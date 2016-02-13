@@ -1,9 +1,9 @@
 /**
- *  Copyright 2016 David Lomas
+ *  Copyright 2016 David Lomas (codersaur)
  *
  *  Name: TKB Metering Switch (TZ88E-GEN5)
  *
- *  Author: David Lomas
+ *  Author: David Lomas (codersaur)
  *
  *  Date: 2016-02-12
  *
