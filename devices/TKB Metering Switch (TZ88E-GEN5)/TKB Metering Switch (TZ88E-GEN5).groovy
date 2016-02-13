@@ -194,13 +194,13 @@ metadata {
 		// Energy Stats:
         // Needs to be a standardTile to be able to change icon for each state.
 		valueTile("statsMode", "device.statsMode", decoration: "flat", canChangeIcon: true, canChangeBackground: true, width: 2, height: 1) {
-			state "default", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-			state "Today", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-            state "Last 24 Hours", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-            state "Last 7 Days", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-            state "This Month", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-			state "This Year", label:"${currentValue}:", action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
-			state "Lifetime", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle2.png"
+			state "default", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+			state "Today", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+            state "Last 24 Hours", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+            state "Last 7 Days", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+            state "This Month", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+			state "This Year", label:"${currentValue}:", action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
+			state "Lifetime", label:'${currentValue}:', action: "cycleStats", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_cal_cycle.png"
 		}
 		valueTile("energyPeriod", "device.dispEnergyPeriod", width: 2, height: 1) {
 			state "default", label:'${currentValue}', icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_top_bottom_2.png"
