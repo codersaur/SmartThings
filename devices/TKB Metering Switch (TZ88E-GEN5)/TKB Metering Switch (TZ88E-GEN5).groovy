@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-02-12
+ *  Date: 2016-02-28
  *
- *  Version: 1.06
+ *  Version: 1.08
  *
  *  Description:
  *   - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
@@ -34,6 +34,14 @@
  *
  *  Version History:
  *
+ *   2016-02-28: v1.08
+ *    - Fixed required properties on input parameters.
+ *
+ *   2016-02-14: v1.07
+ *    - General tidy up.
+ *    - poll() now just calls refresh().
+ *    - standardised date format in installed().
+ * 
  *   2016-02-12: v1.06
  *    - New Icons, hosted on GitHub.
  *    - A meter report for current is now requested whenever a meter report for power is received.
@@ -67,6 +75,8 @@
  *    - Added fingerprint for TZ88E-GEN5.
  * 
  *  To Do:
+ *   - Tidy parse() method using ${result?.inspect(), see Aeon HEMv2.
+ *   - Option to specify a '£/day' fixed charge, which is added to all energy cost calculations.
  *   - Process Alarm reports.
  *   - Add Min/Max/Ave stats (instMode tile to cycle through: Now/Min/Max/Ave).
  *
@@ -139,7 +149,7 @@ metadata {
         attribute "dispEnergyPeriod", "string"
         attribute "dispCostOfEnergyPeriod", "string"
         
-        
+        // Fingerprints:
 		fingerprint deviceId:"0x1001", inClusters:"0x5E 0x86 0x72 0x98 0x5A 0x85 0x59 0x73 0x25 0x20 0x27 0x32 0x70 0x71 0x75 0x7A"
 	}
 
@@ -245,24 +255,24 @@ metadata {
     preferences {
     	
         input "configCostPerKWH", "string", title: "Energy Cost (£/kWh)", defaultValue: "0.1253", required: true, displayDuringSetup: true
-    	input "configAutoReport", "boolean", title: "Enable Auto-Reporting?", defaultValue: true, required: true, displayDuringSetup: true
+    	input "configAutoReport", "boolean", title: "Enable Auto-Reporting?", defaultValue: true, required: false, displayDuringSetup: true
 
 		// Device Configuration Parameters:
-    	input "configParameter1", "number", title: "Power Report Interval (x5sec):", defaultValue: 12, required: true, displayDuringSetup: true // 1 min.
-    	input "configParameter2", "number", title: "Energy Report Interval (x10min):", defaultValue: 1, required: true, displayDuringSetup: true // 10 min.
-        input "configParameter3", "number", title: "Current Threshold for Load Caution (x0.01A):", defaultValue: 1300, required: true, displayDuringSetup: false
-        input "configParameter4", "number", title: "Energy Threshold for Load Caution (kWh):", defaultValue: 10000, required: true, displayDuringSetup: false
+    	input "configParameter1", "number", title: "Power Report Interval (x5sec):", defaultValue: 12, required: false, displayDuringSetup: true // 1 min.
+    	input "configParameter2", "number", title: "Energy Report Interval (x10min):", defaultValue: 1, required: false, displayDuringSetup: true // 10 min.
+        input "configParameter3", "number", title: "Current Threshold for Load Caution (x0.01A):", defaultValue: 1300, required: false, displayDuringSetup: true
+        input "configParameter4", "number", title: "Energy Threshold for Load Caution (kWh):", defaultValue: 10000, required: false, displayDuringSetup: true
         input "configParameter5", "enum", title: "Restore Switch State Mode:", 
-			options:["Last State", "Off", "On"], defaultValue: "Last State", required: true, displayDuringSetup: true
-        input "configParameter6", "boolean", title: "Enable Switch?", defaultValue: true, required: true, displayDuringSetup: true
+			options:["Last State", "Off", "On"], defaultValue: "Last State", required: false, displayDuringSetup: true
+        input "configParameter6", "boolean", title: "Enable Switch?", defaultValue: true, required: false, displayDuringSetup: true
     	input "configParameter7", "enum", title: "LED Indication Mode:", 
-			options:["Show Switch State", "Night Mode"], defaultValue: "Show Switch State", required: true, displayDuringSetup: false
-        input "configParameter8", "number", title: "Auto-Off Timer (s):", defaultValue: 0, required: true, displayDuringSetup: true
+			options:["Show Switch State", "Night Mode"], defaultValue: "Show Switch State", required: false, displayDuringSetup: true
+        input "configParameter8", "number", title: "Auto-Off Timer (s):", defaultValue: 0, required: false, displayDuringSetup: true
         input "configParameter9", "enum", title: "RF Off Command Mode:", 
-			options:["Switch Off", "Ignore", "Toggle State", "Switch On"], defaultValue: "Switch Off", required: true, displayDuringSetup: false		
+			options:["Switch Off", "Ignore", "Toggle State", "Switch On"], defaultValue: "Switch Off", required: false, displayDuringSetup: true		
         
 		// Debug Mode:
-		input "configDebugMode", "boolean", title: "Enable debug logging?", defaultValue: true, displayDuringSetup: true
+		input "configDebugMode", "boolean", title: "Enable debug logging?", defaultValue: true, required: false, displayDuringSetup: true
     }
 }
 
@@ -484,6 +494,7 @@ def on() {
 	]
 }
 
+
 /**
  *  off() - Turns the switch off.
  *
@@ -498,21 +509,6 @@ def off() {
 	]
 }
 
-/**
- *  poll() - Polls the device.
- *
- *  Required for the "Polling" capability
- **/
-def poll() {
-	delayBetween([
-		zwave.switchBinaryV1.switchBinaryGet().format(),
-		zwave.meterV3.meterGet(scale: 0).format(), // Energy
-		zwave.meterV3.meterGet(scale: 2).format(), // Power
-		zwave.meterV3.meterGet(scale: 4).format(), // Volts
-		//zwave.meterV3.meterGet(scale: 5).format(), // Current - Not included, as a request will be triggered when Power report is received.
-		zwave.meterV3.meterGet(scale: 6).format() // Power Factor
-	])
-}
 
 /**
  *  refresh() - Refreshes values from the device. Same as poll()?
@@ -529,6 +525,17 @@ def refresh() {
 		zwave.meterV3.meterGet(scale: 6).format() // Power Factor
 	])
 }
+
+
+/**
+ *  poll() - Polls the device.
+ *
+ *  Required for the "Polling" capability
+ **/
+def poll() {
+	refresh()
+}
+
 
 /**
  *  reset() - Reset the Accumulated Energy figure held in the device.
@@ -557,6 +564,11 @@ def reset() {
 }
 
 
+/**********************************************************************
+ *  Other Commands:
+ **********************************************************************/
+
+
 /**
  *  resetAllStats() - Reset all Accumulated Energy statistics (!)
  *
@@ -583,9 +595,6 @@ def resetAllStats() {
 	]
 }
 
-/**********************************************************************
- *  Other Commands:
- **********************************************************************/
 
 /**
  *  installed() - Runs when the device is first installed.
@@ -596,9 +605,10 @@ def installed() {
 	state.energy = 0
 	state.costPerKWH = 0
 	state.costOfEnergy = 0
-	state.lastReset = new Date().format("YYYY/MM/dd HH:mm a", location.timeZone)
+	state.lastReset = new Date().format("YYYY/MM/dd \n HH:mm:ss", location.timeZone)
     state.statsMode = 'Today'
 }
+
 
 /**
  *  updated() - Runs when you hit "Done" from "Edit Device".
@@ -923,6 +933,7 @@ def cycleStats() {
 	
 }
 
+
 /**
  *  configure() - Configure physical device parameters.
  *
@@ -1007,7 +1018,6 @@ def configure() {
 	else if (configParameter9 == "Toggle State") {CP9 = 2}
 	else if (configParameter9 == "Switch On") {CP9 = 3}
 	else {CP9 = 0}
-	
 	cmds << zwave.configurationV1.configurationSet(parameterNumber: 9, size: 1, scaledConfigurationValue: CP9).format()
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 9).format()
     
