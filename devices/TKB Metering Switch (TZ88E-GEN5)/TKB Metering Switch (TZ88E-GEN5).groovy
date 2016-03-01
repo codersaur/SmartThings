@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-02-28
+ *  Date: 2016-03-01
  *
- *  Version: 1.08
+ *  Version: 1.09
  *
  *  Description:
  *   - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
@@ -33,6 +33,9 @@
  *     this keeps the live figures in sync (voltage isn't requested as it rarely changes much).
  *
  *  Version History:
+ *
+ *   2016-03-01: v1.09
+ *    - Cleaned up parse() method.
  *
  *   2016-02-28: v1.08
  *    - Fixed required properties on input parameters.
@@ -75,7 +78,6 @@
  *    - Added fingerprint for TZ88E-GEN5.
  * 
  *  To Do:
- *   - Tidy parse() method using ${result?.inspect(), see Aeon HEMv2.
  *   - Option to specify a '£/day' fixed charge, which is added to all energy cost calculations.
  *   - Process Alarm reports.
  *   - Add Min/Max/Ave stats (instMode tile to cycle through: Now/Min/Max/Ave).
@@ -282,7 +284,7 @@ metadata {
  **********************************************************************/
 
 /**
- *  parse - Called when messages from a device are received by the hub.
+ *  parse() - Called when messages from a device are received by the hub.
  *
  *  The parse method is responsible for interpreting those messages and returning Event definitions.
  *
@@ -308,18 +310,7 @@ def parse(String description) {
 	if (cmd) {
 		if (state.debug) log.debug "$device.displayName zwave.parse() returned: $cmd"
 		result = zwaveEvent(cmd)
-        if (result) {
-        	if (result.size > 1) {
-            	// Result is list, event will be the first item
-					if (state.debug)  log.debug "$device.displayName zwaveEvent() returned: ${result[0].descriptionText}"
-                }
-                else {
-					if (state.debug)  log.debug "$device.displayName zwaveEvent() returned: ${result.descriptionText}"
-				}
-		}
-        else {
-        	if (state.debug) log.debug "$device.displayName zwaveEvent() returned null!"
-        }
+		if (state.debug) log.debug "$device.displayName zwaveEvent() returned: ${result?.inspect()}"	
 	}
 	return result
 }
