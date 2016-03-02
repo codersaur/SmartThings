@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-03-01
+ *  Date: 2016-03-02
  *
- *  Version: 1.09
+ *  Version: 1.10
  *
  *  Description:
  *   - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
@@ -28,11 +28,15 @@
  *   - Auto-Meter-Reports for power and energy are sent to association group 1. The hub needs to be added to
  *     this group to receive these auto-reports (this is done for you if you enable 'Enable Auto-Reporting' in
  *     the device settings).
- *   - The device cannot be confirgured to send Auto-Meter-Reports for voltage, current, or powerFactor, however
- *     this device handler will request a meter report for current whenever a meter report for power is received,
- *     this keeps the live figures in sync (voltage isn't requested as it rarely changes much).
+ *   - The device cannot be configured to send auto-reports for voltage, current, or powerFactor. 
+ *     Therefore, meter reports for current and powerFactor are requested whenever a meter report for power is received.
+ *     Additionally, a meter report for voltage is reqeusted whenever a meter report for energy is received.
  *
  *  Version History:
+ *
+ *   2016-03-02: v1.10
+ *    - Meter reports for current and powerFactor are requested whenever a meter report for power is received.
+ *    - Meter reports for voltage are reqeusted whenever a meter report for energy is received.
  *
  *   2016-03-01: v1.09
  *    - Cleaned up parse() method.
@@ -100,6 +104,7 @@ metadata {
 		capability "Switch"
 		capability "Power Meter"
 		capability "Energy Meter"
+		//capability "Voltage Measurement"  // In documentation, but generates RunTimeException.
 		capability "Polling"
 		capability "Refresh"
 		capability "Configuration"
@@ -295,9 +300,7 @@ def parse(String description) {
     
     def result = null
     
-	//if(description == "updated") return
-    
-    // zwave.parse: 
+	// zwave.parse: 
     // The second parameter specifies which command version to return for each command type:
     // TZ88E-GEN5 supports:
     //  COMMAND_CLASS_BASIC [0x20: 1]
@@ -324,7 +327,7 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
 {
 	def evt = createEvent(name: "switch", value: cmd.value ? "on" : "off", type: "physical")
 	if (evt.isStateChange) {
-		[evt, response(["delay 3000", zwave.meterV2.meterGet(scale: 2).format()])]
+		[evt, response(["delay 1000", zwave.meterV2.meterGet(scale: 2).format()])]
 	} else {
 		evt
 	}
@@ -337,11 +340,20 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
  **/
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd)
 {
-	createEvent(name: "switch", value: cmd.value ? "on" : "off", type: "digital")
+	def evt = createEvent(name: "switch", value: cmd.value ? "on" : "off", type: "digital")
+	if (evt.isStateChange) {
+		[evt, response(["delay 1000", zwave.meterV3.meterGet(scale: 2).format()])]
+	} else {
+		evt
+	}
 }
 
 /**
  *  COMMAND_CLASS_METER_V3 (0x32)
+ * 
+ *  Process Meter Report. 
+ *  If an energy report is received, a voltage report is also requested.
+ *  If a power report is received, current and powerFactor reports are reqeusted.
  *
  *  Integer			deltaTime		    		Time in seconds since last report
  *  Short			meterType		    		Unknown = 0, Electric = 1, Gas = 2, Water = 3
@@ -357,19 +369,27 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
  **/
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 	if (cmd.scale == 0) {
-    	// Accumulated Energy (kWh) - Update stats and record energy.
+    	// Accumulated Energy (kWh) - Update stats and request voltage.
     	state.energy = cmd.scaledMeterValue
 		updateStats()
         sendEvent(name: "dispEnergy", value: String.format("%.2f",cmd.scaledMeterValue as BigDecimal) + " kWh", displayed: false)
-		return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+		def event = createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+        def cmds = []
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 4).format() // Request voltage (Volts).
+        return [event, response(cmds)] // return a list containing the event and the result of response(). 
 	} else if (cmd.scale == 1) {
     	// Accumulated Energy (kVAh) - Ignore.
 		//createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kVAh")
 	} else if (cmd.scale == 2) {
-    	// Instantaneous Power (Watts) - Record power and requst current also (otherwise Amps figure will by out of sync).
+    	// Instantaneous Power (Watts) - Record power, and requst current & powerFactor.
 		sendEvent(name: "dispPower", value: String.format("%.1f",cmd.scaledMeterValue as BigDecimal) + " W", displayed: false)
         def event = createEvent(name: "power", value: cmd.scaledMeterValue, unit: "W")
-        def cmds = [zwave.meterV3.meterGet(scale: 5).format()] // Request current (Volts).
+        def cmds = []
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 5).format() // Request current (Amps).
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 6).format() // Request powerFactor.
         return [event, response(cmds)] // return a list containing the event and the result of response().
 	} else if (cmd.scale == 4) {
     	// Instantaneous Voltage (Volts)
@@ -389,9 +409,9 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 /**
  *  COMMAND_CLASS_CONFIGURATION (0x70)
  *
+ *  Log received configuration values.
  **/
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
-	// Translate the cmd and log the parameter configuration.
 
 	// Translate value (byte array) back to scaledConfigurationValue (decimal):
     // This should be done in zwave.parse() but isn't implemented yet.
@@ -404,7 +424,7 @@ def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport 
     else if (cmd.size == 2) {  scValue = cmd.configurationValue[1] + (cmd.configurationValue[0] * 0x100) }
     else if (cmd.size == 3) {  scValue = cmd.configurationValue[2] + (cmd.configurationValue[1] * 0x100) + (cmd.configurationValue[0] * 0x10000) }
     else if (cmd.size == 4) {  scValue = cmd.configurationValue[3] + (cmd.configurationValue[2] * 0x100) + (cmd.configurationValue[1] * 0x10000) + (cmd.configurationValue[0] * 0x1000000) }
-    
+
     // Translate parameterNumber to parameterDescription:
     def parameterDescription
     switch (cmd.parameterNumber) {
@@ -480,7 +500,7 @@ def on() {
 	[
 		zwave.basicV1.basicSet(value: 0xFF).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format(),
-		"delay 3000",
+		"delay 1000",
 		zwave.meterV3.meterGet(scale: 2).format()
 	]
 }
@@ -495,7 +515,7 @@ def off() {
 	[
 		zwave.basicV1.basicSet(value: 0x00).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format(),
-		"delay 3000",
+		"delay 1000",
 		zwave.meterV3.meterGet(scale: 2).format()
 	]
 }
@@ -510,10 +530,10 @@ def refresh() {
 	delayBetween([
 		zwave.switchBinaryV1.switchBinaryGet().format(),
 		zwave.meterV3.meterGet(scale: 0).format(), // Energy
-		zwave.meterV3.meterGet(scale: 2).format(), // Power
-		zwave.meterV3.meterGet(scale: 4).format(), // Volts
-		//zwave.meterV3.meterGet(scale: 5).format(), // Current - Not included, as a request will be triggered when Power report is received.
-		zwave.meterV3.meterGet(scale: 6).format() // Power Factor
+		zwave.meterV3.meterGet(scale: 2).format() // Power
+		//zwave.meterV3.meterGet(scale: 4).format(), // Volts - Not included, as a request will be triggered when energy report is received.
+		//zwave.meterV3.meterGet(scale: 5).format(), // Current - Not included, as a request will be triggered when power report is received.
+		//zwave.meterV3.meterGet(scale: 6).format() // Power Factor - Not included, as a request will be triggered when power report is received.
 	])
 }
 
@@ -550,6 +570,7 @@ def reset() {
     
     return [
 		zwave.meterV3.meterReset().format(),
+		"delay 1000",
 		zwave.meterV3.meterGet(scale: 0).format()
 	]
 }
@@ -582,6 +603,7 @@ def resetAllStats() {
     
     return [
 		zwave.meterV3.meterReset().format(),
+		"delay 1000",
 		zwave.meterV3.meterGet(scale: 0).format()
 	]
 }
