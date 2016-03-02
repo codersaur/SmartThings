@@ -37,10 +37,13 @@
  *      COMMAND_CLASS_MANUFACTURER_SPECIFIC_V2 [0x72: 2]
  *      COMMAND_CLASS_ASSOCIATION_V1 [0x85: 1]
  *      COMMAND_CLASS_VERSION [0x86: 1]
- *   - Association Groups:
+ *   - Association Groups receive auto-reports for switch, energy, and power:
  *      Association Group #1 will receive BINARY and METER auto-reports for Relay 1 & 2.
  *      Association Group #2 will receive BINARY and METER auto-reports for Relay 1 only.
  *      Association Group #3 will receive BINARY and METER auto-reports for Relay 2 only.
+ *   - The PAN04 cannot be configured to send auto-reports for voltage, current, or powerFactor. 
+ *     Therefore, meter reports for current and powerFactor are requested whenever a meter report for power is received.
+ *     Additionally, a meter report for voltage is reqeusted whenever a meter report for energy is received.
  *
  *  Version History:
  *
@@ -242,7 +245,6 @@ metadata {
         input "configParameter5", "number", title: "Power Threshold for Load Caution (W):", defaultValue: 1500, required: false, displayDuringSetup: true
         input "configParameter6", "number", title: "Energy Threshold for Load Caution (kWh):", defaultValue: 10000, required: false, displayDuringSetup: true
         	
-        
 		// Debug Mode:
 		input "configDebugMode", "boolean", title: "Enable debug logging?", defaultValue: true, required: false, displayDuringSetup: true
     }
@@ -297,13 +299,13 @@ def parse(String description) {
  *  The PAN04 will report Basic and Binary Switch reports in different ways 
  *  depending on the value of Configuration Parameter #3.
  *
- *  Request a meter report if switch has changed state.
+ *  Request a meter report for power if switch has changed state.
  **/
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
 {
 	def evt = createEvent(name: "switch", value: cmd.value ? "on" : "off", type: "physical")
 	if (evt.isStateChange) {
-		[evt, response(["delay 3000", zwave.meterV3.meterGet(scale: 2).format()])]
+		[evt, response(["delay 1000", zwave.meterV3.meterGet(scale: 2).format()])]
 	} else {
 		evt
 	}
@@ -317,13 +319,13 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd)
  *  The PAN04 will report Basic and Binary Switch reports in different ways 
  *  depending on the value of Configuration Parameter #3.
  *
- *  Request a meter report if switch has changed state.
+ *  Request a meter report for power if switch has changed state.
  **/
 def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cmd)
 {
 	def evt = createEvent(name: "switch", value: cmd.value ? "on" : "off", type: "digital")
 	if (evt.isStateChange) {
-		[evt, response(["delay 3000", zwave.meterV3.meterGet(scale: 2).format()])]
+		[evt, response(["delay 1000", zwave.meterV3.meterGet(scale: 2).format()])]
 	} else {
 		evt
 	}
@@ -331,6 +333,10 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
 
 /**
  *  COMMAND_CLASS_METER_V3 (0x32)
+ * 
+ *  Process Meter Report. 
+ *  If an energy report is received, a voltage report is also requested.
+ *  If a power report is received, current and powerFactor reports are reqeusted.
  *
  *  Integer			deltaTime		    		Time in seconds since last report
  *  Short			meterType		    		Unknown = 0, Electric = 1, Gas = 2, Water = 3
@@ -346,19 +352,27 @@ def zwaveEvent(physicalgraph.zwave.commands.switchbinaryv1.SwitchBinaryReport cm
  **/
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 	if (cmd.scale == 0) {
-    	// Accumulated Energy (kWh) - Update stats and record energy.
+    	// Accumulated Energy (kWh) - Update stats and request voltage.
     	state.energy = cmd.scaledMeterValue
 		updateStats()
         sendEvent(name: "dispEnergy", value: String.format("%.2f",cmd.scaledMeterValue as BigDecimal) + " kWh", displayed: false)
-		return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+		def event = createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+        def cmds = []
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 4).format() // Request voltage (Volts).
+        return [event, response(cmds)] // return a list containing the event and the result of response(). 
 	} else if (cmd.scale == 1) {
     	// Accumulated Energy (kVAh) - Ignore.
 		//createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kVAh")
 	} else if (cmd.scale == 2) {
-    	// Instantaneous Power (Watts) - Record power and requst current also (otherwise Amps figure will by out of sync).
+    	// Instantaneous Power (Watts) - Record power, and requst current & powerFactor.
 		sendEvent(name: "dispPower", value: String.format("%.1f",cmd.scaledMeterValue as BigDecimal) + " W", displayed: false)
         def event = createEvent(name: "power", value: cmd.scaledMeterValue, unit: "W")
-        def cmds = [zwave.meterV3.meterGet(scale: 5).format()] // Request current (Volts).
+        def cmds = []
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 5).format() // Request current (Amps).
+        cmds << "delay 1000"
+    	cmds << zwave.meterV3.meterGet(scale: 6).format() // Request powerFactor.
         return [event, response(cmds)] // return a list containing the event and the result of response().
 	} else if (cmd.scale == 4) {
     	// Instantaneous Voltage (Volts)
@@ -378,9 +392,9 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 /**
  *  COMMAND_CLASS_CONFIGURATION (0x70)
  *
+ *  Log received configuration values.
  **/
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
-	// Translate the cmd and log the parameter configuration.
 
 	// Translate value (byte array) back to scaledConfigurationValue (decimal):
     // This should be done in zwave.parse() but isn't implemented yet.
@@ -460,7 +474,7 @@ def on() {
 	[
 		zwave.basicV1.basicSet(value: 0xFF).format(),
 		zwave.switchBinaryV1.switchBinaryGet().format(),
-		"delay 3000",
+		"delay 1000",
 		zwave.meterV3.meterGet(scale: 2).format()
 	]
 }
@@ -490,10 +504,10 @@ def refresh() {
 	delayBetween([
 		zwave.switchBinaryV1.switchBinaryGet().format(),
 		zwave.meterV3.meterGet(scale: 0).format(), // Energy
-		zwave.meterV3.meterGet(scale: 2).format(), // Power
-		zwave.meterV3.meterGet(scale: 4).format(), // Volts
-		//zwave.meterV3.meterGet(scale: 5).format(), // Current - Not included, as a request will be triggered when Power report is received.
-		zwave.meterV3.meterGet(scale: 6).format() // Power Factor
+		zwave.meterV3.meterGet(scale: 2).format() // Power
+		//zwave.meterV3.meterGet(scale: 4).format(), // Volts - Not included, as a request will be triggered when energy report is received.
+		//zwave.meterV3.meterGet(scale: 5).format(), // Current - Not included, as a request will be triggered when power report is received.
+		//zwave.meterV3.meterGet(scale: 6).format() // Power Factor - Not included, as a request will be triggered when power report is received.
 	])
 }
 
