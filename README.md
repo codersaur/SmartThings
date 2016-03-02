@@ -5,20 +5,25 @@ Copyright (c) 2016 [David Lomas](https://github.com/codersaur)
 
 ##Overview
 
-This repository contains device handlers and SmartApps for use with Samsung's SmartThings home automation platform.
+This repository contains device handlers and SmartApps for use with Samsung's [SmartThings](http://www.smartthings.com) home automation platform.
 
-1. [Aeon Home Energy Meter (GEN2 - UK - 1 Clamp)](https://github.com/codersaur/SmartThings/tree/master/devices/Aeon%20Home%20Energy%20Meter%20(GEN2%20-%20UK%20-%201%20Clamp)):
+### Device Handlers
+
+* [Aeon Home Energy Meter (GEN2 - UK - 1 Clamp)](https://github.com/codersaur/SmartThings/tree/master/devices/Aeon%20Home%20Energy%20Meter%20(GEN2%20-%20UK%20-%201%20Clamp)):
  - This device handler is written specifically for the Aeon Home Energy Meter Gen2 UK version, with a single clamp.
  - It supports live reporting of energy, power, current, and voltage, as well as energy and cost statistics over multiple pre-defined periods.
 
-2. [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04))
+* [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04)):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
-3. [TKB Metering Switch (TZ88E-GEN5)](https://github.com/codersaur/SmartThings/tree/master/devices/TKB%20Metering%20Switch%20(TZ88E-GEN5))
+* [TKB Metering Switch (TZ88E-GEN5)](https://github.com/codersaur/SmartThings/tree/master/devices/TKB%20Metering%20Switch%20(TZ88E-GEN5)):
  - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
+### SmartApps
+
+(TBD)
 
 ##Installation Procedure
 
