@@ -13,6 +13,9 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - This device handler is written specifically for the Aeon Home Energy Meter Gen2 UK version, with a single clamp.
  - It supports live reporting of energy, power, current, and voltage, as well as energy and cost statistics over multiple pre-defined periods.
 
+* [Evohome Heating Zone - BETA](https://github.com/codersaur/SmartThings/tree/master/devices/Evohome):
+ - This device handler is required for the Evohome (Connect) SmartApp.
+
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04)):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
@@ -23,9 +26,12 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  
 ### SmartApps
 
-(TBD)
+* [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/Evohome):
+ - This SmartApp connects your Honeywell Evohome System to SmartThings.
+ - You must install the Evohome Heating Zone device handler (above).
+ - It uses the EMEA Evohome API (therefore may not work for US Evohome users).
 
-##Installation Procedure
+##Device Handler Installation Procedure
 
 1. Using the SmartThings IDE, click 'Create New Device Handler', select 'From Code' and paste in the appropriate .groovy file. Click 'Create', and then 'Publish' (For Me).
 3. If your device is already connected to your SmartTHings hub, you will need to change the device type using the SmartThings IDE. From the 'My Devices' tab, click the relevent device, then 'Edit'. Change the 'Type' using the drop-down box, custom devices will be near the bottom of the list. 
