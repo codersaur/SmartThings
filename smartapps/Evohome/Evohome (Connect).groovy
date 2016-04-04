@@ -39,33 +39,33 @@
  *
  */
 definition(
-    name: "Evohome (Connect)",
-    namespace: "codersaur",
-    author: "David Lomas (codersaur)",
-    description: "Connect your Honeywell Evohome System to SmartThings.",
-    category: "My Apps",
-    iconUrl: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
-    iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
-    iconX3Url: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
-    singleInstance: true
+	name: "Evohome (Connect)",
+	namespace: "codersaur",
+	author: "David Lomas (codersaur)",
+	description: "Connect your Honeywell Evohome System to SmartThings.",
+	category: "My Apps",
+	iconUrl: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
+	iconX2Url: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
+	iconX3Url: "http://cdn.device-icons.smartthings.com/Home/home1-icn.png",
+	singleInstance: true
 )
 
 preferences {
 
-    section ("Evohome:") {
-        input "prefEvohomeUsername", "text", title: "Username", required: true, displayDuringSetup: true
-        input "prefEvohomePassword", "password", title: "Password", required: true, displayDuringSetup: true
-        input "prefEvohomeStatusPollInterval", "number", title: "Polling Interval (minutes)", range: "1..60", defaultValue: 5, required: true, displayDuringSetup: true
-        input "prefEvohomeWindowFuncTemp", "decimal", title: "Window Function Temperature", range: "0..100", defaultValue: 5.0, required: true, displayDuringSetup: true
-    	input title: "Thermostat Modes", description: "Configure how long thermostat modes are applied for. Specify 0 to apply modes permanently. 'Auto' and 'Off' modes are always permanent.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+	section ("Evohome:") {
+		input "prefEvohomeUsername", "text", title: "Username", required: true, displayDuringSetup: true
+		input "prefEvohomePassword", "password", title: "Password", required: true, displayDuringSetup: true
+		input "prefEvohomeStatusPollInterval", "number", title: "Polling Interval (minutes)", range: "1..60", defaultValue: 5, required: true, displayDuringSetup: true
+		input "prefEvohomeWindowFuncTemp", "decimal", title: "Window Function Temperature", range: "0..100", defaultValue: 5.0, required: true, displayDuringSetup: true
+		input title: "Thermostat Modes", description: "Configure how long thermostat modes are applied for. Specify 0 to apply modes permanently. 'Auto' and 'Off' modes are always permanent.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
 		input 'prefThermostatModeDuration', 'number', title: 'Away/Custom/DayOff Mode (days):', description: 'Apply thermostat modes for this many days', range: "0..99", defaultValue: 0, required: true, displayDuringSetup: true
 		input 'prefThermostatEconomyDuration', 'number', title: 'Economy Mode (hours):', description: 'Apply economy mode for this many hours', range: "0..24", defaultValue: 0, required: true, displayDuringSetup: true
 	}
 
 	section("General:") {
 		input "prefDebugMode", "bool", title: "Enable debug logging?", defaultValue: true, displayDuringSetup: true
-    }
-    
+	}
+	
 }
 
 /**********************************************************************
@@ -90,8 +90,8 @@ def installed() {
  **/
 def uninstalled() {
 	if(getChildDevices()) {
-    	removeChildDevices(getChildDevices())
-    }
+		removeChildDevices(getChildDevices())
+	}
 }
 
 
@@ -108,28 +108,28 @@ void updated() {
 	atomicState.debug = settings.prefDebugMode
 	
 	// Evohome:
-    atomicState.evohomeEndpoint = 'https://tccna.honeywell.com'
+	atomicState.evohomeEndpoint = 'https://tccna.honeywell.com'
 	atomicState.evohomeAuth = [tokenLifetimePercentThreshold : 50] // Auth Token will be refreshed when down to 50% of its lifetime.
-    atomicState.evohomeStatusPollInterval = settings.prefEvohomeStatusPollInterval // Poll interval for status updates (minutes).
+	atomicState.evohomeStatusPollInterval = settings.prefEvohomeStatusPollInterval // Poll interval for status updates (minutes).
 	atomicState.evohomeSchedulePollInterval = 60 // Hardcoded to 1hr (minutes).
 
 	// Thermostat Mode Durations:
 	atomicState.thermostatModeDuration = settings.prefThermostatModeDuration
-    atomicState.thermostatEconomyDuration = settings.prefThermostatEconomyDuration
-    
-    // Force Authentication:
+	atomicState.thermostatEconomyDuration = settings.prefThermostatEconomyDuration
+	
+	// Force Authentication:
 	authenticate()
 
 	// Refresh Subscriptions and Schedules:
 	manageSubscriptions()
 	manageSchedules()
-    
-    // Refresh child device configuration:
-    getEvohomeConfig()
-    updateChildDeviceConfig()
+	
+	// Refresh child device configuration:
+	getEvohomeConfig()
+	updateChildDeviceConfig()
 
-    // Run a poll, but defer it so that updated() returns sooner:
-    runIn(5, "poll")
+	// Run a poll, but defer it so that updated() returns sooner:
+	runIn(5, "poll")
 
 }
 
@@ -196,11 +196,11 @@ void manageSubscriptions() {
 	if (atomicState.debug) log.debug "${app.label}: manageSubscriptions()"
 
 	// Unsubscribe:
-    unsubscribe()
-    
-    // Subscribe to App Touch events:
-    subscribe(app,handleAppTouch)
-    
+	unsubscribe()
+	
+	// Subscribe to App Touch events:
+	subscribe(app,handleAppTouch)
+	
 }
 
 
@@ -218,23 +218,23 @@ void manageAuth() {
 
 	if (atomicState.debug) log.debug "${app.label}: manageAuth()"
 
-    // Check if Auth Token is valid, if not authenticate:
+	// Check if Auth Token is valid, if not authenticate:
 	if (!atomicState.evohomeAuth.authToken) {
 	
-    	log.info "${app.label}: manageAuth(): No Auth Token. Authenticating..."
-    	authenticate()
-    }
-    else if (atomicState.evohomeAuthFailed) {
+		log.info "${app.label}: manageAuth(): No Auth Token. Authenticating..."
+		authenticate()
+	}
+	else if (atomicState.evohomeAuthFailed) {
 	
-    	log.info "${app.label}: manageAuth(): Auth has failed. Authenticating..."
-    	authenticate()
-    }
-    else if (!atomicState.evohomeAuth.expiresAt.isNumber() || now() >= atomicState.evohomeAuth.expiresAt) {
+		log.info "${app.label}: manageAuth(): Auth has failed. Authenticating..."
+		authenticate()
+	}
+	else if (!atomicState.evohomeAuth.expiresAt.isNumber() || now() >= atomicState.evohomeAuth.expiresAt) {
 	
-    	log.info "${app.label}: manageAuth(): Auth Token has expired. Authenticating..."
-    	authenticate()
-    }
-    else {		
+		log.info "${app.label}: manageAuth(): Auth Token has expired. Authenticating..."
+		authenticate()
+	}
+	else {		
 		// Check if Auth Token should be refreshed:
 		def refreshAt = atomicState.evohomeAuth.expiresAt - ( 1000 * (atomicState.evohomeAuth.tokenLifetime * atomicState.evohomeAuth.tokenLifetimePercentThreshold / 100))
 		
@@ -245,7 +245,7 @@ void manageAuth() {
 		else {
 			log.info "${app.label}: manageAuth(): Auth Token is okay."		
 		}
-    }
+	}
 
 	log.debug "${app.label}: manageAuth(): Finish"
 }
@@ -270,35 +270,35 @@ void manageAuth() {
 void poll(onlyZoneId=-1) {
 
 	if (atomicState.debug) log.debug "${app.label}: poll(${onlyZoneId})"
-    
-    // Check if there's been an authentication failure:
+	
+	// Check if there's been an authentication failure:
 	if (atomicState.evohomeAuthFailed) {
 		manageAuth()
 	}
 	
-    if (onlyZoneId != -1) { // A zoneId has been specified, so just get the status and update the relevent device:
-    	getEvohomeStatus(onlyZoneId)
-        updateChildDevice(onlyZoneId)
-    }
-    else { // Get status and schedule for all zones, but only if the relevent poll interval has been exceeded: 
-    
-        // Adjust intervals to allow for poll() execution time:
-        def evohomeStatusPollThresh = (atomicState.evohomeStatusPollInterval * 60) - 30
-        def evohomeSchedulePollThresh = (atomicState.evohomeSchedulePollInterval * 60) - 30
+	if (onlyZoneId != -1) { // A zoneId has been specified, so just get the status and update the relevent device:
+		getEvohomeStatus(onlyZoneId)
+		updateChildDevice(onlyZoneId)
+	}
+	else { // Get status and schedule for all zones, but only if the relevent poll interval has been exceeded: 
+	
+		// Adjust intervals to allow for poll() execution time:
+		def evohomeStatusPollThresh = (atomicState.evohomeStatusPollInterval * 60) - 30
+		def evohomeSchedulePollThresh = (atomicState.evohomeSchedulePollInterval * 60) - 30
 
-        // Get zone status:
-        if (!atomicState.evohomeStatusUpdatedAt || atomicState.evohomeStatusUpdatedAt + (1000 * evohomeStatusPollThresh) < now()) {
-            getEvohomeStatus()
-        } 
+		// Get zone status:
+		if (!atomicState.evohomeStatusUpdatedAt || atomicState.evohomeStatusUpdatedAt + (1000 * evohomeStatusPollThresh) < now()) {
+			getEvohomeStatus()
+		} 
 
-        // Get zone schedules:
-        if (!atomicState.evohomeSchedulesUpdatedAt || atomicState.evohomeSchedulesUpdatedAt + (1000 * evohomeSchedulePollThresh) < now()) {
-            getEvohomeSchedules()
-        }
-        
-       	// Update all child devices:
-        updateChildDevice()
-    }
+		// Get zone schedules:
+		if (!atomicState.evohomeSchedulesUpdatedAt || atomicState.evohomeSchedulesUpdatedAt + (1000 * evohomeSchedulePollThresh) < now()) {
+			getEvohomeSchedules()
+		}
+		
+		// Update all child devices:
+		updateChildDevice()
+	}
 
 }
 
@@ -319,13 +319,13 @@ void handleAppTouch(evt) {
 
 	if (atomicState.debug) log.debug "${app.label}: handleAppTouch()"
 
-    //manageAuth()
+	//manageAuth()
 	//manageSchedules()
-    
-    //getEvohomeConfig()
-    //updateChildDeviceConfig()
-    
-    poll()
+	
+	//getEvohomeConfig()
+	//updateChildDeviceConfig()
+	
+	poll()
 
 }
 
@@ -343,68 +343,68 @@ void handleAppTouch(evt) {
  **/
 void updateChildDeviceConfig() {
 
- 	if (atomicState.debug) log.debug "${app.label}: updateChildDeviceConfig()"
-    
+	if (atomicState.debug) log.debug "${app.label}: updateChildDeviceConfig()"
+	
 	// Build list of active DNIs, any existing children with DNIs not in here will be deleted.
 	def activeDnis = []
 	
-    // Iterate through evohomeConfig, adding new Evohome Heating Zone devices where necessary.
+	// Iterate through evohomeConfig, adding new Evohome Heating Zone devices where necessary.
 	atomicState.evohomeConfig.each { loc ->
 		loc.gateways.each { gateway ->
 			gateway.temperatureControlSystems.each { tcs ->
 				tcs.zones.each { zone ->
-                	
-                	def dni = generateDni(loc.locationInfo.locationId, gateway.gatewayInfo.gatewayId, tcs.systemId, zone.zoneId )
-                    activeDnis << dni
-                    
-                    def values = [
-                    	'debug': atomicState.debug,
+					
+					def dni = generateDni(loc.locationInfo.locationId, gateway.gatewayInfo.gatewayId, tcs.systemId, zone.zoneId )
+					activeDnis << dni
+					
+					def values = [
+						'debug': atomicState.debug,
 						'minHeatingSetpoint': formatTemperature(zone?.heatSetpointCapabilities?.minHeatSetpoint),
 						'maxHeatingSetpoint': formatTemperature(zone?.heatSetpointCapabilities?.maxHeatSetpoint),
 						'temperatureResolution': zone?.heatSetpointCapabilities?.valueResolution,
-                        'windowFunctionTemperature': formatTemperature(settings.prefEvohomeWindowFuncTemp),
+						'windowFunctionTemperature': formatTemperature(settings.prefEvohomeWindowFuncTemp),
 						'zoneType': zone?.zoneType,
-                        'locationId': loc.locationInfo.locationId,
-                        'gatewayId': gateway.gatewayInfo.gatewayId,
-                        'systemId': tcs.systemId,
-                        'zoneId': zone.zoneId
-                    ]
-                    
+						'locationId': loc.locationInfo.locationId,
+						'gatewayId': gateway.gatewayInfo.gatewayId,
+						'systemId': tcs.systemId,
+						'zoneId': zone.zoneId
+					]
+					
 					def d = getChildDevice(dni)
 					if(!d) {
-                    	try {
-                        	values.put('label', "${zone.name} Heating Zone (Evohome)")
-                        	log.info "${app.label}: updateChildDeviceConfig(): Creating device: Name: ${values.label},  DNI: ${dni}"
- 		                   	d = addChildDevice(app.namespace, "Evohome Heating Zone", dni, null, values)
-                        } catch (e) {
-                        	log.error "${app.label}: updateChildDeviceConfig(): Error creating device: Name: ${values.label}, DNI: ${dni}, Error: ${e}"
-                        }
-                    } 
-                    
-                    if(d) {
-                        d.generateEvent(values)
-                    }
-               	}
+						try {
+							values.put('label', "${zone.name} Heating Zone (Evohome)")
+							log.info "${app.label}: updateChildDeviceConfig(): Creating device: Name: ${values.label},  DNI: ${dni}"
+		                   	d = addChildDevice(app.namespace, "Evohome Heating Zone", dni, null, values)
+						} catch (e) {
+							log.error "${app.label}: updateChildDeviceConfig(): Error creating device: Name: ${values.label}, DNI: ${dni}, Error: ${e}"
+						}
+					} 
+					
+					if(d) {
+						d.generateEvent(values)
+					}
+				}
 			}
 		}
 	}
-    
+	
 	if (atomicState.debug) log.debug "${app.label}: updateChildDeviceConfig(): Active DNIs: ${activeDnis}"
 	
-    // Delete Devices:
+	// Delete Devices:
 	def delete = getChildDevices().findAll { !activeDnis.contains(it.deviceNetworkId) }
 	
 	if (atomicState.debug) log.debug "${app.label}: updateChildDeviceConfig(): Found ${delete.size} devices to delete."
 
 	delete.each {
 		log.info "${app.label}: updateChildDeviceConfig(): Deleting device with DNI: ${it.deviceNetworkId}"
-        try {
+		try {
 			deleteChildDevice(it.deviceNetworkId)
 		}
-        catch(e) {
-        	log.error "${app.label}: updateChildDeviceConfig(): Error deleting device with DNI: ${it.deviceNetworkId}. Error: ${e}"
-        }
-    }
+		catch(e) {
+			log.error "${app.label}: updateChildDeviceConfig(): Error deleting device with DNI: ${it.deviceNetworkId}. Error: ${e}"
+		}
+	}
 }
 
 
@@ -422,8 +422,8 @@ void updateChildDeviceConfig() {
  **/
 void updateChildDevice(onlyZoneId=-1) {
 
- 	if (atomicState.debug) log.debug "${app.label}: updateChildDevice(${onlyZoneId})"
-    
+	if (atomicState.debug) log.debug "${app.label}: updateChildDevice(${onlyZoneId})"
+	
 	atomicState.evohomeStatus.each { loc ->
 		loc.gateways.each { gateway ->
 			gateway.temperatureControlSystems.each { tcs ->
@@ -455,7 +455,7 @@ void updateChildDevice(onlyZoneId=-1) {
 							if (atomicState.debug) log.debug "${app.label}: updateChildDevice(): Device with DNI: ${dni} does not exist, so skipping status update."
 						}
 					}
-               	}
+				}
 			}
 		}
 	}
@@ -475,7 +475,7 @@ void updateChildDevice(onlyZoneId=-1) {
 private authenticate() {
 
 	if (atomicState.debug) log.debug "${app.label}: authenticate()"
-    
+	
 	def requestParams = [
 		method: 'POST',
 		uri: 'https://tccna.honeywell.com',
@@ -483,7 +483,7 @@ private authenticate() {
 		headers: [
 			'Authorization': 'Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=',
 			'Accept': 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml',
-            'Content-Type':	'application/x-www-form-urlencoded; charset=utf-8'
+			'Content-Type':	'application/x-www-form-urlencoded; charset=utf-8'
 		],
 		body: [
 			'grant_type':	'password',
@@ -498,41 +498,41 @@ private authenticate() {
 			if(resp.status == 200 && resp.data) {
 				// Update evohomeAuth:
 				// We can't just '.put' or '<<' with atomicState, we have to make a temp copy, edit, and then re-assign.
-                def tmpAuth = atomicState.evohomeAuth ?: [:]
+				def tmpAuth = atomicState.evohomeAuth ?: [:]
 			    	tmpAuth.put('lastUpdated' , now())
-                    tmpAuth.put('authToken' , resp?.data?.access_token)
-                    tmpAuth.put('tokenLifetime' , resp?.data?.expires_in.toInteger() ?: 0)
-                    tmpAuth.put('expiresAt' , now() + (tmpAuth.tokenLifetime * 1000))
-                    tmpAuth.put('refreshToken' , resp?.data?.refresh_token)
-    			atomicState.evohomeAuth = tmpAuth
+					tmpAuth.put('authToken' , resp?.data?.access_token)
+					tmpAuth.put('tokenLifetime' , resp?.data?.expires_in.toInteger() ?: 0)
+					tmpAuth.put('expiresAt' , now() + (tmpAuth.tokenLifetime * 1000))
+					tmpAuth.put('refreshToken' , resp?.data?.refresh_token)
+				atomicState.evohomeAuth = tmpAuth
 				atomicState.evohomeAuthFailed = false
-                
+				
 				if (atomicState.debug) log.debug "${app.label}: authenticate(): New evohomeAuth: ${atomicState.evohomeAuth}"
 				def exp = new Date(tmpAuth.expiresAt)
 				log.info "${app.label}: authenticate(): New Auth Token Expires At: ${exp}"
 
-                // Update evohomeHeaders:
-                def tmpHeaders = atomicState.evohomeHeaders ?: [:]
+				// Update evohomeHeaders:
+				def tmpHeaders = atomicState.evohomeHeaders ?: [:]
 					tmpHeaders.put('Authorization',"bearer ${atomicState.evohomeAuth.authToken}")
-    				tmpHeaders.put('applicationId', 'b013aa26-9724-4dbd-8897-048b9aada249')
-    				tmpHeaders.put('Accept', 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml')
+					tmpHeaders.put('applicationId', 'b013aa26-9724-4dbd-8897-048b9aada249')
+					tmpHeaders.put('Accept', 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml')
 				atomicState.evohomeHeaders = tmpHeaders
 				
-                if (atomicState.debug) log.debug "${app.label}: authenticate(): New evohomeHeaders: ${atomicState.evohomeHeaders}"
-                
+				if (atomicState.debug) log.debug "${app.label}: authenticate(): New evohomeHeaders: ${atomicState.evohomeHeaders}"
+				
 				// Now get User Account info:
 				getEvohomeUserAccount()
 			}
-            else {
-            	log.error "${app.label}: authenticate(): No Data. Response Status: ${resp.status}"
+			else {
+				log.error "${app.label}: authenticate(): No Data. Response Status: ${resp.status}"
 				atomicState.evohomeAuthFailed = true
-            }
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: authenticate(): Error: e.statusCode ${e.statusCode}"
 		atomicState.evohomeAuthFailed = true
 	}
-    
+	
 }
 
 
@@ -555,7 +555,7 @@ private refreshAuthToken() {
 		headers: [
 			'Authorization': 'Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=',
 			'Accept': 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml',
-            'Content-Type':	'application/x-www-form-urlencoded; charset=utf-8'
+			'Content-Type':	'application/x-www-form-urlencoded; charset=utf-8'
 		],
 		body: [
 			'grant_type':	'refresh_token',
@@ -569,34 +569,34 @@ private refreshAuthToken() {
 			if(resp.status == 200 && resp.data) {
 				// Update evohomeAuth:
 				// We can't just '.put' or '<<' with atomicState, we have to make a temp copy, edit, and then re-assign.
-                def tmpAuth = atomicState.evohomeAuth ?: [:]
+				def tmpAuth = atomicState.evohomeAuth ?: [:]
 			    	tmpAuth.put('lastUpdated' , now())
-                    tmpAuth.put('authToken' , resp?.data?.access_token)
-                    tmpAuth.put('tokenLifetime' , resp?.data?.expires_in.toInteger() ?: 0)
-                    tmpAuth.put('expiresAt' , now() + (tmpAuth.tokenLifetime * 1000))
-                    tmpAuth.put('refreshToken' , resp?.data?.refresh_token)
-    			atomicState.evohomeAuth = tmpAuth
+					tmpAuth.put('authToken' , resp?.data?.access_token)
+					tmpAuth.put('tokenLifetime' , resp?.data?.expires_in.toInteger() ?: 0)
+					tmpAuth.put('expiresAt' , now() + (tmpAuth.tokenLifetime * 1000))
+					tmpAuth.put('refreshToken' , resp?.data?.refresh_token)
+				atomicState.evohomeAuth = tmpAuth
 				atomicState.evohomeAuthFailed = false
-                
+				
 				if (atomicState.debug) log.debug "${app.label}: refreshAuthToken(): New evohomeAuth: ${atomicState.evohomeAuth}"
 				def exp = new Date(tmpAuth.expiresAt)
 				log.info "${app.label}: refreshAuthToken(): New Auth Token Expires At: ${exp}"
 
-                // Update evohomeHeaders:
-                def tmpHeaders = atomicState.evohomeHeaders ?: [:]
+				// Update evohomeHeaders:
+				def tmpHeaders = atomicState.evohomeHeaders ?: [:]
 					tmpHeaders.put('Authorization',"bearer ${atomicState.evohomeAuth.authToken}")
-    				tmpHeaders.put('applicationId', 'b013aa26-9724-4dbd-8897-048b9aada249')
-    				tmpHeaders.put('Accept', 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml')
+					tmpHeaders.put('applicationId', 'b013aa26-9724-4dbd-8897-048b9aada249')
+					tmpHeaders.put('Accept', 'application/json, application/xml, text/json, text/x-json, text/javascript, text/xml')
 				atomicState.evohomeHeaders = tmpHeaders
 				
-                if (atomicState.debug) log.debug "${app.label}: refreshAuthToken(): New evohomeHeaders: ${atomicState.evohomeHeaders}"
-                
+				if (atomicState.debug) log.debug "${app.label}: refreshAuthToken(): New evohomeHeaders: ${atomicState.evohomeHeaders}"
+				
 				// Now get User Account info:
 				getEvohomeUserAccount()
 			}
-            else {
-            	log.error "${app.label}: refreshAuthToken(): No Data. Response Status: ${resp.status}"
-            }
+			else {
+				log.error "${app.label}: refreshAuthToken(): No Data. Response Status: ${resp.status}"
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: refreshAuthToken(): Error: e.statusCode ${e.statusCode}"
@@ -606,7 +606,7 @@ private refreshAuthToken() {
 			authenticate()
 		}
 	}
-    
+	
 }
 
 
@@ -619,7 +619,7 @@ private refreshAuthToken() {
 private getEvohomeUserAccount() {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeUserAccount()"
-    
+	
 	def requestParams = [
 		method: 'GET',
 		uri: atomicState.evohomeEndpoint,
@@ -630,12 +630,12 @@ private getEvohomeUserAccount() {
 	try {
 		httpGet(requestParams) { resp ->
 			if (resp.status == 200 && resp.data) {
-            	atomicState.evohomeUserAccount = resp.data
-                if (atomicState.debug) log.debug "${app.label}: getEvohomeUserAccount(): Data: ${atomicState.evohomeUserAccount}"
+				atomicState.evohomeUserAccount = resp.data
+				if (atomicState.debug) log.debug "${app.label}: getEvohomeUserAccount(): Data: ${atomicState.evohomeUserAccount}"
 			}
-            else {
-            	log.error "${app.label}: getEvohomeUserAccount(): No Data. Response Status: ${resp.status}"
-            }
+			else {
+				log.error "${app.label}: getEvohomeUserAccount(): No Data. Response Status: ${resp.status}"
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: getEvohomeUserAccount(): Error: e.statusCode ${e.statusCode}"
@@ -656,37 +656,37 @@ private getEvohomeUserAccount() {
 private getEvohomeConfig() {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeConfig()"
-    
+	
 	def requestParams = [
 		method: 'GET',
 		uri: atomicState.evohomeEndpoint,
 		path: '/WebAPI/emea/api/v1/location/installationInfo',
-        query: [
-        	'userId': atomicState.evohomeUserAccount.userId,
-            'includeTemperatureControlSystems': 'True'
-        ],
+		query: [
+			'userId': atomicState.evohomeUserAccount.userId,
+			'includeTemperatureControlSystems': 'True'
+		],
 		headers: atomicState.evohomeHeaders
 	]
 
 	try {
 		httpGet(requestParams) { resp ->
 			if (resp.status == 200 && resp.data) {
-            	if (atomicState.debug) log.debug "${app.label}: getEvohomeConfig(): Data: ${resp.data}"
-                atomicState.evohomeConfig = resp.data
-                atomicState.evohomeConfigUpdatedAt = now()
-                return null
+				if (atomicState.debug) log.debug "${app.label}: getEvohomeConfig(): Data: ${resp.data}"
+				atomicState.evohomeConfig = resp.data
+				atomicState.evohomeConfigUpdatedAt = now()
+				return null
 			}
-            else {
-            	log.error "${app.label}: getEvohomeConfig(): No Data. Response Status: ${resp.status}"
-                return 'error'
-            }
+			else {
+				log.error "${app.label}: getEvohomeConfig(): No Data. Response Status: ${resp.status}"
+				return 'error'
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: getEvohomeConfig(): Error: e.statusCode ${e.statusCode}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return e
+		return e
 	}
 }
 
@@ -701,7 +701,7 @@ private getEvohomeConfig() {
 private getEvohomeStatus(onlyZoneId=-1) {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeStatus(${onlyZoneId})"
-    
+	
 	def newEvohomeStatus = []
 	
 	if (onlyZoneId == -1) { // Update all zones (which can be obtained en-masse for each location):
@@ -722,27 +722,27 @@ private getEvohomeStatus(onlyZoneId=-1) {
 	else { // Only update the specified zone:
 		
 		def newZoneStatus = getEvohomeZoneStatus(onlyZoneId)
-        if (newZoneStatus) {
-        	// Get existing evohomeStatus and update only the specified zone, preservign data for other zones:
-            // Have to do this as atomicState.evohomeStatus can only be written in its entirety (as using atomicstate).
-            newEvohomeStatus = atomicState.evohomeStatus
-            newEvohomeStatus.each { loc ->
-                loc.gateways.each { gateway ->
-                    gateway.temperatureControlSystems.each { tcs ->
-                        tcs.zones.each { zone ->
-                            if (onlyZoneId == zone.zoneId) { // This is the zone that must be updated:
-                                zone.activeFaults = newZoneStatus.activeFaults
-                                zone.heatSetpointStatus = newZoneStatus.heatSetpointStatus
-                                zone.temperatureStatus = newZoneStatus.temperatureStatus
-                            }
-                        }
-                    }
-                }
-            }
-            // Write out newEvohomeStatus back to atomicState:
+		if (newZoneStatus) {
+			// Get existing evohomeStatus and update only the specified zone, preservign data for other zones:
+			// Have to do this as atomicState.evohomeStatus can only be written in its entirety (as using atomicstate).
+			newEvohomeStatus = atomicState.evohomeStatus
+			newEvohomeStatus.each { loc ->
+				loc.gateways.each { gateway ->
+					gateway.temperatureControlSystems.each { tcs ->
+						tcs.zones.each { zone ->
+							if (onlyZoneId == zone.zoneId) { // This is the zone that must be updated:
+								zone.activeFaults = newZoneStatus.activeFaults
+								zone.heatSetpointStatus = newZoneStatus.heatSetpointStatus
+								zone.temperatureStatus = newZoneStatus.temperatureStatus
+							}
+						}
+					}
+				}
+			}
+			// Write out newEvohomeStatus back to atomicState:
 			atomicState.evohomeStatus = newEvohomeStatus
-            // Note: atomicState.evohomeStatusUpdatedAt is NOT updated.
-        } 
+			// Note: atomicState.evohomeStatusUpdatedAt is NOT updated.
+		} 
 	}
 }
 
@@ -757,12 +757,12 @@ private getEvohomeStatus(onlyZoneId=-1) {
 private getEvohomeLocationStatus(locationId) {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeLocationStatus: Location ID: ${locationId}"
-    
+	
 	def requestParams = [
 		'method': 'GET',
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/location/${locationId}/status", 
-        'query': [ 'includeTemperatureControlSystems': 'True'],
+		'query': [ 'includeTemperatureControlSystems': 'True'],
 		'headers': atomicState.evohomeHeaders
 	]
 
@@ -770,19 +770,19 @@ private getEvohomeLocationStatus(locationId) {
 		httpGet(requestParams) { resp ->
 			if(resp.status == 200 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: getEvohomeLocationStatus: Data: ${resp.data}"
-                return resp.data
+				return resp.data
 			}
-            else {
-            	log.error "${app.label}: getEvohomeLocationStatus:  No Data. Response Status: ${resp.status}"
-                return false
-            }
+			else {
+				log.error "${app.label}: getEvohomeLocationStatus:  No Data. Response Status: ${resp.status}"
+				return false
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: getEvohomeLocationStatus: Error: e.statusCode ${e.statusCode}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return false
+		return false
 	}
 }
 
@@ -796,31 +796,31 @@ private getEvohomeLocationStatus(locationId) {
 private getEvohomeZoneStatus(zoneId) {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeZoneStatus(${zoneId})"
-    
+	
 	def requestParams = [
 		'method': 'GET',
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/temperatureZone/${zoneId}/status",
-        'headers': atomicState.evohomeHeaders
+		'headers': atomicState.evohomeHeaders
 	]
 
 	try {
 		httpGet(requestParams) { resp ->
 			if(resp.status == 200 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: getEvohomeZoneStatus: Data: ${resp.data}"
-                return resp.data
+				return resp.data
 			}
-            else {
-            	log.error "${app.label}: getEvohomeZoneStatus:  No Data. Response Status: ${resp.status}"
-                return false
-            }
+			else {
+				log.error "${app.label}: getEvohomeZoneStatus:  No Data. Response Status: ${resp.status}"
+				return false
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: getEvohomeZoneStatus: Error: e.statusCode ${e.statusCode}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return false
+		return false
 	}
 }
 
@@ -834,30 +834,30 @@ private getEvohomeZoneStatus(zoneId) {
 private getEvohomeSchedules() {
 
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeSchedules()"
-            
+			
 	def evohomeSchedules = []
-        
-    atomicState.evohomeConfig.each { loc ->
+		
+	atomicState.evohomeConfig.each { loc ->
 		loc.gateways.each { gateway ->
 			gateway.temperatureControlSystems.each { tcs ->
 				tcs.zones.each { zone ->
-                	def dni = generateDni(loc.locationInfo.locationId, gateway.gatewayInfo.gatewayId, tcs.systemId, zone.zoneId )
-                    def schedule = getEvohomeZoneSchedule(zone.zoneId)
-                    if (schedule) {
-        				evohomeSchedules << ['zoneId': zone.zoneId, 'dni': dni, 'schedule': schedule]
-                    }
-                }
-            }
-        }
-    }
+					def dni = generateDni(loc.locationInfo.locationId, gateway.gatewayInfo.gatewayId, tcs.systemId, zone.zoneId )
+					def schedule = getEvohomeZoneSchedule(zone.zoneId)
+					if (schedule) {
+						evohomeSchedules << ['zoneId': zone.zoneId, 'dni': dni, 'schedule': schedule]
+					}
+				}
+			}
+		}
+	}
 
-    if (evohomeSchedules) {
-        // Write out complete schedules to state:
-        atomicState.evohomeSchedules = evohomeSchedules
-        atomicState.evohomeSchedulesUpdatedAt = now()
-    }
+	if (evohomeSchedules) {
+		// Write out complete schedules to state:
+		atomicState.evohomeSchedules = evohomeSchedules
+		atomicState.evohomeSchedulesUpdatedAt = now()
+	}
 
-    return evohomeSchedules
+	return evohomeSchedules
 }
 
 
@@ -869,31 +869,31 @@ private getEvohomeSchedules() {
  **/
 private getEvohomeZoneSchedule(zoneId) {
 	if (atomicState.debug) log.debug "${app.label}: getEvohomeZoneSchedule(${zoneId})"
-    
+	
 	def requestParams = [
 		'method': 'GET',
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/temperatureZone/${zoneId}/schedule",
-        'headers': atomicState.evohomeHeaders
+		'headers': atomicState.evohomeHeaders
 	]
 
 	try {
 		httpGet(requestParams) { resp ->
 			if(resp.status == 200 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: getEvohomeZoneSchedule: Data: ${resp.data}"
-                return resp.data
+				return resp.data
 			}
-            else {
-            	log.error "${app.label}: getEvohomeZoneSchedule:  No Data. Response Status: ${resp.status}"
-                return false
-            }
+			else {
+				log.error "${app.label}: getEvohomeZoneSchedule:  No Data. Response Status: ${resp.status}"
+				return false
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: getEvohomeZoneSchedule: Error: e.statusCode ${e.statusCode}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return false
+		return false
 	}
 }
 
@@ -932,106 +932,106 @@ private getEvohomeZoneSchedule(zoneId) {
 def setThermostatMode(systemId, mode, until=-1) {
 
 	if (atomicState.debug) log.debug "${app.label}: setThermostatMode(): SystemID: ${systemId}, Mode: ${mode}, Until: ${until}"
-    
-    // Clean mode (translate to index):
-    mode = mode.toLowerCase()
- 	int modeIndex
-    switch (mode) {
-    	case 'auto':
-        	modeIndex = 0
-            break
-    	case 'off':
-        	modeIndex = 1
-            break
-        case 'economy':
-        	modeIndex = 2
-            break
-    	case 'away':
-        	modeIndex = 3
-            break
-    	case 'dayoff':
-        	modeIndex = 4
-            break
-    	case 'custom':
-        	modeIndex = 6
-            break
-    	default:
-        	log.error "${app.label}: setThermostatMode(): Mode: ${mode} is not supported!"
-    		modeIndex = 999
-            break
-    }
-    
-	// Clean until:
-    def untilRes
-    
-    // until has not been specified, so determine behaviour from settings:
-	if (-1 == until && 'economy' == mode) { 
-    	until = atomicState.thermostatEconomyDuration ?: 0 // Use Default duration for economy mode (hours):
+	
+	// Clean mode (translate to index):
+	mode = mode.toLowerCase()
+	int modeIndex
+	switch (mode) {
+		case 'auto':
+			modeIndex = 0
+			break
+		case 'off':
+			modeIndex = 1
+			break
+		case 'economy':
+			modeIndex = 2
+			break
+		case 'away':
+			modeIndex = 3
+			break
+		case 'dayoff':
+			modeIndex = 4
+			break
+		case 'custom':
+			modeIndex = 6
+			break
+		default:
+			log.error "${app.label}: setThermostatMode(): Mode: ${mode} is not supported!"
+			modeIndex = 999
+			break
 	}
-    else if (-1 == until && ( 'away' == mode ||'dayoff' == mode ||'custom' == mode )) {
-    	until = atomicState.thermostatModeDuration ?: 0 // Use Default duration for other modes (days):
-    }
-    
-    // Convert to date (or 0):    
-    if ('permanent' == until || 0 == until || -1 == until) {
-    	untilRes = 0
-    }
-    else if (until instanceof Date) {
-    	untilRes = until.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
-    }
-    else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string already, but we'll re-format it anyway to ensure it's in UTC:
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
-    }
-    else if (until.isNumber() && 'economy' == mode) { // until is a duration in hours:
-    	untilRes = new Date( now() + (Math.round(until) * 3600000) ).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
-    }
-    else if (until.isNumber() && ('away' == mode ||'dayoff' == mode ||'custom' == mode )) { // until is a duration in days:
-    	untilRes = new Date( now() + (Math.round(until) * 86400000) ).format("yyyy-MM-dd'T'00:00:00XX", location.timeZone) // Round down to midnight in the LOCAL timezone.
-    }
-    else {
-    	log.warn "${device.label}: setThermostatMode(): until value could not be parsed. Mode will be applied permanently."
-        untilRes = 0
-    }
-    
-    // If mode is away/dayOff/custom the date needs to be rounded down to midnight in the local timezone, then converted back to string again:
-    if (0 != untilRes && ('away' == mode ||'dayoff' == mode ||'custom' == mode )) { 
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", untilRes).format("yyyy-MM-dd'T'00:00:00XX", location.timeZone) ).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC'))
-    }
+	
+	// Clean until:
+	def untilRes
+	
+	// until has not been specified, so determine behaviour from settings:
+	if (-1 == until && 'economy' == mode) { 
+		until = atomicState.thermostatEconomyDuration ?: 0 // Use Default duration for economy mode (hours):
+	}
+	else if (-1 == until && ( 'away' == mode ||'dayoff' == mode ||'custom' == mode )) {
+		until = atomicState.thermostatModeDuration ?: 0 // Use Default duration for other modes (days):
+	}
+	
+	// Convert to date (or 0):    
+	if ('permanent' == until || 0 == until || -1 == until) {
+		untilRes = 0
+	}
+	else if (until instanceof Date) {
+		untilRes = until.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
+	}
+	else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string already, but we'll re-format it anyway to ensure it's in UTC:
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
+	}
+	else if (until.isNumber() && 'economy' == mode) { // until is a duration in hours:
+		untilRes = new Date( now() + (Math.round(until) * 3600000) ).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
+	}
+	else if (until.isNumber() && ('away' == mode ||'dayoff' == mode ||'custom' == mode )) { // until is a duration in days:
+		untilRes = new Date( now() + (Math.round(until) * 86400000) ).format("yyyy-MM-dd'T'00:00:00XX", location.timeZone) // Round down to midnight in the LOCAL timezone.
+	}
+	else {
+		log.warn "${device.label}: setThermostatMode(): until value could not be parsed. Mode will be applied permanently."
+		untilRes = 0
+	}
+	
+	// If mode is away/dayOff/custom the date needs to be rounded down to midnight in the local timezone, then converted back to string again:
+	if (0 != untilRes && ('away' == mode ||'dayoff' == mode ||'custom' == mode )) { 
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", untilRes).format("yyyy-MM-dd'T'00:00:00XX", location.timeZone) ).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC'))
+	}
 
 	// Build request:
-    def body
-    if (0 == untilRes || 'off' == mode || 'auto' == mode) { // Mode is permanent:
-        body = ['SystemMode': modeIndex, 'TimeUntil': null, 'Permanent': 'True']
-    }
-    else { // Mode is temporary:
-        body = ['SystemMode': modeIndex, 'TimeUntil': untilRes, 'Permanent': 'False']
-    }
-    
+	def body
+	if (0 == untilRes || 'off' == mode || 'auto' == mode) { // Mode is permanent:
+		body = ['SystemMode': modeIndex, 'TimeUntil': null, 'Permanent': 'True']
+	}
+	else { // Mode is temporary:
+		body = ['SystemMode': modeIndex, 'TimeUntil': untilRes, 'Permanent': 'False']
+	}
+	
 	def requestParams = [
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/temperatureControlSystem/${systemId}/mode", 
-        'body': body,
+		'body': body,
 		'headers': atomicState.evohomeHeaders
 	]
-    
-    // Make request:
-    try {
+	
+	// Make request:
+	try {
 		httpPutJson(requestParams) { resp ->
 			if(resp.status == 201 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: setThermostatMode(): Response: ${resp.data}"
-                return null
+				return null
 			}
-            else {
-            	log.error "${app.label}: setThermostatMode():  No Data. Response Status: ${resp.status}"
-                return 'error'
-            }
+			else {
+				log.error "${app.label}: setThermostatMode():  No Data. Response Status: ${resp.status}"
+				return 'error'
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: setThermostatMode(): Error: ${e}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return e
+		return e
 	}
 }
 
@@ -1060,60 +1060,60 @@ def setThermostatMode(systemId, mode, until=-1) {
 def setHeatingSetpoint(zoneId, setpoint, until=-1) {
 
 	if (atomicState.debug) log.debug "${app.label}: setHeatingSetpoint(): Zone ID: ${zoneId}, Setpoint: ${setpoint}, Until: ${until}"
-    
+	
 	// Clean setpoint:
 	setpoint = formatTemperature(setpoint)
 	
 	// Clean until:
-    def untilRes
+	def untilRes
 	if ('permanent' == until || 0 == until || -1 == until) {
-    	untilRes = 0
-    }
-    else if (until instanceof Date) {
-    	untilRes = until.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
-    }
-    else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string already, but we'll re-format it anyway to ensure it's in UTC:
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
-    }
-    else {
-    	log.warn "${device.label}: setHeatingSetpoint(): until value could not be parsed. Setpoint will be applied permanently."
-        untilRes = 0
-    }
-    
-    // Build request:
-    def body
-    if (0 == untilRes) { // Permanent:
-        body = ['HeatSetpointValue': setpoint, 'SetpointMode': 1, 'TimeUntil': null]
-    }
-    else { // Temporary:
-        body = ['HeatSetpointValue': setpoint, 'SetpointMode': 2, 'TimeUntil': untilRes]
-    }
-    
-    def requestParams = [
+		untilRes = 0
+	}
+	else if (until instanceof Date) {
+		untilRes = until.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
+	}
+	else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string already, but we'll re-format it anyway to ensure it's in UTC:
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until).format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')) // Round to nearest minute.
+	}
+	else {
+		log.warn "${device.label}: setHeatingSetpoint(): until value could not be parsed. Setpoint will be applied permanently."
+		untilRes = 0
+	}
+	
+	// Build request:
+	def body
+	if (0 == untilRes) { // Permanent:
+		body = ['HeatSetpointValue': setpoint, 'SetpointMode': 1, 'TimeUntil': null]
+	}
+	else { // Temporary:
+		body = ['HeatSetpointValue': setpoint, 'SetpointMode': 2, 'TimeUntil': untilRes]
+	}
+	
+	def requestParams = [
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/temperatureZone/${zoneId}/heatSetpoint", 
-        'body': body,
+		'body': body,
 		'headers': atomicState.evohomeHeaders
 	]
-    
-    // Make request:
-    try {
+	
+	// Make request:
+	try {
 		httpPutJson(requestParams) { resp ->
 			if(resp.status == 201 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: setHeatingSetpoint(): Response: ${resp.data}"
-                return null
+				return null
 			}
-            else {
-            	log.error "${app.label}: setHeatingSetpoint():  No Data. Response Status: ${resp.status}"
-                return 'error'
-            }
+			else {
+				log.error "${app.label}: setHeatingSetpoint():  No Data. Response Status: ${resp.status}"
+				return 'error'
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: setHeatingSetpoint(): Error: ${e}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return e
+		return e
 	}
 }
 
@@ -1127,33 +1127,33 @@ def setHeatingSetpoint(zoneId, setpoint, until=-1) {
 def clearHeatingSetpoint(zoneId) {
 
 	if (atomicState.debug) log.debug "${app.label}: clearHeatingSetpoint(): Zone ID: ${zoneId}"
-    
-    // Build request:
-    def requestParams = [
+	
+	// Build request:
+	def requestParams = [
 		'uri': atomicState.evohomeEndpoint,
 		'path': "/WebAPI/emea/api/v1/temperatureZone/${zoneId}/heatSetpoint", 
-        'body': ['HeatSetpointValue': 0.0, 'SetpointMode': 0, 'TimeUntil': null],
+		'body': ['HeatSetpointValue': 0.0, 'SetpointMode': 0, 'TimeUntil': null],
 		'headers': atomicState.evohomeHeaders
 	]
-    
-    // Make request:
-    try {
+	
+	// Make request:
+	try {
 		httpPutJson(requestParams) { resp ->
 			if(resp.status == 201 && resp.data) {
 				if (atomicState.debug) log.debug "${app.label}: clearHeatingSetpoint(): Response: ${resp.data}"
-                return null
+				return null
 			}
-            else {
-            	log.error "${app.label}: clearHeatingSetpoint():  No Data. Response Status: ${resp.status}"
-                return 'error'
-            }
+			else {
+				log.error "${app.label}: clearHeatingSetpoint():  No Data. Response Status: ${resp.status}"
+				return 'error'
+			}
 		}
 	} catch (groovyx.net.http.HttpResponseException e) {
 		log.error "${app.label}: clearHeatingSetpoint(): Error: ${e}"
 		if (e.statusCode == 401) {
 			atomicState.evohomeAuthFailed = true
 		}
-        return e
+		return e
 	}
 }
 
@@ -1194,22 +1194,22 @@ private formatTemperature(t) {
 private formatSetpointMode(mode) {
  
 	switch (mode) {
-    	case 'FollowSchedule':
-        	mode = 'followSchedule'
-            break
-    	case 'PermanentOverride':
-        	mode = 'permanentOverride'
-            break
-    	case 'TemporaryOverride':
-        	mode = 'temporaryOverride'
-            break
-    	default:
-        	log.error "${app.label}: formatSetpointMode(): Mode: ${mode} unknown!"
-    		mode = mode.toLowerCase()
-            break
-    }
+		case 'FollowSchedule':
+			mode = 'followSchedule'
+			break
+		case 'PermanentOverride':
+			mode = 'permanentOverride'
+			break
+		case 'TemporaryOverride':
+			mode = 'temporaryOverride'
+			break
+		default:
+			log.error "${app.label}: formatSetpointMode(): Mode: ${mode} unknown!"
+			mode = mode.toLowerCase()
+			break
+	}
 
- 	return mode
+	return mode
 }
  
  
@@ -1222,31 +1222,31 @@ private formatSetpointMode(mode) {
 private formatThermostatMode(mode) {
  
 	switch (mode) {
-    	case 'Auto':
-        	mode = 'auto'
-            break
-    	case 'AutoWithEco':
-        	mode = 'economy'
-            break
-    	case 'Away':
-        	mode = 'away'
-            break
-    	case 'Custom':
-        	mode = 'custom'
-            break
-    	case 'DayOff':
-        	mode = 'dayOff'
-            break
-    	case 'HeatingOff':
-        	mode = 'off'
-            break
-    	default:
-        	log.error "${app.label}: formatThermostatMode(): Mode: ${mode} unknown!"
-    		mode = mode.toLowerCase()
-            break
-    }
+		case 'Auto':
+			mode = 'auto'
+			break
+		case 'AutoWithEco':
+			mode = 'economy'
+			break
+		case 'Away':
+			mode = 'away'
+			break
+		case 'Custom':
+			mode = 'custom'
+			break
+		case 'DayOff':
+			mode = 'dayOff'
+			break
+		case 'HeatingOff':
+			mode = 'off'
+			break
+		default:
+			log.error "${app.label}: formatThermostatMode(): Mode: ${mode} unknown!"
+			mode = mode.toLowerCase()
+			break
+	}
 
- 	return mode
+	return mode
 }
   
 
@@ -1259,33 +1259,33 @@ private formatThermostatMode(mode) {
  **/
 private getCurrentSwitchpoint(schedule) {
 
-  	if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint()"
-    
-    Calendar c = new GregorianCalendar()
-    def ScheduleToday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
-    
-    // Sort and find next switchpoint:
-    ScheduleToday.switchpoints.sort {it.timeOfDay}
- 	ScheduleToday.switchpoints.reverse(true)
- 	def currentSwitchPoint = ScheduleToday.switchpoints.find {it.timeOfDay < c.getTime().format("HH:mm:ss", location.timeZone)}
-    
-    if (!currentSwitchPoint) {
-    	// There are no current switchpoints today, so we must look for the last Switchpoint yesterday.
-    	if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint(): No current switchpoints today, so must look to yesterday's schedule."
-        c.add(Calendar.DATE, -1 ) // Subtract one DAY.
-        def ScheduleYesterday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
-        ScheduleYesterday.switchpoints.sort {it.timeOfDay}
-        ScheduleYesterday.switchpoints.reverse(true)
- 		currentSwitchPoint = ScheduleYesterday.switchpoints[0] // There will always be one.
-    }
+	if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint()"
+	
+	Calendar c = new GregorianCalendar()
+	def ScheduleToday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
+	
+	// Sort and find next switchpoint:
+	ScheduleToday.switchpoints.sort {it.timeOfDay}
+	ScheduleToday.switchpoints.reverse(true)
+	def currentSwitchPoint = ScheduleToday.switchpoints.find {it.timeOfDay < c.getTime().format("HH:mm:ss", location.timeZone)}
+	
+	if (!currentSwitchPoint) {
+		// There are no current switchpoints today, so we must look for the last Switchpoint yesterday.
+		if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint(): No current switchpoints today, so must look to yesterday's schedule."
+		c.add(Calendar.DATE, -1 ) // Subtract one DAY.
+		def ScheduleYesterday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
+		ScheduleYesterday.switchpoints.sort {it.timeOfDay}
+		ScheduleYesterday.switchpoints.reverse(true)
+		currentSwitchPoint = ScheduleYesterday.switchpoints[0] // There will always be one.
+	}
 	
 	// Now construct the switchpoint time as a full ISO-8601 format date string in UTC:
-    def localDateStr = c.getTime().format("yyyy-MM-dd'T'", location.timeZone) + currentSwitchPoint.timeOfDay + c.getTime().format("XX", location.timeZone) // Switchpoint in local timezone.
-    def isoDateStr = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", localDateStr).format("yyyy-MM-dd'T'HH:mm:ssXX", TimeZone.getTimeZone('UTC')) // Parse and re-format to UTC timezone.    
-    currentSwitchPoint << [ 'time': isoDateStr ]
-    if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint(): Current Switchpoint: ${currentSwitchPoint}"
-    
-    return currentSwitchPoint
+	def localDateStr = c.getTime().format("yyyy-MM-dd'T'", location.timeZone) + currentSwitchPoint.timeOfDay + c.getTime().format("XX", location.timeZone) // Switchpoint in local timezone.
+	def isoDateStr = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", localDateStr).format("yyyy-MM-dd'T'HH:mm:ssXX", TimeZone.getTimeZone('UTC')) // Parse and re-format to UTC timezone.    
+	currentSwitchPoint << [ 'time': isoDateStr ]
+	if (atomicState.debug) log.debug "${app.label}: getCurrentSwitchpoint(): Current Switchpoint: ${currentSwitchPoint}"
+	
+	return currentSwitchPoint
 }
  
 
@@ -1298,30 +1298,30 @@ private getCurrentSwitchpoint(schedule) {
  **/
 private getNextSwitchpoint(schedule) {
 
-  	if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint()"
-    
-    Calendar c = new GregorianCalendar()
-    def ScheduleToday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
-    
-    // Sort and find next switchpoint:
-    ScheduleToday.switchpoints.sort {it.timeOfDay}
- 	def nextSwitchPoint = ScheduleToday.switchpoints.find {it.timeOfDay > c.getTime().format("HH:mm:ss", location.timeZone)}
-    
-    if (!nextSwitchPoint) {
-    	// There are no switchpoints left today, so we must look for the first Switchpoint tomorrow.
-    	if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint(): No more switchpoints today, so must look to tomorrow's schedule."
-        c.add(Calendar.DATE, 1 ) // Add one DAY.
-        def ScheduleTmrw = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
-        ScheduleTmrw.switchpoints.sort {it.timeOfDay}
-        nextSwitchPoint = ScheduleTmrw.switchpoints[0] // There will always be one.
-    }
+	if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint()"
+	
+	Calendar c = new GregorianCalendar()
+	def ScheduleToday = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
+	
+	// Sort and find next switchpoint:
+	ScheduleToday.switchpoints.sort {it.timeOfDay}
+	def nextSwitchPoint = ScheduleToday.switchpoints.find {it.timeOfDay > c.getTime().format("HH:mm:ss", location.timeZone)}
+	
+	if (!nextSwitchPoint) {
+		// There are no switchpoints left today, so we must look for the first Switchpoint tomorrow.
+		if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint(): No more switchpoints today, so must look to tomorrow's schedule."
+		c.add(Calendar.DATE, 1 ) // Add one DAY.
+		def ScheduleTmrw = schedule.dailySchedules.find { it.dayOfWeek = c.getTime().format("EEEE", location.timeZone) }
+		ScheduleTmrw.switchpoints.sort {it.timeOfDay}
+		nextSwitchPoint = ScheduleTmrw.switchpoints[0] // There will always be one.
+	}
 
 	// Now construct the switchpoint time as a full ISO-8601 format date string in UTC:
-    def localDateStr = c.getTime().format("yyyy-MM-dd'T'", location.timeZone) + nextSwitchPoint.timeOfDay + c.getTime().format("XX", location.timeZone) // Switchpoint in local timezone.
-    def isoDateStr = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", localDateStr).format("yyyy-MM-dd'T'HH:mm:ssXX", TimeZone.getTimeZone('UTC')) // Parse and re-format to UTC timezone.    
+	def localDateStr = c.getTime().format("yyyy-MM-dd'T'", location.timeZone) + nextSwitchPoint.timeOfDay + c.getTime().format("XX", location.timeZone) // Switchpoint in local timezone.
+	def isoDateStr = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", localDateStr).format("yyyy-MM-dd'T'HH:mm:ssXX", TimeZone.getTimeZone('UTC')) // Parse and re-format to UTC timezone.    
 	nextSwitchPoint << [ 'time': isoDateStr ]
-    if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint(): Next Switchpoint: ${nextSwitchPoint}"
-    
- 	return nextSwitchPoint
+	if (atomicState.debug) log.debug "${app.label}: getNextSwitchpoint(): Next Switchpoint: ${nextSwitchPoint}"
+	
+	return nextSwitchPoint
 }
   

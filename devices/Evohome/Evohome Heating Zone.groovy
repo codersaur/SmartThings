@@ -44,38 +44,38 @@ metadata {
 		//command "poll" // Polling
 		command "refresh" // Refresh
 		command "setHeatingSetpoint" // Thermostat
-        command "raiseSetpoint" // Custom
+		command "raiseSetpoint" // Custom
 		command "lowerSetpoint" // Custom
 		command "setThermostatMode" // Thermostat
-        command "cycleThermostatMode" // Custom
-        command "off" // Thermostat
-        command "heat" // Thermostat
-        command "auto" // Custom
-        command "away" // Custom
-        command "economy" // Custom
-        command "dayOff" // Custom
-        command "custom" // Custom
-        command "resume" // Custom
+		command "cycleThermostatMode" // Custom
+		command "off" // Thermostat
+		command "heat" // Thermostat
+		command "auto" // Custom
+		command "away" // Custom
+		command "economy" // Custom
+		command "dayOff" // Custom
+		command "custom" // Custom
+		command "resume" // Custom
 		command "boost" // Custom
 		command "suppress" // Custom
 		command "generateEvent" // Custom
 		command "test" // Custom
 
 		attribute "temperature","number" // Temperature Measurement
-        attribute "heatingSetpoint","number" // Thermostat
-        attribute "thermostatSetpoint","number" // Thermostat
-        attribute "thermostatSetpointMode", "string" // Custom
-        attribute "thermostatSetpointUntil", "string" // Custom
-        attribute "thermostatSetpointStatus", "string" // Custom
-        attribute "thermostatMode", "string" // Thermostat
-        attribute "thermostatOperatingState", "string" // Thermostat
-        attribute "thermostatStatus", "string" // Custom
-        attribute "scheduledSetpoint", "number" // Custom
-        attribute "nextScheduledSetpoint", "number" // Custom
-        attribute "nextScheduledTime", "string" // Custom
-        attribute "optimisation", "string" // Custom
-        attribute "windowFunction", "string" // Custom
-        
+		attribute "heatingSetpoint","number" // Thermostat
+		attribute "thermostatSetpoint","number" // Thermostat
+		attribute "thermostatSetpointMode", "string" // Custom
+		attribute "thermostatSetpointUntil", "string" // Custom
+		attribute "thermostatSetpointStatus", "string" // Custom
+		attribute "thermostatMode", "string" // Thermostat
+		attribute "thermostatOperatingState", "string" // Thermostat
+		attribute "thermostatStatus", "string" // Custom
+		attribute "scheduledSetpoint", "number" // Custom
+		attribute "nextScheduledSetpoint", "number" // Custom
+		attribute "nextScheduledTime", "string" // Custom
+		attribute "optimisation", "string" // Custom
+		attribute "windowFunction", "string" // Custom
+		
 	}
 
 	tiles(scale: 2) {
@@ -86,11 +86,11 @@ metadata {
 				attributeState("default", label:'${currentValue}°', unit:"C")
 			}
 			// Up and Down buttons:
-            //tileAttribute("device.temperature", key: "VALUE_CONTROL") {
+			//tileAttribute("device.temperature", key: "VALUE_CONTROL") {
 			//	attributeState("VALUE_UP", action: "raiseSetpoint")
 			//	attributeState("VALUE_DOWN", action: "lowerSetpoint")
 			//}
-            // Operating State - used to get background colour when type is 'thermostat'.
+			// Operating State - used to get background colour when type is 'thermostat'.
 			//tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
 			//	attributeState("idle", backgroundColor:"#44b621")
 			//	attributeState("heating", backgroundColor:"#ffa81e")
@@ -120,8 +120,8 @@ metadata {
 			//	attributeState("default", label:'${currentValue}', unit:"C")
 			//}
 		}
-    
-    	// temperature tile:
+	
+		// temperature tile:
 		valueTile("temperature", "device.temperature", width: 2, height: 2, canChangeIcon: true) {
 			state("temperature", label:'${currentValue}°', unit:"C", icon:"st.Weather.weather2",
 					backgroundColors:[
@@ -136,9 +136,9 @@ metadata {
 					]
 			)
 		}
-        
-        // thermostatSetpoint tiles:
-        valueTile("thermostatSetpoint", "device.thermostatSetpoint", width: 3, height: 1) {
+		
+		// thermostatSetpoint tiles:
+		valueTile("thermostatSetpoint", "device.thermostatSetpoint", width: 3, height: 1) {
 			state "thermostatSetpoint", label:'Setpoint: ${currentValue}°', unit:"C"
 		}
 		valueTile("thermostatSetpointStatus", "device.thermostatSetpointStatus", width: 3, height: 1, decoration: "flat") {
@@ -160,15 +160,15 @@ metadata {
 			state "default", action:"suppress", label:'Suppress' // icon TBC
 		}
 		
-        
-        // thermostatMode/Status Tiles:
-        
-        // thermostatStatus (also incorporated into the multi tile).
+		
+		// thermostatMode/Status Tiles:
+		
+		// thermostatStatus (also incorporated into the multi tile).
 		valueTile("thermostatStatus", "device.thermostatStatus", height: 1, width: 6, decoration: "flat") {
 			state "thermostatStatus", label:'${currentValue}', backgroundColor:"#ffffff"
 		}
 		// Single thermostatMode tile that cycles between all modes (too slow).
-        // To Do: Update with Evohome-specific modes:
+		// To Do: Update with Evohome-specific modes:
 		standardTile("thermostatMode", "device.thermostatMode", inactiveLabel: false, decoration: "flat") {
 			state "off", action:"cycleMode", nextState: "updating", icon: "st.thermostat.heating-cooling-off"
 			state "heat", action:"cycleMode",  nextState: "updating", icon: "st.thermostat.heat"
@@ -177,55 +177,55 @@ metadata {
 			state "auxHeatOnly", action:"cycleMode", icon: "st.thermostat.emergency-heat"
 			state "updating", label:"Working", icon: "st.secondary.secondary"
 		}
-        // Individual Mode tiles:
+		// Individual Mode tiles:
 		standardTile("auto", "device.auto", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"auto", icon: "st.thermostat.auto"
 		}
 		standardTile("away", "device.away", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"away", label:'Away' // icon TBC
 		}
-        standardTile("custom", "device.custom", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+		standardTile("custom", "device.custom", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"custom", label:'Custom' // icon TBC
 		}
-        standardTile("dayOff", "device.dayOff", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+		standardTile("dayOff", "device.dayOff", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"dayOff", label:'Day Off' // icon TBC
 		}
-        standardTile("economy", "device.economy", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+		standardTile("economy", "device.economy", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"economy", label:'Economy' // icon TBC
 		}
-        standardTile("off", "device.off", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+		standardTile("off", "device.off", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", action:"off", icon:"st.thermostat.heating-cooling-off"
 		}
-        // Other tiles:
+		// Other tiles:
 		standardTile("refresh", "device.thermostatMode", inactiveLabel: false, decoration: "flat") {
 			state "default", action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
-        standardTile("test", "device.test", width: 1, height: 1, decoration: "flat") {
+		standardTile("test", "device.test", width: 1, height: 1, decoration: "flat") {
 			state "default", label:'Test', action:"test"
 		}
 		
 		main "temperature"
 		details(
-        		[
-        		"multi",
-        		"thermostatSetpoint","raiseSetpoint","boost","resume",
-                "thermostatSetpointStatus","lowerSetpoint","suppress","refresh",
-                "auto","away","custom","dayOff","economy","off"
-        		]
-        )
+				[
+				"multi",
+				"thermostatSetpoint","raiseSetpoint","boost","resume",
+				"thermostatSetpointStatus","lowerSetpoint","suppress","refresh",
+				"auto","away","custom","dayOff","economy","off"
+				]
+		)
 	}
 
 	preferences {
 		section { // Setpoint Adjustments:
-        	input title: "Setpoint Duration", description: "Configure how long setpoint adjustments are applied for.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
-        	input 'prefSetpointMode', 'enum', title: 'Until', description: '', options: ["Next Switchpoint", "Midday", "Midnight", "Duration", "Permanent"], defaultValue: "Next Switchpoint", required: true, displayDuringSetup: true
+			input title: "Setpoint Duration", description: "Configure how long setpoint adjustments are applied for.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+			input 'prefSetpointMode', 'enum', title: 'Until', description: '', options: ["Next Switchpoint", "Midday", "Midnight", "Duration", "Permanent"], defaultValue: "Next Switchpoint", required: true, displayDuringSetup: true
 			input 'prefSetpointDuration', 'number', title: 'Duration (minutes)', description: 'Apply setpoint for this many minutes', range: "1..1440", defaultValue: 60, required: true, displayDuringSetup: true
 			//input 'prefSetpointTime', 'time', title: 'Time', description: 'Apply setpoint until this time', required: true, displayDuringSetup: true
 			input title: "Setpoint Temperatures", description: "Configure preset temperatures for the 'Boost' and 'Suppress' buttons.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
-        	input "prefBoostTemperature", "string", title: "'Boost' Temperature", defaultValue: "21.5", required: true, displayDuringSetup: true // use of 'decimal' input type in devices is currently broken.
-    		input "prefSuppressTemperature", "string", title: "'Suppress' Temperature", defaultValue: "15.0", required: true, displayDuringSetup: true // use of 'decimal' input type in devices is currently broken.
-    	}
-                
+			input "prefBoostTemperature", "string", title: "'Boost' Temperature", defaultValue: "21.5", required: true, displayDuringSetup: true // use of 'decimal' input type in devices is currently broken.
+			input "prefSuppressTemperature", "string", title: "'Suppress' Temperature", defaultValue: "15.0", required: true, displayDuringSetup: true // use of 'decimal' input type in devices is currently broken.
+		}
+				
 	}
 
 }
@@ -266,21 +266,21 @@ def test() {
 def installed() {
 
 	state.installedAt = now()
-    
-    // These default values will be overwritten by the Evohome SmartApp almost immediately:
-    state.debug = false
-    state.zoneType = 'RadiatorZone'
-    state.minHeatingSetpoint = formatTemperature(5.0)
-    state.maxHeatingSetpoint = formatTemperature(35.0)
-    state.temperatureResolution = formatTemperature(0.5)
-    state.targetSetpoint = state.minHeatingSetpoint
-    
+	
+	// These default values will be overwritten by the Evohome SmartApp almost immediately:
+	state.debug = false
+	state.zoneType = 'RadiatorZone'
+	state.minHeatingSetpoint = formatTemperature(5.0)
+	state.maxHeatingSetpoint = formatTemperature(35.0)
+	state.temperatureResolution = formatTemperature(0.5)
+	state.targetSetpoint = state.minHeatingSetpoint
+	
 	// Populate state.* with default values for each preference/input:
 	state.setpointMode = getInputDefaultValue('prefSetpointMode')
 	state.setpointDuration = getInputDefaultValue('prefSetpointDuration')
 	state.boostTemperature = getInputDefaultValue('prefBoostTemperature')
 	state.suppressTemperature = getInputDefaultValue('prefSuppressTemperature')
-    
+	
 }
 
 
@@ -319,37 +319,37 @@ void generateEvent(values) {
 	if(values) {
 		values.each { name, value ->
 			if ( name == 'minHeatingSetpoint' 
-            	|| name == 'maxHeatingSetpoint' 
-                || name == 'temperatureResolution' 
-                || name == 'windowFunctionTemperature'
-                || name == 'zoneType'
-                || name == 'locationId'
-                || name == 'gatewayId'
-                || name == 'systemId'
-                || name == 'zoneId'
-                || name == 'schedule'
-                || name == 'debug'
-                ) {
-            	// Internal device state only.
-            	state."${name}" = value
-            }
-            else {
-            	sendEvent(name: name, value: value)
-                
-                // update internal targetSetpoint too:
-                if (name == 'heatingSetpoint') {
-                	state.targetSetpoint = value
-                }
-            }
+				|| name == 'maxHeatingSetpoint' 
+				|| name == 'temperatureResolution' 
+				|| name == 'windowFunctionTemperature'
+				|| name == 'zoneType'
+				|| name == 'locationId'
+				|| name == 'gatewayId'
+				|| name == 'systemId'
+				|| name == 'zoneId'
+				|| name == 'schedule'
+				|| name == 'debug'
+				) {
+				// Internal device state only.
+				state."${name}" = value
+			}
+			else {
+				sendEvent(name: name, value: value)
+				
+				// update internal targetSetpoint too:
+				if (name == 'heatingSetpoint') {
+					state.targetSetpoint = value
+				}
+			}
 		}
 	}
-    
-    // Calculate derived attributes (order is important here):
-    calculateThermostatOperatingState()
-    calculateOptimisations()
-    calculateThermostatStatus()
-    calculateThermostatSetpointStatus()
-    
+	
+	// Calculate derived attributes (order is important here):
+	calculateThermostatOperatingState()
+	calculateOptimisations()
+	calculateThermostatStatus()
+	calculateThermostatSetpointStatus()
+	
 }
 
 
@@ -366,7 +366,7 @@ void generateEvent(values) {
 void poll() {
 
 	if (state.debug) log.debug "${device.label}: poll()"//
-    parent.poll(state.zoneId)
+	parent.poll(state.zoneId)
 }
 
 
@@ -413,19 +413,19 @@ void refresh() {
 def setThermostatMode(String mode, until=-1) {
 
 	log.info "${device.label}: setThermostatMode(Mode: ${mode}, Until: ${until})"
-    
+	
 	// Send update via parent:
 	if (!parent.setThermostatMode(state.systemId, mode, until)) {
-    	// Wait a few seconds as it takes a while for Evohome to update setpoints in response to a mode change.
-        sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-        pseudoSleep(4000)
-        parent.poll(state.zoneId)
-        return null
-    }
-    else {
-    	log.error "${device.label}: setThermostatMode(): Error: Unable to set thermostat mode."
-        return 'error'
-    }
+		// Wait a few seconds as it takes a while for Evohome to update setpoints in response to a mode change.
+		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
+		pseudoSleep(4000)
+		parent.poll(state.zoneId)
+		return null
+	}
+	else {
+		log.error "${device.label}: setThermostatMode(): Error: Unable to set thermostat mode."
+		return 'error'
+	}
 }
 
 
@@ -461,7 +461,7 @@ def setHeatingSetpoint(setpoint, until=-1) {
 	if (state.debug) log.debug "${device.label}: setHeatingSetpoint(Setpoint: ${setpoint}, Until: ${until})"
 	
 	// Clean setpoint:
-    setpoint = formatTemperature(setpoint)
+	setpoint = formatTemperature(setpoint)
 	if (Float.parseFloat(setpoint) < Float.parseFloat(state.minHeatingSetpoint)) {
 		log.warn "${device.label}: setHeatingSetpoint(): Specified setpoint (${setpoint}) is less than zone's minimum setpoint (${state.minHeatingSetpoint})."
 		setpoint = state.minHeatingSetpoint
@@ -472,13 +472,13 @@ def setHeatingSetpoint(setpoint, until=-1) {
 	}
 	
 	// Clean and parse until value:
-    def untilRes
-    Calendar c = new GregorianCalendar()
-    def tzOffset = location.timeZone.getOffset(new Date().getTime()) // Timezone offset to UTC in milliseconds.
-    
+	def untilRes
+	Calendar c = new GregorianCalendar()
+	def tzOffset = location.timeZone.getOffset(new Date().getTime()) // Timezone offset to UTC in milliseconds.
+	
 	// If until has not been specified, determine behaviour from device state.setpointMode:
 	if (-1 == until) {
-    	switch (state.setpointMode) {
+		switch (state.setpointMode) {
 	    	case 'Next Switchpoint':
 	        	until = 'nextSwitchpoint'
 	            break
@@ -492,11 +492,11 @@ def setHeatingSetpoint(setpoint, until=-1) {
 	        	until = state.setpointDuration ?: 0
 	            break
 	    	case 'Time':
-            	// TO DO : construct time, like we do for midnight.
-                // settings.prefSetpointTime appears to return an ISO dateformat string.
-                // However using an input of type "time" causes HTTP 500 errors in the IDE, so disabled for now.
-                // If time has passed, then need to make it the next day.
-                if (state.debug) log.debug "${device.label}: setHeatingSetpoint(): Time: ${state.SetpointTime}"
+				// TO DO : construct time, like we do for midnight.
+				// settings.prefSetpointTime appears to return an ISO dateformat string.
+				// However using an input of type "time" causes HTTP 500 errors in the IDE, so disabled for now.
+				// If time has passed, then need to make it the next day.
+				if (state.debug) log.debug "${device.label}: setHeatingSetpoint(): Time: ${state.SetpointTime}"
 	        	until = 'nextSwitchpoint'
 	            break
 	    	case 'Permanent':
@@ -505,60 +505,60 @@ def setHeatingSetpoint(setpoint, until=-1) {
 	    	default:
 	        	until = 'nextSwitchpoint'
 	            break
-        }
-    }
-    
-    if ('permanent' == until || 0 == until) {
-    	untilRes = 0
-    }
-    else if (until instanceof Date) {
-    	untilRes = until
-    }
-    else if ('nextSwitchpoint' == until) {
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", device.currentValue('nextScheduledTime'))
-    }
-    else if ('midday' == until) {
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", new Date().format("yyyy-MM-dd'T'12:00:00XX", location.timeZone)) 
-    }
-    else if ('midnight' == until) {
-    	c.add(Calendar.DATE, 1 ) // Add one day to calendar and use to get midnight in local time:
-    	untilRes =  new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", c.getTime().format("yyyy-MM-dd'T'00:00:00XX", location.timeZone))
-    }
-    else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string, so parse:
-    	untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until)
-    }
-    else if (until.isNumber()) { // until is a duration in minutes, so construct date from now():
-    	// Evohome supposedly only accepts setpoints for up to 24 hours, so we should limit minutes to 1440.
-        // For now, just pass any duration and see if Evohome accepts it...
-        untilRes = new Date( now() + (Math.round(until) * 60000) )
-    }
-    else {
-    	log.warn "${device.label}: setHeatingSetpoint(): until value could not be parsed. Setpoint will be applied permanently."
-        untilRes = 0
-    }
-    
-    log.info "${device.label}: setHeatingSetpoint(): Setting setpoint to: ${setpoint} until: ${untilRes}"
-    
+		}
+	}
+	
+	if ('permanent' == until || 0 == until) {
+		untilRes = 0
+	}
+	else if (until instanceof Date) {
+		untilRes = until
+	}
+	else if ('nextSwitchpoint' == until) {
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", device.currentValue('nextScheduledTime'))
+	}
+	else if ('midday' == until) {
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", new Date().format("yyyy-MM-dd'T'12:00:00XX", location.timeZone)) 
+	}
+	else if ('midnight' == until) {
+		c.add(Calendar.DATE, 1 ) // Add one day to calendar and use to get midnight in local time:
+		untilRes =  new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", c.getTime().format("yyyy-MM-dd'T'00:00:00XX", location.timeZone))
+	}
+	else if (until ==~ /\d+.*T.*/) { // until is a ISO-8601 date string, so parse:
+		untilRes = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", until)
+	}
+	else if (until.isNumber()) { // until is a duration in minutes, so construct date from now():
+		// Evohome supposedly only accepts setpoints for up to 24 hours, so we should limit minutes to 1440.
+		// For now, just pass any duration and see if Evohome accepts it...
+		untilRes = new Date( now() + (Math.round(until) * 60000) )
+	}
+	else {
+		log.warn "${device.label}: setHeatingSetpoint(): until value could not be parsed. Setpoint will be applied permanently."
+		untilRes = 0
+	}
+	
+	log.info "${device.label}: setHeatingSetpoint(): Setting setpoint to: ${setpoint} until: ${untilRes}"
+	
 	// Send update via parent:
 	if (!parent.setHeatingSetpoint(state.zoneId, setpoint, untilRes)) {
-    	// Command was successful, but it takes a few seconds for the Evohome cloud service to update with new values.
-        // Meanwhile, we know the new setpoint and thermostatSetpointMode anyway:
-        sendEvent(name: 'heatingSetpoint', value: setpoint)
-    	sendEvent(name: 'thermostatSetpoint', value: setpoint)
-    	sendEvent(name: 'thermostatSetpointMode', value: (0 == untilRes) ? 'permanentOverride' : 'temporaryOverride' )
-    	sendEvent(name: 'thermostatSetpointUntil', value: (0 == untilRes) ? null : untilRes.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')))
-    	calculateThermostatOperatingState()
-    	calculateOptimisations()
-    	calculateThermostatStatus()
-    	sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-        pseudoSleep(3000)
-        parent.poll(state.zoneId)
-        return null
-    }
-    else {
-    	log.error "${device.label}: setHeatingSetpoint(): Error: Unable to set heating setpoint."
-        return 'error'
-    }
+		// Command was successful, but it takes a few seconds for the Evohome cloud service to update with new values.
+		// Meanwhile, we know the new setpoint and thermostatSetpointMode anyway:
+		sendEvent(name: 'heatingSetpoint', value: setpoint)
+		sendEvent(name: 'thermostatSetpoint', value: setpoint)
+		sendEvent(name: 'thermostatSetpointMode', value: (0 == untilRes) ? 'permanentOverride' : 'temporaryOverride' )
+		sendEvent(name: 'thermostatSetpointUntil', value: (0 == untilRes) ? null : untilRes.format("yyyy-MM-dd'T'HH:mm:00XX", TimeZone.getTimeZone('UTC')))
+		calculateThermostatOperatingState()
+		calculateOptimisations()
+		calculateThermostatStatus()
+		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
+		pseudoSleep(3000)
+		parent.poll(state.zoneId)
+		return null
+	}
+	else {
+		log.error "${device.label}: setHeatingSetpoint(): Error: Unable to set heating setpoint."
+		return 'error'
+	}
 }
 
 
@@ -576,20 +576,20 @@ def clearHeatingSetpoint() {
 
 	// Send update via parent:
 	if (!parent.clearHeatingSetpoint(state.zoneId)) {
-    	// Command was successful, but it takes a few seconds for the Evohome cloud service
-        // to update the zone status with the new heatingSetpoint.
-        // Meanwhile, we know the new thermostatSetpointMode is "followSchedule".
-        sendEvent(name: 'thermostatSetpointMode', value: 'followSchedule')
-        sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-        // sleep command is not allowed in SmartThings, so we use psuedoSleep().
-        pseudoSleep(3000)
-        parent.poll(state.zoneId)
-        return null
-    }
-    else {
-    	log.error "${device.label}: clearHeatingSetpoint(): Error: Unable to clear heating setpoint."
-        return 'error'
-    }
+		// Command was successful, but it takes a few seconds for the Evohome cloud service
+		// to update the zone status with the new heatingSetpoint.
+		// Meanwhile, we know the new thermostatSetpointMode is "followSchedule".
+		sendEvent(name: 'thermostatSetpointMode', value: 'followSchedule')
+		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
+		// sleep command is not allowed in SmartThings, so we use psuedoSleep().
+		pseudoSleep(3000)
+		parent.poll(state.zoneId)
+		return null
+	}
+	else {
+		log.error "${device.label}: clearHeatingSetpoint(): Error: Unable to clear heating setpoint."
+		return 'error'
+	}
 }
 
 
@@ -605,28 +605,28 @@ def clearHeatingSetpoint() {
 void raiseSetpoint() {
 
 	if (state.debug) log.debug "${device.label}: raiseSetpoint()"
-    
-    def mode = device.currentValue("thermostatMode")
-    def targetSp = new BigDecimal(state.targetSetpoint)
-    def tempRes = new BigDecimal(state.temperatureResolution) // (normally 0.5)
-    def maxSp = new BigDecimal(state.maxHeatingSetpoint)
-    
-    if ('off' == mode || 'away' == mode) {
-    	log.warn "${device.label}: raiseSetpoint(): thermostat mode (${mode}) does not allow altering the temperature setpoint."
-    }
-    else {
-        targetSp += tempRes
+	
+	def mode = device.currentValue("thermostatMode")
+	def targetSp = new BigDecimal(state.targetSetpoint)
+	def tempRes = new BigDecimal(state.temperatureResolution) // (normally 0.5)
+	def maxSp = new BigDecimal(state.maxHeatingSetpoint)
+	
+	if ('off' == mode || 'away' == mode) {
+		log.warn "${device.label}: raiseSetpoint(): thermostat mode (${mode}) does not allow altering the temperature setpoint."
+	}
+	else {
+		targetSp += tempRes
 
-        if (targetSp > maxSp) {
-            targetSp = maxSp
-        }
-        
-        state.targetSetpoint = targetSp
-        log.info "${device.label}: raiseSetpoint(): Target setpoint raised to: ${targetSp}"
-        sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-        runIn(3, "alterSetpoint", [overwrite: true]) 
-    }
-    
+		if (targetSp > maxSp) {
+			targetSp = maxSp
+		}
+		
+		state.targetSetpoint = targetSp
+		log.info "${device.label}: raiseSetpoint(): Target setpoint raised to: ${targetSp}"
+		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
+		runIn(3, "alterSetpoint", [overwrite: true]) 
+	}
+	
 }
 
 
@@ -642,28 +642,28 @@ void raiseSetpoint() {
 void lowerSetpoint() {
 
 	if (state.debug) log.debug "${device.label}: lowerSetpoint()"
-    
-    def mode = device.currentValue("thermostatMode")
-    def targetSp = new BigDecimal(state.targetSetpoint)
-    def tempRes = new BigDecimal(state.temperatureResolution) // (normally 0.5)
-    def minSp = new BigDecimal(state.minHeatingSetpoint)
-    
-    if ('off' == mode || 'away' == mode) {
-    	log.warn "${device.label}: lowerSetpoint(): thermostat mode (${mode}) does not allow altering the temperature setpoint."
-    }
-    else {
-        targetSp -= tempRes 
+	
+	def mode = device.currentValue("thermostatMode")
+	def targetSp = new BigDecimal(state.targetSetpoint)
+	def tempRes = new BigDecimal(state.temperatureResolution) // (normally 0.5)
+	def minSp = new BigDecimal(state.minHeatingSetpoint)
+	
+	if ('off' == mode || 'away' == mode) {
+		log.warn "${device.label}: lowerSetpoint(): thermostat mode (${mode}) does not allow altering the temperature setpoint."
+	}
+	else {
+		targetSp -= tempRes 
 
-        if (targetSp < minSp) {
-            targetSp = minSp
-        }
-        
-        state.targetSetpoint = targetSp
-        log.info "${device.label}: lowerSetpoint(): Target setpoint lowered to: ${targetSp}"
-        sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-        runIn(3, "alterSetpoint", [overwrite: true]) 
-    }
-    
+		if (targetSp < minSp) {
+			targetSp = minSp
+		}
+		
+		state.targetSetpoint = targetSp
+		log.info "${device.label}: lowerSetpoint(): Target setpoint lowered to: ${targetSp}"
+		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
+		runIn(3, "alterSetpoint", [overwrite: true]) 
+	}
+	
 }
 
 
@@ -678,7 +678,7 @@ private alterSetpoint() {
 
 	if (state.debug) log.debug "${device.label}: alterSetpoint()"
 	
-    setHeatingSetpoint(state.targetSetpoint)
+	setHeatingSetpoint(state.targetSetpoint)
 }
 
 
@@ -750,8 +750,8 @@ void suppress() {
 private pseudoSleep(ms) {
 	def start = now()
 	while (now() < start + ms) {
-    	// Do nothing, just wait.
-    }
+		// Do nothing, just wait.
+	}
 }
 
 
@@ -766,13 +766,13 @@ private getInputDefaultValue(inputName) {
 	if (state.debug) log.debug "${device.label}: getInputDefaultValue()"
 	
 	def returnValue
-    properties.preferences?.sections.each { section ->
-    	section.input.each { input ->
+	properties.preferences?.sections.each { section ->
+		section.input.each { input ->
 			if (input.name == inputName) {
 				returnValue = input.defaultValue
-            }
-        }
-    }
+			}
+		}
+	}
 	
 	return returnValue
 }
@@ -787,9 +787,9 @@ private getInputDefaultValue(inputName) {
  *  Returns as string.
  **/
 private formatTemperature(t) {
-    //return Float.parseFloat("${t}").round(1)
- 	//return String.format("%.1f", Float.parseFloat("${t}").round(1))
- 	return Float.parseFloat("${t}").round(1).toString()
+	//return Float.parseFloat("${t}").round(1)
+	//return String.format("%.1f", Float.parseFloat("${t}").round(1))
+	return Float.parseFloat("${t}").round(1).toString()
 }
 
 
@@ -804,30 +804,30 @@ private formatThermostatModeForDisp(mode) {
 	if (state.debug) log.debug "${device.label}: formatThermostatModeForDisp()"
 
 	switch (mode) {
-    	case 'auto':
-        	mode = 'Auto'
-            break
-    	case 'economy':
-        	mode = 'Economy'
-            break
-    	case 'away':
-        	mode = 'Away'
-            break
-    	case 'custom':
-        	mode = 'Custom'
-            break
-    	case 'dayOff':
-        	mode = 'Day Off'
-            break
-    	case 'off':
-        	mode = 'Off'
-            break
-    	default:
-        	mode = 'Unknown'
-            break
-    }
+		case 'auto':
+			mode = 'Auto'
+			break
+		case 'economy':
+			mode = 'Economy'
+			break
+		case 'away':
+			mode = 'Away'
+			break
+		case 'custom':
+			mode = 'Custom'
+			break
+		case 'dayOff':
+			mode = 'Day Off'
+			break
+		case 'off':
+			mode = 'Off'
+			break
+		default:
+			mode = 'Unknown'
+			break
+	}
 
- 	return mode
+	return mode
  }
   
 
@@ -842,17 +842,17 @@ private calculateThermostatOperatingState() {
 	if (state.debug) log.debug "${device.label}: calculateThermostatOperatingState()"
 
 	def tOS
-    if ('off' == device.currentValue('thermostatMode')) {
-    	tOS = 'off'
-    }
-    else if (device.currentValue("temperature") < device.currentValue("thermostatSetpoint")) {
-    	tOS = 'heating'
-    }
-    else {
-    	tOS = 'idle'
-    }
-    
-    sendEvent(name: 'thermostatOperatingState', value: tOS)
+	if ('off' == device.currentValue('thermostatMode')) {
+		tOS = 'off'
+	}
+	else if (device.currentValue("temperature") < device.currentValue("thermostatSetpoint")) {
+		tOS = 'heating'
+	}
+	else {
+		tOS = 'idle'
+	}
+	
+	sendEvent(name: 'thermostatOperatingState', value: tOS)
 }
 
 
@@ -870,29 +870,29 @@ private calculateOptimisations() {
 	if (state.debug) log.debug "${device.label}: calculateOptimisations()"
 
 	def newOptValue = 'inactive'
-    def newWdfValue = 'inactive'
-    
-    if ('auto' != device.currentValue('thermostatMode')) {
-    	// Optimisations cannot be active if thermostatMode is not 'auto'.
-    }
-    else if ('followSchedule' != device.currentValue('thermostatSetpointMode')) {
-    	// Optimisations cannot be active if thermostatSetpointMode is not 'followSchedule'.
-        // There must be a manual override.
-    }
-    else if (device.currentValue('heatingSetpoint') == device.currentValue('scheduledSetpoint')) {
-    	// heatingSetpoint is what it should be, so no reason to suspect that optimisations are active.
-    }
-    else if (device.currentValue('heatingSetpoint') == device.currentValue('nextScheduledSetpoint')) {
-    	// heatingSetpoint is the nextScheduledSetpoint, so optimisation is likely active:
-        newOptValue = 'active'
-    }
-    else if (device.currentValue('heatingSetpoint') == (state.windowFunctionTemperature ?: 5.0)) {
-    	// heatingSetpoint is the windowFunctionTemp, so windowFunction is likely active:
-        newWdfValue = 'active'
-    }
+	def newWdfValue = 'inactive'
+	
+	if ('auto' != device.currentValue('thermostatMode')) {
+		// Optimisations cannot be active if thermostatMode is not 'auto'.
+	}
+	else if ('followSchedule' != device.currentValue('thermostatSetpointMode')) {
+		// Optimisations cannot be active if thermostatSetpointMode is not 'followSchedule'.
+		// There must be a manual override.
+	}
+	else if (device.currentValue('heatingSetpoint') == device.currentValue('scheduledSetpoint')) {
+		// heatingSetpoint is what it should be, so no reason to suspect that optimisations are active.
+	}
+	else if (device.currentValue('heatingSetpoint') == device.currentValue('nextScheduledSetpoint')) {
+		// heatingSetpoint is the nextScheduledSetpoint, so optimisation is likely active:
+		newOptValue = 'active'
+	}
+	else if (device.currentValue('heatingSetpoint') == (state.windowFunctionTemperature ?: 5.0)) {
+		// heatingSetpoint is the windowFunctionTemp, so windowFunction is likely active:
+		newWdfValue = 'active'
+	}
    
-    sendEvent(name: 'optimisation', value: newOptValue)
-    sendEvent(name: 'windowFunction', value: newWdfValue)
+	sendEvent(name: 'optimisation', value: newOptValue)
+	sendEvent(name: 'windowFunction', value: newWdfValue)
 
 }
 
@@ -910,20 +910,20 @@ private calculateThermostatStatus() {
 	if (state.debug) log.debug "${device.label}: calculateThermostatStatus()"
 
 	def newThermostatStatus = ''
-    def thermostatModeDisp = formatThermostatModeForDisp(device.currentValue('thermostatMode'))
-    def setpoint = device.currentValue('thermostatSetpoint')
-    
-    if ('Off' == thermostatModeDisp) {
-    	newThermostatStatus = 'Off'
-    }
-    else if('heating' == device.currentValue('thermostatOperatingState')) {
-    	newThermostatStatus = "Heating to ${setpoint}° (${thermostatModeDisp})"
-    }
-    else {
-    	newThermostatStatus = "Idle (${thermostatModeDisp})"
-    }
-    
-    sendEvent(name: 'thermostatStatus', value: newThermostatStatus)
+	def thermostatModeDisp = formatThermostatModeForDisp(device.currentValue('thermostatMode'))
+	def setpoint = device.currentValue('thermostatSetpoint')
+	
+	if ('Off' == thermostatModeDisp) {
+		newThermostatStatus = 'Off'
+	}
+	else if('heating' == device.currentValue('thermostatOperatingState')) {
+		newThermostatStatus = "Heating to ${setpoint}° (${thermostatModeDisp})"
+	}
+	else {
+		newThermostatStatus = "Idle (${thermostatModeDisp})"
+	}
+	
+	sendEvent(name: 'thermostatStatus', value: newThermostatStatus)
 }
 
 
@@ -942,48 +942,48 @@ private calculateThermostatSetpointStatus() {
 	if (state.debug) log.debug "${device.label}: calculateThermostatSetpointStatus()"
 
 	def newThermostatSetpointStatus = ''
-    def setpointMode = device.currentValue('thermostatSetpointMode')
-    
-    if ('off' == device.currentValue('thermostatMode')) {
-    	newThermostatSetpointStatus = 'Off'
-    }
-    else if ('away' == device.currentValue('thermostatMode')) {
-    	newThermostatSetpointStatus = 'Away'
-    }
-    else if ('active' == device.currentValue('optimisation')) {
-    	newThermostatSetpointStatus = 'Optimisation Active'
-    }
-    else if ('active' == device.currentValue('windowFunction')) {
-    	newThermostatSetpointStatus = 'Window Function Active'
-    }
-    else if ('followSchedule' == setpointMode) {
-    	newThermostatSetpointStatus = 'Following Schedule'
-    }
-    else if ('permanentOverride' == setpointMode) {
-    	newThermostatSetpointStatus = 'Permanent'
-    }
-    else {
-    	def untilStr = device.currentValue('thermostatSetpointUntil')
-        if (untilStr) {
-        
-            //def nowDate = new Date()
-            
-            // thermostatSetpointUntil is an ISO-8601 date format in UTC, and parse() seems to assume date is in UTC.
-        	def untilDate = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", untilStr) 
-            def untilDisp = ''
-            
-            if (untilDate.format("u") == new Date().format("u")) { // Compare day of week to current day of week (today).
-        		untilDisp = untilDate.format("HH:mm", location.timeZone) // Same day, so just show time.
-            }
-            else {
-            	untilDisp = untilDate.format("HH:mm 'on' EEEE", location.timeZone) // Different day, so include name of day.
-            }
-    		newThermostatSetpointStatus = "Temporary Until ${untilDisp}"
-        }
-        else {
-        	newThermostatSetpointStatus = "Temporary"
-        }
-    }
-    
-    sendEvent(name: 'thermostatSetpointStatus', value: newThermostatSetpointStatus)
+	def setpointMode = device.currentValue('thermostatSetpointMode')
+	
+	if ('off' == device.currentValue('thermostatMode')) {
+		newThermostatSetpointStatus = 'Off'
+	}
+	else if ('away' == device.currentValue('thermostatMode')) {
+		newThermostatSetpointStatus = 'Away'
+	}
+	else if ('active' == device.currentValue('optimisation')) {
+		newThermostatSetpointStatus = 'Optimisation Active'
+	}
+	else if ('active' == device.currentValue('windowFunction')) {
+		newThermostatSetpointStatus = 'Window Function Active'
+	}
+	else if ('followSchedule' == setpointMode) {
+		newThermostatSetpointStatus = 'Following Schedule'
+	}
+	else if ('permanentOverride' == setpointMode) {
+		newThermostatSetpointStatus = 'Permanent'
+	}
+	else {
+		def untilStr = device.currentValue('thermostatSetpointUntil')
+		if (untilStr) {
+		
+			//def nowDate = new Date()
+			
+			// thermostatSetpointUntil is an ISO-8601 date format in UTC, and parse() seems to assume date is in UTC.
+			def untilDate = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXX", untilStr) 
+			def untilDisp = ''
+			
+			if (untilDate.format("u") == new Date().format("u")) { // Compare day of week to current day of week (today).
+				untilDisp = untilDate.format("HH:mm", location.timeZone) // Same day, so just show time.
+			}
+			else {
+				untilDisp = untilDate.format("HH:mm 'on' EEEE", location.timeZone) // Different day, so include name of day.
+			}
+			newThermostatSetpointStatus = "Temporary Until ${untilDisp}"
+		}
+		else {
+			newThermostatSetpointStatus = "Temporary"
+		}
+	}
+	
+	sendEvent(name: 'thermostatSetpointStatus', value: newThermostatSetpointStatus)
 }
