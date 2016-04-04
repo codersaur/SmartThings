@@ -14,6 +14,10 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - You must install the Evohome Heating Zone device handler (below).
  - It uses the EMEA Evohome API (therefore may not work for US Evohome users).
 
+
+* [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/InfluxDB%20Logger):
+ - This SmartApp logs device states to an [InfluxDB](https://influxdata.com/) database.
+
 #### SmartApp Installation Procedure
 
 1. Within the SmartThings IDE, click '*My SmartApps*', then '*+ New SmartApp*'. 
