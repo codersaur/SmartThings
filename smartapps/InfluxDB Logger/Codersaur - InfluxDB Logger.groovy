@@ -11,8 +11,11 @@
  *
  *  Description:
  *   Log SmartThings device states to InfluxDB.
- *   Subscribes to device attributes and will send data to InfluxDB when a value changes.
- *   Additionallu, softPolling ensures that values are written to the database periodically, even if device states haven't changed.
+ *   Subscribes to device attributes and sends data to InfluxDB when a value changes.
+ *   Additionally, softPolling ensures that values are written to the database periodically, even if device states haven't changed.
+ *
+ *   IMPORTANT - To enable the resolution of groupNames (i.e. room names), you must manually insert the group IDs into the getGroupName()
+ *   command code at the end of this file.
  *
  *  Version History:
  *   
