@@ -19,7 +19,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 1. Within the SmartThings IDE, click '*My SmartApps*', then '*+ New SmartApp*'. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
 3. Click '*Create*', and then '*Publish*' *(For Me)*.
-4. Now using the SmartThings smartphone app, navigate to the '*Marketplace*', select '*SmartApps*', and then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
+4. Now using the SmartThings smartphone app, navigate to the '*Marketplace*', select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
 5. Select the new SmartApp, complete the configuraiton options and press '*Done*'.
 
   
@@ -44,7 +44,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 1. Within the SmartThings IDE, click '*My Device Handlers*', then '*+ Create New Device Handler*'. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
-3. Click '*Create*', and then '*Publish*' *(For Me)*.
+3. Click '*Create*', then '*Publish*' *(For Me)*.
 4. If your device is already connected to your SmartTHings hub, you will need to change the device type using the SmartThings IDE. From the '*My Devices*' tab, click the relevent device, then '*Edit*'. Change the '*Type*' using the drop-down box, custom devices will be near the bottom of the list. 
 
   
