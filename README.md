@@ -14,7 +14,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - You must install the Evohome Heating Zone device handler (below).
  - It uses the EMEA Evohome API (therefore may not work for US Evohome users).
 
-##SmartApp Installation Procedure
+#### SmartApp Installation Procedure
 
 1. Within the SmartThings IDE, click 'My SmartApps', then '+ New SmartApp'. 
 2. Select the 'From Code' tab and paste in the contents of the relevant groovy file.
@@ -40,7 +40,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
-##Device Handler Installation Procedure
+####Device Handler Installation Procedure
 
 1. Within the SmartThings IDE, click 'My Device Handlers', then '+ Create New Device Handler'. 
 2. Select the 'From Code' tab and paste in the contents of the relevant groovy file.
