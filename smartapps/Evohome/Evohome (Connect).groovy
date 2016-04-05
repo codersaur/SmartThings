@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-04-03
+ *  Date: 2016-04-05
  *
- *  Version: 0.06
+ *  Version: 0.08
  *
  *  Description:
  *   - Connect your Honeywell Evohome System to SmartThings.
@@ -15,6 +15,13 @@
  *   - For latest documentation see: https://github.com/codersaur/SmartThings
  *
  *  Version History:
+ * 
+ *   2016-04-05: v0.08
+ *    - New 'Update Refresh Time' setting to control polling after making an update.
+ *    - poll() - If onlyZoneId is 0, this will force a status update for all zones.
+ * 
+ *   2016-04-04: v0.07
+ *    - Additional info log messages.
  * 
  *   2016-04-03: v0.06
  *    - Initial Beta Release
@@ -55,11 +62,13 @@ preferences {
 	section ("Evohome:") {
 		input "prefEvohomeUsername", "text", title: "Username", required: true, displayDuringSetup: true
 		input "prefEvohomePassword", "password", title: "Password", required: true, displayDuringSetup: true
-		input "prefEvohomeStatusPollInterval", "number", title: "Polling Interval (minutes)", range: "1..60", defaultValue: 5, required: true, displayDuringSetup: true
-		input "prefEvohomeWindowFuncTemp", "decimal", title: "Window Function Temperature", range: "0..100", defaultValue: 5.0, required: true, displayDuringSetup: true
-		input title: "Thermostat Modes", description: "Configure how long thermostat modes are applied for. Specify 0 to apply modes permanently. 'Auto' and 'Off' modes are always permanent.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
-		input 'prefThermostatModeDuration', 'number', title: 'Away/Custom/DayOff Mode (days):', description: 'Apply thermostat modes for this many days', range: "0..99", defaultValue: 0, required: true, displayDuringSetup: true
-		input 'prefThermostatEconomyDuration', 'number', title: 'Economy Mode (hours):', description: 'Apply economy mode for this many hours', range: "0..24", defaultValue: 0, required: true, displayDuringSetup: true
+		input title: "Advanced Settings:", displayDuringSetup: true, type: "paragraph", element: "paragraph", description: "Change these only if needed"
+		input "prefEvohomeStatusPollInterval", "number", title: "Polling Interval (minutes)", range: "1..60", defaultValue: 5, required: true, displayDuringSetup: true, description: "Poll Evohome every n minutes"
+		input "prefEvohomeUpdateRefreshTime", "number", title: "Update Refresh Time (seconds)", range: "2..60", defaultValue: 3, required: true, displayDuringSetup: true, description: "Wait n seconds after an update before polling"
+		input "prefEvohomeWindowFuncTemp", "decimal", title: "Window Function Temperature", range: "0..100", defaultValue: 5.0, required: true, displayDuringSetup: true, description: "Must match Evohome controller setting"
+		input title: "Thermostat Modes", description: "Configure how long thermostat modes are applied for by default. Set to zero to apply modes permanently.", displayDuringSetup: true, type: "paragraph", element: "paragraph"
+		input 'prefThermostatModeDuration', 'number', title: 'Away/Custom/DayOff Mode (days):', range: "0..99", defaultValue: 0, required: true, displayDuringSetup: true, description: 'Apply thermostat modes for this many days'
+		input 'prefThermostatEconomyDuration', 'number', title: 'Economy Mode (hours):', range: "0..24", defaultValue: 0, required: true, displayDuringSetup: true, description: 'Apply economy mode for this many hours'
 	}
 
 	section("General:") {
@@ -76,10 +85,13 @@ preferences {
  *  installed()
  *
  *  Runs when the app is first installed.
+ *
  **/
 def installed() {
+
 	atomicState.installedAt = now()
 	log.debug "${app.label}: Installed with settings: ${settings}"
+
 }
 
 
@@ -87,6 +99,7 @@ def installed() {
  *  uninstalled()
  *
  *  Runs when the app is uninstalled.
+ *
  **/
 def uninstalled() {
 	if(getChildDevices()) {
@@ -99,6 +112,7 @@ def uninstalled() {
  *  updated()
  * 
  *  Runs when app settings are changed.
+ *
  **/
 void updated() {
 
@@ -112,6 +126,8 @@ void updated() {
 	atomicState.evohomeAuth = [tokenLifetimePercentThreshold : 50] // Auth Token will be refreshed when down to 50% of its lifetime.
 	atomicState.evohomeStatusPollInterval = settings.prefEvohomeStatusPollInterval // Poll interval for status updates (minutes).
 	atomicState.evohomeSchedulePollInterval = 60 // Hardcoded to 1hr (minutes).
+	atomicState.evohomeUpdateRefreshTime = settings.prefEvohomeUpdateRefreshTime // Wait this many seconds after an update before polling.
+	
 
 	// Thermostat Mode Durations:
 	atomicState.thermostatModeDuration = settings.prefThermostatModeDuration
@@ -160,26 +176,26 @@ void manageSchedules() {
 	// manageAuth (every 5 mins):
 	if (1==1) { // To Do: Test if schedule has actually stalled.
 		if (atomicState.debug) log.debug "${app.label}: manageSchedules(): Re-scheduling manageAuth()"
-		randomOffset = rand.nextInt(60)
 		try {
 			unschedule(manageAuth)
 		}
 		catch(e) {
 			//if (atomicState.debug) log.debug "${app.label}: manageSchedules(): Unschedule failed"
 		}
+		randomOffset = rand.nextInt(60)
 		schedule("${randomOffset} 0/5 * * * ?", "manageAuth")
 	}
 
 	// poll():
 	if (1==1) { // To Do: Test if schedule has actually stalled.
 		if (atomicState.debug) log.debug "${app.label}: manageSchedules(): Re-scheduling poll()"
-		randomOffset = rand.nextInt(60)
 		try {
 			unschedule(poll)
 		}
 		catch(e) {
 			//if (atomicState.debug) log.debug "${app.label}: manageSchedules(): Unschedule failed"
 		}
+		randomOffset = rand.nextInt(60)
 		schedule("${randomOffset} 0/1 * * * ?", "poll")
 	}
 
@@ -247,7 +263,6 @@ void manageAuth() {
 		}
 	}
 
-	log.debug "${app.label}: manageAuth(): Finish"
 }
 
 
@@ -257,14 +272,18 @@ void manageAuth() {
  *  This is the main command that co-ordinates retrieval of information from the Evohome API
  *  and its dissemination to child devices. It should be scheduled to run every minute.
  *
- *  poll() can be called by a child device when an update has been made, in which case
- *  onlyZoneId will be specified, and only that zone will be updated.
- *
- *  If onlyZoneId is not specified all zones are updated.
- *
  *  Different types of information are collected on different schedules:
  *   - Zone status information is polled according to ${evohomeStatusPollInterval}.
  *   - Zone schedules are polled according to ${evohomeSchedulePollInterval}.
+ *
+ *  poll() can be called by a child device when an update has been made, in which case
+ *  onlyZoneId will be specified, and only that zone will be updated.
+ * 
+ *  If onlyZoneId is 0, this will force a status update for all zones, igonoring the poll 
+ *  interval. This should only be used after setThremostatMode() call.
+ *
+ *  If onlyZoneId is not specified all zones are updated, but only if the relevent poll
+ *  interval has been exceeded.
  *
  **/
 void poll(onlyZoneId=-1) {
@@ -276,7 +295,11 @@ void poll(onlyZoneId=-1) {
 		manageAuth()
 	}
 	
-	if (onlyZoneId != -1) { // A zoneId has been specified, so just get the status and update the relevent device:
+	if (onlyZoneId == 0) { // Force a status update for all zones (used after a thermostatMode update):
+		getEvohomeStatus()
+		updateChildDevice()
+	}
+	else if (onlyZoneId != -1) { // A zoneId has been specified, so just get the status and update the relevent device:
 		getEvohomeStatus(onlyZoneId)
 		updateChildDevice(onlyZoneId)
 	}
@@ -359,6 +382,7 @@ void updateChildDeviceConfig() {
 					
 					def values = [
 						'debug': atomicState.debug,
+						'updateRefreshTime': atomicState.evohomeUpdateRefreshTime,
 						'minHeatingSetpoint': formatTemperature(zone?.heatSetpointCapabilities?.minHeatSetpoint),
 						'maxHeatingSetpoint': formatTemperature(zone?.heatSetpointCapabilities?.maxHeatSetpoint),
 						'temperatureResolution': zone?.heatSetpointCapabilities?.valueResolution,
@@ -618,7 +642,7 @@ private refreshAuthToken() {
  **/
 private getEvohomeUserAccount() {
 
-	if (atomicState.debug) log.debug "${app.label}: getEvohomeUserAccount()"
+	log.info "${app.label}: getEvohomeUserAccount(): Getting user account information."
 	
 	def requestParams = [
 		method: 'GET',
@@ -655,8 +679,8 @@ private getEvohomeUserAccount() {
  **/
 private getEvohomeConfig() {
 
-	if (atomicState.debug) log.debug "${app.label}: getEvohomeConfig()"
-	
+	log.info "${app.label}: getEvohomeConfig(): Getting configuration for all locations."
+
 	def requestParams = [
 		method: 'GET',
 		uri: atomicState.evohomeEndpoint,
@@ -706,6 +730,8 @@ private getEvohomeStatus(onlyZoneId=-1) {
 	
 	if (onlyZoneId == -1) { // Update all zones (which can be obtained en-masse for each location):
 		
+		log.info "${app.label}: getEvohomeStatus(): Getting status for all zones."
+		
 		atomicState.evohomeConfig.each { loc ->
 			def locStatus = getEvohomeLocationStatus(loc.locationInfo.locationId)
 			if (locStatus) {
@@ -721,10 +747,14 @@ private getEvohomeStatus(onlyZoneId=-1) {
 	}
 	else { // Only update the specified zone:
 		
+		log.info "${app.label}: getEvohomeStatus(): Getting status for zone ID: ${onlyZoneId}"
+		
 		def newZoneStatus = getEvohomeZoneStatus(onlyZoneId)
 		if (newZoneStatus) {
-			// Get existing evohomeStatus and update only the specified zone, preservign data for other zones:
+			// Get existing evohomeStatus and update only the specified zone, preserving data for other zones:
 			// Have to do this as atomicState.evohomeStatus can only be written in its entirety (as using atomicstate).
+			// If mutiple zones are requesting updates at the same time this could cause loss of new data, but
+			// the worse case is having out-of-date data for a few minutes...
 			newEvohomeStatus = atomicState.evohomeStatus
 			newEvohomeStatus.each { loc ->
 				loc.gateways.each { gateway ->
@@ -833,7 +863,7 @@ private getEvohomeZoneStatus(zoneId) {
  **/
 private getEvohomeSchedules() {
 
-	if (atomicState.debug) log.debug "${app.label}: getEvohomeSchedules()"
+	log.info "${app.label}: getEvohomeSchedules(): Getting schedules for all zones."
 			
 	def evohomeSchedules = []
 		
@@ -1002,9 +1032,11 @@ def setThermostatMode(systemId, mode, until=-1) {
 	def body
 	if (0 == untilRes || 'off' == mode || 'auto' == mode) { // Mode is permanent:
 		body = ['SystemMode': modeIndex, 'TimeUntil': null, 'Permanent': 'True']
+		log.info "${app.label}: setThermostatMode(): System ID: ${systemId}, Mode: ${mode}, Permanent: True"
 	}
 	else { // Mode is temporary:
 		body = ['SystemMode': modeIndex, 'TimeUntil': untilRes, 'Permanent': 'False']
+		log.info "${app.label}: setThermostatMode(): System ID: ${systemId}, Mode: ${mode}, Permanent: False, Until: ${untilRes}"
 	}
 	
 	def requestParams = [
@@ -1084,9 +1116,11 @@ def setHeatingSetpoint(zoneId, setpoint, until=-1) {
 	def body
 	if (0 == untilRes) { // Permanent:
 		body = ['HeatSetpointValue': setpoint, 'SetpointMode': 1, 'TimeUntil': null]
+		log.info "${app.label}: setHeatingSetpoint(): Zone ID: ${zoneId}, Setpoint: ${setpoint}, Until: Permanent"
 	}
 	else { // Temporary:
 		body = ['HeatSetpointValue': setpoint, 'SetpointMode': 2, 'TimeUntil': untilRes]
+		log.info "${app.label}: setHeatingSetpoint(): Zone ID: ${zoneId}, Setpoint: ${setpoint}, Until: ${untilRes}"
 	}
 	
 	def requestParams = [
@@ -1126,7 +1160,7 @@ def setHeatingSetpoint(zoneId, setpoint, until=-1) {
  **/
 def clearHeatingSetpoint(zoneId) {
 
-	if (atomicState.debug) log.debug "${app.label}: clearHeatingSetpoint(): Zone ID: ${zoneId}"
+	log.info "${app.label}: clearHeatingSetpoint(): Zone ID: ${zoneId}"
 	
 	// Build request:
 	def requestParams = [

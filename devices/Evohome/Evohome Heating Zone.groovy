@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-04-03
+ *  Date: 2016-04-05
  *
- *  Version: 0.06
+ *  Version: 0.08
  *
  *  Description:
  *   - This device handler is a child device for the Evohome (Connect) SmartApp.
@@ -15,6 +15,14 @@
  *
  *  Version History:
  *
+ *   2016-04-05: v0.08
+ *    - New 'Update Refresh Time' setting from parent to control polling after making an update.
+ *    - setThermostatMode(): Forces poll for all zones to ensure new thermostatMode is updated.
+ * 
+ *   2016-04-04: v0.07
+ *    - generateEvent(): hides events if name or value are null.
+ *    - generateEvent(): log.info message for new values.
+ * 
  *   2016-04-03: v0.06
  *    - Initial Beta Release
  * 
@@ -91,11 +99,6 @@ metadata {
 			//	attributeState("VALUE_DOWN", action: "lowerSetpoint")
 			//}
 			// Operating State - used to get background colour when type is 'thermostat'.
-			//tileAttribute("device.thermostatOperatingState", key: "OPERATING_STATE") {
-			//	attributeState("idle", backgroundColor:"#44b621")
-			//	attributeState("heating", backgroundColor:"#ffa81e")
-			//	attributeState("off", backgroundColor:"#269bd2")
-			//}
 			tileAttribute("device.thermostatStatus", key: "OPERATING_STATE") {
 				attributeState("Heating", backgroundColor:"#ffa81e", defaultState: true)
 				attributeState("Idle (Auto)", backgroundColor:"#44b621")
@@ -238,7 +241,7 @@ metadata {
 /**
  *  test()
  *
- *  Test method, called from tile.
+ *  Test method, called from test tile.
  **/
 def test() {
 
@@ -265,10 +268,13 @@ def test() {
  **/
 def installed() {
 
+	log.debug "${app.label}: Installed with settings: ${settings}"
+
 	state.installedAt = now()
 	
 	// These default values will be overwritten by the Evohome SmartApp almost immediately:
 	state.debug = false
+    state.updateRefreshTime = 5 // Wait this many seconds after an update before polling.
 	state.zoneType = 'RadiatorZone'
 	state.minHeatingSetpoint = formatTemperature(5.0)
 	state.maxHeatingSetpoint = formatTemperature(35.0)
@@ -293,7 +299,7 @@ def updated() {
 
 	if (state.debug) log.debug "${device.label}: Updating with settings: ${settings}"
 
-	// Inputs:
+	// Copy input values to state:
 	state.setpointMode = settings.prefSetpointMode
 	state.setpointDuration = settings.prefSetpointDuration
 	state.boostTemperature = formatTemperature(settings.prefBoostTemperature)
@@ -314,7 +320,7 @@ def updated() {
  **/
 void generateEvent(values) {
 
-	if (state.debug) log.debug "${device.label}: generateEvent(): Values: $values"
+	log.info "${device.label}: generateEvent(): New values: ${values}"
 	
 	if(values) {
 		values.each { name, value ->
@@ -329,14 +335,22 @@ void generateEvent(values) {
 				|| name == 'zoneId'
 				|| name == 'schedule'
 				|| name == 'debug'
+                || name == 'updateRefreshTime'
 				) {
-				// Internal device state only.
+				// Internal state only.
 				state."${name}" = value
 			}
-			else {
-				sendEvent(name: name, value: value)
+			else { // Attribute value, so generate an event:
+				if (name != null && value != null) {
+					sendEvent(name: name, value: value, displayed: true)
+				}
+				else { // If name or value is null, set displayed to false,
+					   // otherwise the 'Recently' view on smartphone app clogs 
+					   // up with empty events.
+					sendEvent(name: name, value: value, displayed: false)
+				}
 				
-				// update internal targetSetpoint too:
+				// Reset targetSetpoint (used by raiseSetpoint/lowerSetpoint) if heatingSetpoint has changed:
 				if (name == 'heatingSetpoint') {
 					state.targetSetpoint = value
 				}
@@ -365,7 +379,7 @@ void generateEvent(values) {
  **/
 void poll() {
 
-	if (state.debug) log.debug "${device.label}: poll()"//
+	if (state.debug) log.debug "${device.label}: poll()"
 	parent.poll(state.zoneId)
 }
 
@@ -399,15 +413,15 @@ void refresh() {
  *                       (e.g. a duration of 1 day will end at midnight tonight). If 0, mode is permanent.
  *                       If duration is not specified, a default value is used from the Evohome SmartApp settings.
  *
- *   Notes:   'Auto' and 'Off' modes are always permanent, any 'until' value will be ignored.
+ *   Notes:   'Auto' and 'Off' modes are always permanent.
  *            Thermostat mode is a property of the temperatureControlSystem (i.e. Evohome controller).
  *            Therefore changing the thermostatMode will affect all zones associated with the same controller.
  * 
  *  Example usage:
- *   setThermostatMode('off', 0) // Set off mode permanently.
- *   setThermostatMode('away', 1) // Set away mode until midnight tonight.
- *   setThermostatMode('dayOff', 2) // Set dayOff mode for 2 days (ends tomorrow night).
- *   setThermostatMode('economy', 2) // Set economy mode for 2 hours.
+ *   setThermostatMode('off', 0)         // Set off mode permanently.
+ *   setThermostatMode('away', 1)        // Set away mode for one day (i.e. until midnight tonight).
+ *   setThermostatMode('dayOff', 2)      // Set dayOff mode for two days (ends tomorrow night).
+ *   setThermostatMode('economy', 2)     // Set economy mode for two hours.
  *
  **/
 def setThermostatMode(String mode, until=-1) {
@@ -416,10 +430,10 @@ def setThermostatMode(String mode, until=-1) {
 	
 	// Send update via parent:
 	if (!parent.setThermostatMode(state.systemId, mode, until)) {
-		// Wait a few seconds as it takes a while for Evohome to update setpoints in response to a mode change.
 		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-		pseudoSleep(4000)
-		parent.poll(state.zoneId)
+		// Wait a few seconds as it takes a while for Evohome to update setpoints in response to a mode change.
+		pseudoSleep(state.updateRefreshTime * 1000)
+		parent.poll(0) // Force poll for all zones as thermostatMode is a property of the temperatureControlSystem.
 		return null
 	}
 	else {
@@ -447,13 +461,13 @@ def setThermostatMode(String mode, until=-1) {
  *               behaviour defined in the device settings.
  *
  *  Example usage:
- *   setHeatingSetpoint(21.0) // Set until <device default>.
- *   setHeatingSetpoint(21.0, 'nextSwitchpoint') // Set until next scheduled switchpoint.
- *   setHeatingSetpoint(21.0, 'midnight') // Set until midnight.
- *   setHeatingSetpoint(21.0, 'permanent') // Set permanently.
- *   setHeatingSetpoint(21.0, 0) // Set permanently.
- *   setHeatingSetpoint(21.0, 6) // Set for 6 hours.
- *   setHeatingSetpoint(21.0, '2016-04-01T00:00:00Z') // Set until specific time.
+ *   setHeatingSetpoint(21.0)                           // Set until <device default>.
+ *   setHeatingSetpoint(21.0, 'nextSwitchpoint')        // Set until next scheduled switchpoint.
+ *   setHeatingSetpoint(21.0, 'midnight')               // Set until midnight.
+ *   setHeatingSetpoint(21.0, 'permanent')              // Set permanently.
+ *   setHeatingSetpoint(21.0, 0)                        // Set permanently.
+ *   setHeatingSetpoint(21.0, 6)                        // Set for 6 hours.
+ *   setHeatingSetpoint(21.0, '2016-04-01T00:00:00Z')   // Set until specific time.
  *
  **/
 def setHeatingSetpoint(setpoint, until=-1) {
@@ -551,7 +565,7 @@ def setHeatingSetpoint(setpoint, until=-1) {
 		calculateOptimisations()
 		calculateThermostatStatus()
 		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-		pseudoSleep(3000)
+		pseudoSleep(state.updateRefreshTime * 1000)
 		parent.poll(state.zoneId)
 		return null
 	}
@@ -582,7 +596,7 @@ def clearHeatingSetpoint() {
 		sendEvent(name: 'thermostatSetpointMode', value: 'followSchedule')
 		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
 		// sleep command is not allowed in SmartThings, so we use psuedoSleep().
-		pseudoSleep(3000)
+		pseudoSleep(state.updateRefreshTime * 1000)
 		parent.poll(state.zoneId)
 		return null
 	}
@@ -624,7 +638,7 @@ void raiseSetpoint() {
 		state.targetSetpoint = targetSp
 		log.info "${device.label}: raiseSetpoint(): Target setpoint raised to: ${targetSp}"
 		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-		runIn(3, "alterSetpoint", [overwrite: true]) 
+		runIn(3, "alterSetpoint", [overwrite: true]) // Wait three seconds in case targetSetpoint is changed again.
 	}
 	
 }
@@ -661,7 +675,7 @@ void lowerSetpoint() {
 		state.targetSetpoint = targetSp
 		log.info "${device.label}: lowerSetpoint(): Target setpoint lowered to: ${targetSp}"
 		sendEvent(name: 'thermostatSetpointStatus', value: 'Updating', displayed: false)
-		runIn(3, "alterSetpoint", [overwrite: true]) 
+		runIn(3, "alterSetpoint", [overwrite: true]) // Wait three seconds in case targetSetpoint is changed again.
 	}
 	
 }
