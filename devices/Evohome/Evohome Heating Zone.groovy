@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-04-05
+ *  Date: 2016-04-08
  *
- *  Version: 0.08
+ *  Version: 0.09
  *
  *  Description:
  *   - This device handler is a child device for the Evohome (Connect) SmartApp.
@@ -15,6 +15,9 @@
  *
  *  Version History:
  *
+ *   2016-04-08: v0.09
+ *    - calculateOptimisations(): Fixed comparison of temperature values.
+ * 
  *   2016-04-05: v0.08
  *    - New 'Update Refresh Time' setting from parent to control polling after making an update.
  *    - setThermostatMode(): Forces poll for all zones to ensure new thermostatMode is updated.
@@ -279,6 +282,7 @@ def installed() {
 	state.minHeatingSetpoint = formatTemperature(5.0)
 	state.maxHeatingSetpoint = formatTemperature(35.0)
 	state.temperatureResolution = formatTemperature(0.5)
+	state.windowFunctionTemperature = formatTemperature(5.0)
 	state.targetSetpoint = state.minHeatingSetpoint
 	
 	// Populate state.* with default values for each preference/input:
@@ -886,6 +890,12 @@ private calculateOptimisations() {
 	def newOptValue = 'inactive'
 	def newWdfValue = 'inactive'
 	
+    // Convert temp values to BigDecimals for comparison:
+	def heatingSp = new BigDecimal(device.currentValue('heatingSetpoint'))
+	def scheduledSp = new BigDecimal(device.currentValue('scheduledSetpoint'))
+	def nextScheduledSp = new BigDecimal(device.currentValue('nextScheduledSetpoint'))
+	def windowTemp = new BigDecimal(state.windowFunctionTemperature)
+    
 	if ('auto' != device.currentValue('thermostatMode')) {
 		// Optimisations cannot be active if thermostatMode is not 'auto'.
 	}
@@ -893,14 +903,14 @@ private calculateOptimisations() {
 		// Optimisations cannot be active if thermostatSetpointMode is not 'followSchedule'.
 		// There must be a manual override.
 	}
-	else if (device.currentValue('heatingSetpoint') == device.currentValue('scheduledSetpoint')) {
+	else if (heatingSp == scheduledSp) {
 		// heatingSetpoint is what it should be, so no reason to suspect that optimisations are active.
 	}
-	else if (device.currentValue('heatingSetpoint') == device.currentValue('nextScheduledSetpoint')) {
+	else if (heatingSp == nextScheduledSp) {
 		// heatingSetpoint is the nextScheduledSetpoint, so optimisation is likely active:
 		newOptValue = 'active'
 	}
-	else if (device.currentValue('heatingSetpoint') == (state.windowFunctionTemperature ?: 5.0)) {
+	else if (heatingSp == windowTemp) {
 		// heatingSetpoint is the windowFunctionTemp, so windowFunction is likely active:
 		newWdfValue = 'active'
 	}
