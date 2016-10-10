@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-03-02
+ *  Date: 2016-10-10
  *
- *  Version: 1.10
+ *  Version: 1.11
  *
  *  Description:
  *   - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
@@ -33,6 +33,9 @@
  *     Additionally, a meter report for voltage is reqeusted whenever a meter report for energy is received.
  *
  *  Version History:
+ *
+ *   2016-10-10: v1.11
+ *    - 'Voltage Measurement' capability is now accepted.
  *
  *   2016-03-02: v1.10
  *    - Meter reports for current and powerFactor are requested whenever a meter report for power is received.
@@ -104,7 +107,7 @@ metadata {
 		capability "Switch"
 		capability "Power Meter"
 		capability "Energy Meter"
-		//capability "Voltage Measurement"  // In documentation, but generates RunTimeException.
+		capability "Voltage Measurement"
 		capability "Polling"
 		capability "Refresh"
 		capability "Configuration"
@@ -417,7 +420,7 @@ def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport 
     // This should be done in zwave.parse() but isn't implemented yet.
     // See: https://community.smartthings.com/t/zwave-configurationv2-configurationreport-dev-question/9771/6
     // I can't make this work just yet...
-	//int value = java.nio.ByteBuffer.wrap(cmd.configurationValue as byte[]).getInt()
+	//  int value = java.nio.ByteBuffer.wrap(cmd.configurationValue as byte[]).getInt()
     // Instead, a brute force way
     def scValue = 0
     if (cmd.size == 1) { scValue = cmd.configurationValue[0]}
@@ -635,7 +638,7 @@ def installed() {
  **/
 def updated() {
 
-	log.debug "Updated() called"
+	log.debug "${device.displayName}: Updated()"
 	// Update internal state:
 	state.debug = ("true" == configDebugMode)
 	state.costPerKWH = configCostPerKWH as BigDecimal
