@@ -13,7 +13,7 @@
  *   - This device handler is written specifically for the Fibaro Dimmer 2 (FGD-212).
  *   - It extends hajar97's original device handler to suport Nightmode and fixes a number of issues.
  *   - Nightmode function: 
- *      Nightmode forces the dimmer to swich on at a specific level (e.g. low-level during the night).
+ *      Nightmode forces the dimmer to switch on at a specific level (e.g. low-level during the night).
  *      Nightmode can be enabled/disabled manually using the new Nightmode tile, and/or scheduled from the device settings.
  *      The 'Force Nightmode' option will cause the dimmer level will be adjusted immediately when Nightmode is enabled/disabled.
  *
@@ -177,7 +177,7 @@ metadata {
 
     preferences {
     	section { // NIGHTMODE:
-	        def paragraph = "NIGHTMODE:\n\nNightmode forces the dimmer to swich on at a specific level (e.g. low-level during the night).\n" +
+	        def paragraph = "NIGHTMODE:\n\nNightmode forces the dimmer to switch on at a specific level (e.g. low-level during the night).\n" +
         				"Nightmode can be enabled/disabled manually using the new Nightmode tile, or scheduled below.\n" +
                         "When nightmode is disabled, the dimmer's original settings are restored."
                         
