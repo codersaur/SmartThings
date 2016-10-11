@@ -34,6 +34,11 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 * [Evohome Heating Zone - BETA](https://github.com/codersaur/SmartThings/tree/master/devices/Evohome):
  - This device handler is required for the Evohome (Connect) SmartApp.
 
+* [Fibaro Dimmer 2 (FGD-212)](https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20Dimmer%202%20(FGD-212))
+ - This device handler is written specifically for the Fibaro Dimmer 2 (FGD-212).
+ - It extends hajar97's original device handler to suport Nightmode and fixes a number of issues.
+ - Nightmode function: Nightmode forces the dimmer to swich on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the new Nightmode tile, and/or scheduled from the device settings.
+ 
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04)):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
