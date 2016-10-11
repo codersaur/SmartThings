@@ -189,10 +189,10 @@ metadata {
                 title: "2. Force Nightmode: If the dimmer is on when nightmode is enabled, the Nightmode Level is applied immediately " + 
                     "(otherwise it's only applied next time the dimmer is switched on)."
                     
-            input "configNightmodeStartTime", "time", required: false, 
+            input name: "configNightmodeStartTime", type: "time", required: false, 
                 title: "Nightmode Start Time: Nightmode will start every day at this time."
                 
-            input "configNightmodeStopTime", "time", required: false, 
+            input name: "configNightmodeStopTime", type: "time", required: false, 
                 title: "Nightmode Stop Time: Nightmode will stop every day at this time."
         }
         
