@@ -39,6 +39,10 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - It extends hajar97's original device handler to suport Nightmode and fixes a number of issues.
  - Nightmode function: Nightmode forces the dimmer to switch on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the new Nightmode tile, and/or scheduled from the device settings.
  
+* [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)):
+ - This device handler is written specifically for the Fibaro RGBW Controller (FGRGBWM-441).
+ - It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode (i.e. analog sensor inputs).
+ 
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04)):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
