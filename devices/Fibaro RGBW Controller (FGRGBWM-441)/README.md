@@ -12,7 +12,8 @@ This SmartThings device handler has been written for the Fibaro RGBW Controller 
 * Channels can be mapped to different colours without needing to physically rewire the device.
 * Shortcut tiles for the built-in RGBW programs.
 * Shortcut tiles for named colours.
-* Multiple options for the calculation of aggregate `switch` and `level` attributes (useful when using INPUTS).
+* Multiple options for the calculation of aggregate `switch` and `level` attributes (useful when using a combination of inputs and outputs).
+* Configurable thresholds for mapping the level of input channels to their corresponding `switch` (on/off) states.
 * Implements "Energy Meter", "Power Meter", and "Polling" capabilities.
 * For SmartApp developers, the `setColor()` command supports an extended range of colorMap key combinations:
  * red, green, blue, white
@@ -66,6 +67,7 @@ The _Built-in Program Shortcut_ tiles can also be commented out as these will no
 
 In the SmartThings app, edit the device settings. Configure the channel mappings so that Channel #4 maps to `Input` and Parameter #14 so that Channels #1/2/3 are set to `9. OUT...` and Channel #4 is set to `8. IN - ANALOG 0-10V (SENSOR)`.
 
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_mappings_rgb.png" width="200">
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_rgb_plus_in.png" width="200">
 
 The SmartThings GUI should end up looking like the following:
@@ -134,8 +136,11 @@ Additionally, comment out the _Energy and Power_ tiles, the _Built-in Program Sh
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_four_inputs.png" width="400">
 
-In the device settings, configure the channel mappings so that all channels map to `Input`, and configure Parameter #14 so that all channels are set to `8. IN - ANALOG 0-10V (SENSOR)`
+In the device settings, configure the channel mappings so that all channels map to `Input`. It is possible to alter the threshold values too, which control the level at which each input is considered "ON". 
 
+Configure Parameter #14 so that all channels are set to `8. IN - ANALOG 0-10V (SENSOR)`
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_mappings_four_inputs.png" width="200">
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_four_inputs.png" width="200">
 
 The SmartThings GUI should end up looking like the following:
