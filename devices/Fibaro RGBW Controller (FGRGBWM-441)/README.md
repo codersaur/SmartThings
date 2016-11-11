@@ -5,7 +5,7 @@ Copyright (c) 2016 [David Lomas](https://github.com/codersaur)
 
 ## Overview
 
-This SmartThings device handler is written for the Fibaro RGBW Controller (FGRGBWM-441). It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode.
+This SmartThings device handler has been written for the Fibaro RGBW Controller (FGRGBWM-441). It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode.
 
 ### Key features:
 * Physical device parameters can be edited from the Smartthings GUI, and verified in the IDE Log.
