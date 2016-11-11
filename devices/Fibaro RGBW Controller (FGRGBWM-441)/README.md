@@ -10,14 +10,16 @@ This SmartThings device handler is written for the Fibaro RGBW Controller (FGRGB
 ### Key features:
 * Physical device parameters can be edited from the Smartthings GUI, and verified in the IDE Log.
 * Channels can be mapped to different colours without needing to physically rewire the device.
-* `setColor()` supports a wide range of colorMap key combinations:
+* Shortcut tiles for the built-in RGBW programs.
+* Shortcut tiles for named colours.
+* Multiple options for the calculation of aggregate `switch` and `level` attributes (useful when using INPUTS).
+* Implements "Energy Meter", "Power Meter", and "Polling" capabilities.
+* For SmartApp developers, the `setColor()` command supports an extended range of colorMap key combinations:
  * red, green, blue, white
  * red, green, blue
  * hue, saturation, level
  * hex
  * name
-* Multiple options for the calculation of aggregate `switch` and `level` attributes (useful when using INPUTS).
-* Implements "Energy Meter", "Power Meter", and "Polling" capabilities.
 
 ### Screenshots:
 
@@ -28,18 +30,21 @@ This SmartThings device handler is written for the Fibaro RGBW Controller (FGRGB
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_color_shortcuts.png" width="200">
 
 ## Installation
-To install this device handler:
+To install the device handler:
 
 1. Follow [these instructions](https://github.com/codersaur/SmartThings#device-handler-installation-procedure) to install the device handler in the SmartThings IDE.
 
-2. Edit the device handler code to suit your needs. Specifically, the tiles section will need to be customised to suit the channel configuration (see the use cases below).
+2. From the SmartThings IDE, edit the device handler code to suit your needs. Specifically, the tiles section will need to be customised to suit the channel configuration in use (see the use cases below). [If you have multiple FIbaro RGBW Controllers, each with different channel configurations, then you will need to create multiple copies of the device handler with different names.]
 
-3. Configure your device instance to use the device handler, then edit the device settings in the SmartThings GUI.
+3. From the SmartThings app, edit the device settings to suit the channel configuration in use (see the use cases below) and hit _Done_. [It is possible to verify the device parameters from the Live Logging tab in the SmartThings IDE.]
+
+4. Once the settings have been applied, power-cycle the Fibaro RGBW Controller. 
 
 ### Example Use Cases
 
 #### Four-channel RGBW LED strip:
-By default, the device handler is set up for use with a four-channel RGBW LED strip.
+
+By default, the device handler is configured for use with a four-channel RGBW LED strip, so there is no need to edit the device handler code. The SmartThings GUI should look like the following: 
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgbw.png" width="200">
 
@@ -47,7 +52,7 @@ By default, the device handler is set up for use with a four-channel RGBW LED st
 
 For this use case, it is recommended to use Channel #1 as Red, Channel #2 as Green, Channel #3 as Blue, and Channel #4 as the analog input.
 
-In the device handler code, edit the tiles section to comment out the White channel tiles:
+In the device handler code, edit the tiles section to comment out the _White_ channel tiles:
 
     "switchWhite", "levelWhiteSlider", "levelWhiteTile",
 
@@ -57,9 +62,10 @@ Then uncomment the read-only input channel for Ch4:
     
 The _Built-in Program Shortcut_ tiles can also be commented out as these will not function in this configuration.
 
-In the SmartThings app, edit the device settings: configure the channel mappings so that Channel #4 maps to `Input` and Parameter #14 so that Channels #1/2/3 are set to `9. OUT...` and Channel #4 is set to `8. IN - ANALOG 0-10V (SENSOR)`.
-
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_rgb_plus_input.png" width="400">
+
+In the SmartThings app, edit the device settings. Configure the channel mappings so that Channel #4 maps to `Input` and Parameter #14 so that Channels #1/2/3 are set to `9. OUT...` and Channel #4 is set to `8. IN - ANALOG 0-10V (SENSOR)`.
+
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_rgb_plus_in.png" width="200">
 
 The SmartThings GUI should end up looking like the following:
@@ -71,21 +77,32 @@ The SmartThings GUI should end up looking like the following:
 
 In this example, channels #1 and #2 are used as outputs (e.g. two circuits of white lights), and channels #3 & #4 are used for analog sensor inputs.
 
-In the device handler code, edit the tiles section to comment out the blue and white channel tile lines:
+In the device handler code, edit the tiles section to comment out all of the colour channel tile lines:
 
-    "switchBlue","levelBlueSlider", "levelBlueTile",
-    "switchWhite", "levelWhiteSlider", "levelWhiteTile",
+    // RGBW Channels:
+    //"switchRed","levelRedSlider", "levelRedTile",
+    //"switchGreen","levelGreenSlider", "levelGreenTile",
+    //"switchBlue","levelBlueSlider", "levelBlueTile",
+    //"switchWhite", "levelWhiteSlider", "levelWhiteTile",
     
-Uncomment the lines for the Ch3 and Ch4 input tiles:
+Uncomment the lines for the Ch1 and Ch2 OUT channels, and the Ch3 and Ch4 input tiles:
 
+    // OUT Channels:
+    "switchCh1","levelCh1Slider", "levelCh1Tile",
+    "switchCh2","levelCh2Slider", "levelCh2Tile",
+    ...
+    
+    // INPUT Channels (read-only, label replaced slider control):
+    ...
     "switchCh3ReadOnly", "ch3Label", "levelCh3Tile",
     "switchCh4ReadOnly", "ch4Label", "levelCh4Tile",
     
-You can also comment out the built-in program shortcut tiles as these will not function in this configuration.
+The _Built-in Program Shortcut_ and _Color Shortcut_ tiles can also be commented out as these will not function in this configuration.
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_two_out_two_in.png" width="400">
 
 In the device settings, configure the channel mappings so that Channels #3 & #4 map to `Input`, and configure Parameter #14 so that Channels #1 & #2 are set to an `OUT ...` mode, and Channels #3 & #4 are set to `8. IN - ANALOG 0-10V (SENSOR)`
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_two_out_two_in.png" width="400">
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_two_out_two_in.png" width="200">
 
 The SmartThings GUI should end up looking like the following:
@@ -95,17 +112,19 @@ The SmartThings GUI should end up looking like the following:
 
 #### Four 0-10V analog sensor inputs:
 
-In this example, all four channels on the RGBW controller are used as analog sensor inputs. This means the output channels cannot be used and the tiles configuration can be simplified.
+In this example, all four channels on the RGBW controller are used as analog sensor inputs. As the output channels cannot be used the tiles configuration can be simplified.
 
 In the device handler code, edit the tiles section to comment out the RGBW channel tiles:
 
-    "switchRed","levelRedSlider", "levelRedTile",
-    "switchGreen","levelGreenSlider", "levelGreenTile",
-    "switchBlue","levelBlueSlider", "levelBlueTile",
-    "switchWhite", "levelWhiteSlider", "levelWhiteTile",
-    
-Uncomment the lines for the Ch3 and Ch4 input tiles:
+    // RGBW Channels:
+    //"switchRed","levelRedSlider", "levelRedTile",
+    //"switchGreen","levelGreenSlider", "levelGreenTile",
+    //"switchBlue","levelBlueSlider", "levelBlueTile",
+    //"switchWhite", "levelWhiteSlider", "levelWhiteTile",
+        
+Uncomment the lines for all input tiles:
 
+    // INPUT Channels (read-only, label replaced slider control):
     "switchCh1ReadOnly", "ch1Label", "levelCh1Tile",
     "switchCh2ReadOnly", "ch2Label", "levelCh2Tile",
     "switchCh3ReadOnly", "ch3Label", "levelCh3Tile",
@@ -113,9 +132,10 @@ Uncomment the lines for the Ch3 and Ch4 input tiles:
     
 Additionally, comment out the _Energy and Power_ tiles, the _Built-in Program Shortcut_ tiles, and the _Color Shortcut Tiles_ sections as none of these will function in this configuration.
 
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_four_inputs.png" width="400">
+
 In the device settings, configure the channel mappings so that all channels map to `Input`, and configure Parameter #14 so that all channels are set to `8. IN - ANALOG 0-10V (SENSOR)`
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_four_inputs.png" width="400">
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_four_inputs.png" width="200">
 
 The SmartThings GUI should end up looking like the following:
@@ -127,15 +147,15 @@ The SmartThings GUI should end up looking like the following:
 
 Some general notes relating to the Fibaro RGBW Controller:
 
-* Parameter #14 is used to control the mode of each channel. When editing keep in mind:
+* Parameter #14 is used to control the mode of each channel. When editing this parameter keep in mind:
  * If using RGBW modes, all channels must have exactly the same mode. 
- * Mixing RGBW channels with IN/OUT channels at the same time will cause IN channels to report incorrect levels (the INPUT is treated as a switch input for the RGBW mode).
+ * Mixing RGBW channels with IN/OUT channels at the same time will cause weird behaviour, for example the IN channels may report incorrect levels (as the INPUT is treated as a switch input for the RGBW channels).
   * If you want to use one or more channels as analog inputs, then the remaining channels must be set to OUT mode.
   * If using IN/OUT channel modes, the OUT channels can still be mapped to colours, but the built-in "RGBW programs" will have no effect.
   * switchColorSet commands do not affect INPUT channels, but you can't use switchColorGet to get the level of an INPUT channel either.
   * Energy and power reports for individual channels are not available, only the aggregate device as a whole.
 
-There are two potential bugs in firmware 25.25, which this device handler attempts to work around:
+There are two known bugs in firmware 25.25, which this device handler attempts to work around:
 
 * BUG: If the device's parameters are changed, the device may stop responding to many Z-Wave _Get_ commands. **It is therefore recommended to power-cycle the device after changing parameters.**
 * BUG: If a basicSet or switchMultilevelSet command is issued to channel 0 or to an INPUT channel, then the levels of all INPUT channels may be incorrectly reported as zero. Incorrect reports will persist until there is a change to the input voltages that is greater than the 'input change threshold' defined by Paramter #43. To avoid this issue, this device handler does not send basicSet or switchMultilevelSet commands to channels in INPUT mode.
@@ -170,10 +190,10 @@ There are two potential bugs in firmware 25.25, which this device handler attemp
 
 ## References
  Some useful links relevant to the development of this device handler:
-* Fibaro RGBW Controller Z-Wave certification information: (http://products.z-wavealliance.org/products/1054)
-* Color Control Capability: https://community.smartthings.com/t/capability-color-control-color-attribute-command-ambiguous-incorrectly-documented-and-or-improperly-used-in-dths/58018/23
-* Using the Switch Color Command Class: https://community.smartthings.com/t/color-switch-z-wave-command-class/19300
-* RGB-RGBW colorMap conversion: http://stackoverflow.com/questions/21117842/converting-an-rgbw-color-to-a-standard-rgb-hsb-rappresentation
+* [Fibaro RGBW Controller Z-Wave certification information](http://products.z-wavealliance.org/products/1054)
+* [Color Control Capability](https://community.smartthings.com/t/capability-color-control-color-attribute-command-ambiguous-incorrectly-documented-and-or-improperly-used-in-dths/58018/23)
+* [Using the Switch Color Command Class](https://community.smartthings.com/t/color-switch-z-wave-command-class/19300)
+* [RGB-RGBW colorMap conversion](http://stackoverflow.com/questions/21117842/converting-an-rgbw-color-to-a-standard-rgb-hsb-rappresentation)
 
 ## License
 
