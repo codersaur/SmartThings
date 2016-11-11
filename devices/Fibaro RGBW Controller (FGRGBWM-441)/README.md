@@ -21,7 +21,11 @@ This SmartThings device handler is written for the Fibaro RGBW Controller (FGRGB
 
 ### Screenshots:
 
-![Color Shortcuts](https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_color_shortcuts.png)
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgbw.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgb_plus_input.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_four_inputs.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_power_energy2.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_color_shortcuts.png" width="200">
 
 ## Installation
 To install this device handler:
@@ -33,20 +37,49 @@ To install this device handler:
 3. Configure your device instance to use the device handler, then edit the device settings in the SmartThings GUI.
 
 #### Example Use Cases
-###### A four-channel RGBW LED strip:
-...
+##### Four-channel RGBW LED strip:
+By default, the device handler is set up for use with a four-channel RGBW LED strip.
 
-###### A three-channel RGB LED strip, plus a 0-10V analog sensor input:
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgbw.png" width="150">
+
+##### Three-channel RGB LED strip, plus a 0-10V analog sensor input:
+
 For this use case, it is recommended to use Channel #1 as Red, Channel #2 as Green, Channel #3 as Blue, and Channel #4 as the analog input.
 
-In the device handler code, you will want to comment out the tiles for ...
+In the device handler code, edit the tiles section to comment out `"switchWhite", "levelWhiteSlider", "levelWhiteTile",` and uncomment `"switchCh4ReadOnly", "ch4Label", "levelCh4Tile",`. You can also comment out the built-in program shortcut tiles as these will not function in this configuration.
 
-In the device settings you will want to configure as follows:
+In the device settings, configure the channel mappings so that Channel #4 maps to `Input`.
 
-###### Two single-channel output loads, and two 0-10V analog sensor inputs:
-...
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_rgb_plus_input.png" width="400">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_rgb_plus_in.png" width="200">
 
-###### Four 0-10V analog sensor inputs:
+##### Two single-channel output loads, and two 0-10V analog sensor inputs:
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_two_out_two_in.png" width="200">
+
+In the device handler code, edit the tiles section to comment out the blue and white channels:
+
+    "switchBlue","levelBlueSlider", "levelBlueTile",
+    "switchWhite", "levelWhiteSlider", "levelWhiteTile",
+    
+and uncomment Ch3 and Ch4 inputs:
+
+    "switchCh3ReadOnly", "ch3Label", "levelCh3Tile",
+    "switchCh4ReadOnly", "ch4Label", "levelCh4Tile",
+    
+You can also comment out the built-in program shortcut tiles as these will not function in this configuration.
+
+In the device settings, configure the channel mappings so that Channels #3 & #4 map to `Input`, and configure Parameter #14 so that Channels #1 & #2 are set to an `OUT` mode, and Channels #3 & #4 are set to `8. IN....`
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_two_out_two_in.png" width="400">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/settings_params_two_out_two_in.png" width="200">
+
+The SmartThings GUI should end up looking like the following:
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgb_plus_input.png" width="200">
+
+
+##### Four 0-10V analog sensor inputs:
 ...
 
 ## Physical Device Notes:
