@@ -68,7 +68,7 @@ metadata {
         }
 
         // Color Channel attributes and commands:
-        ["Red", "Green", "Blue"].each { c ->
+        ["Red", "Green", "Blue", "White"].each { c ->
             attribute "switch${c}", "enum", ["on", "off"]
             attribute "level${c}", "number"
             command "on${c}"
