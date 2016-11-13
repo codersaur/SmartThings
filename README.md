@@ -53,12 +53,18 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  
 ####Device Handler Installation Procedure
 
-1. Within the SmartThings IDE, click '*My Device Handlers*', then '*+ Create New Device Handler*'. 
+1. Within the SmartThings IDE, click on '*My Device Handlers*' at the top, then the '*+ Create New Device Handler*' button. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
 3. Click '*Create*', then '*Publish*' *(For Me)*.
-4. If your device is already connected to your SmartTHings hub, you will need to change the device type using the SmartThings IDE. From the '*My Devices*' tab, click the relevent device, then '*Edit*'. Change the '*Type*' using the drop-down box, custom devices will be near the bottom of the list. 
 
-  
+When you add new devices, SmartThings will automatically select the device handler with the closest-matching *fingerprint*. However, this process is not perfect and it often fails to select the custom device handler that you might want. You may also have pre-existing devices that you want to have use the new device handler. In these cases, you need to change the device type of each device instance from the IDE:
+
+4. Within the SmartThings IDE, click on '*My Devices*' at the top to list all your devices.
+5. Click on the appropriate device to bring up its properties, then click the '*Edit*' button at the bottom.
+6. Change the '*Type*' using the drop-down box (custom devices will be near the bottom of the list).
+7. Hit the '*Update*' button at the bottom.
+8. In the SmartThings app on your phone, navigate to the device and edit its settings. Review each setting to ensure it has a suitable value, then hit '*Done*'. (This will trigger the update() command and ensure the device instance is fully configured for use with the new device handler).
+
 ##License
 
 
