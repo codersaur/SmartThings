@@ -966,7 +966,8 @@ def configure() {
 
     // Association Groups:
     // TODO: Enable other association groups to be edited from the GUI.
-    cmds << zwave.associationV2.associationSet(groupingIdentifier:5, nodeId:[zwaveHubNodeId]).format() // The SmartThings hub (controller) must be in Group #5.
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier:5, nodeId: []).format() // Remove all nodes from Association Group #5 (in case there's a rouge nodeId).
+    cmds << zwave.associationV2.associationSet(groupingIdentifier:5, nodeId:[zwaveHubNodeId]).format() // Add the SmartThings hub (controller) to Association Group #5.
 
     log.info "${device.displayName}: configure(): Device Parameters are being updated. It is recommended to power-cycle the Fibaro device once completed."
 

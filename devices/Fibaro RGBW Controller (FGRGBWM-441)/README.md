@@ -172,6 +172,7 @@ There are two known bugs in firmware 25.25, which this device handler attempts t
  * on(): Restores saved levels of channels, but if all saved levels are zero, then all channels are set to 100%.
  * onChX(): If the saved level is zero, then the channel will be set to 100%.
  * installed(): state variables are pre-populated.
+ * configure(): Removes all nodes from association group #5 before re-adding the hub's ID.
 
 #### 2016-11-08: v0.01
  * Added support for channels in IN/OUT modes.
