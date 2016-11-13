@@ -3,11 +3,11 @@ https://github.com/codersaur/SmartThings
 
 Copyright (c) 2016 [David Lomas](https://github.com/codersaur)
 
-##Overview
+## Overview
 
 This repository contains device handlers and SmartApps for use with Samsung's [SmartThings](http://www.smartthings.com) home automation platform.
 
-### SmartApps
+## SmartApps
 
 * [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/Evohome):
  - This SmartApp connects your Honeywell Evohome System to SmartThings.
@@ -16,16 +16,16 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 * [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/InfluxDB%20Logger):
  - This SmartApp logs device states to an [InfluxDB](https://influxdata.com/) database.
 
-#### SmartApp Installation Procedure
+### SmartApp Installation Procedure
 
 1. Within the SmartThings IDE, click '*My SmartApps*', then '*+ New SmartApp*'. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
 3. Click '*Create*', and then '*Publish*' *(For Me)*.
-4. Now using the SmartThings smartphone app, navigate to the '*Marketplace*', select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
+4. Using the SmartThings app on your phone, navigate to the '*Marketplace*', select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
 5. Select the new SmartApp, complete the configuraiton options and press '*Done*'.
 
   
-### Device Handlers
+## Device Handlers
 
 * [Aeon Home Energy Meter (GEN2 - UK - 1 Clamp)](https://github.com/codersaur/SmartThings/tree/master/devices/Aeon%20Home%20Energy%20Meter%20(GEN2%20-%20UK%20-%201%20Clamp)):
  - This device handler is written specifically for the Aeon Home Energy Meter Gen2 UK version, with a single clamp.
@@ -51,15 +51,23 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
-####Device Handler Installation Procedure
+### Device Handler Installation Procedure
 
-1. Within the SmartThings IDE, click '*My Device Handlers*', then '*+ Create New Device Handler*'. 
+1. Within the SmartThings IDE, click on '*My Device Handlers*' at the top, then the '*+ Create New Device Handler*' button. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
 3. Click '*Create*', then '*Publish*' *(For Me)*.
-4. If your device is already connected to your SmartTHings hub, you will need to change the device type using the SmartThings IDE. From the '*My Devices*' tab, click the relevent device, then '*Edit*'. Change the '*Type*' using the drop-down box, custom devices will be near the bottom of the list. 
 
-  
-##License
+ When you add new devices, SmartThings will automatically select the device handler with the closest-matching *fingerprint*. However, this process is not perfect and it often fails to select the desired device handler. You may also have pre-existing devices that you want to have use the new device handler. In these cases, you need to change the device type of each device instance from the IDE:
+
+4. Within the SmartThings IDE, click on '*My Devices*' at the top to list all your devices.
+5. Click on the appropriate device to bring up its properties, then click the '*Edit*' button at the bottom.
+6. Change the '*Type*' using the drop-down box (custom devices will be near the bottom of the list).
+7. Hit the '*Update*' button at the bottom.
+8. **IMPORTANT:** In the SmartThings app on your phone, navigate to the device (you should the GUI has updated to reflect the new tiles configuration). Press the gear icon to edit the device's settings and review each setting to ensure it has a suitable value, then press '*Done*'. (This will trigger the *update()* command and ensure the device instance is fully initialised and ready for use with the new device handler).
+ 
+ **Note:** Android users may encounter some errors in the SmartThings app after a device type has been changed. This can usually be resolved by completely closing the SmartThings app and restarting it.
+
+## License
 
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
