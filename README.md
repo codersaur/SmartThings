@@ -21,7 +21,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 1. Within the SmartThings IDE, click '*My SmartApps*', then '*+ New SmartApp*'. 
 2. Select the '*From Code*' tab and paste in the contents of the relevant groovy file.
 3. Click '*Create*', and then '*Publish*' *(For Me)*.
-4. Now using the SmartThings smartphone app, navigate to the '*Marketplace*', select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
+4. Using the SmartThings app on your phone, navigate to the '*Marketplace*', select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list. You should see the new SmartApp available for installation.
 5. Select the new SmartApp, complete the configuraiton options and press '*Done*'.
 
   
@@ -63,7 +63,9 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 5. Click on the appropriate device to bring up its properties, then click the '*Edit*' button at the bottom.
 6. Change the '*Type*' using the drop-down box (custom devices will be near the bottom of the list).
 7. Hit the '*Update*' button at the bottom.
-8. IMPORTANT: In the SmartThings app on your phone, navigate to the device (you should the GUI has updated to reflect the new tiles configuraiton). Press the gear icon to edit the device's settings and review each setting to ensure it has a suitable value, then press '*Done*'. (This will trigger the update() command and ensure the device instance is fully configured for use with the new device handler).
+8. **IMPORTANT:** In the SmartThings app on your phone, navigate to the device (you should the GUI has updated to reflect the new tiles configuration). Press the gear icon to edit the device's settings and review each setting to ensure it has a suitable value, then press '*Done*'. (This will trigger the *update()* command and ensure the device instance is fully initialised and ready for use with the new device handler).
+ 
+ **Note:** Android users may encounter some errors in the SmartThings app after a device type has been changed. This can usually be resolved by completely closing the SmartThings app and restarting it.
 
 ## License
 
