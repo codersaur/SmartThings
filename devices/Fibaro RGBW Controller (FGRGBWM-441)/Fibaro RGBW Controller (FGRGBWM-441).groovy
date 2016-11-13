@@ -3,7 +3,7 @@
  *
  *  SmartThings Device Handler for: Fibaro RGBW Controller EU v2.x (FGRGBWM-441)
  *
- *  Version: 0.01 (2016-11-08)
+ *  Version: 0.02 (2016-11-13)
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)
  *
@@ -601,7 +601,7 @@ metadata {
                 options: ["0" : "0: Illumination colour set to white",
                           "1" : "1: Last set colour is memorised"]
 
-            input name: "configParam72", type: "number", range: "1-10", defaultValue: "1", required: true, displayDuringSetup: false,
+            input name: "configParam72", type: "number", range: "1..10", defaultValue: "1", required: true, displayDuringSetup: false,
                 title: "#72: Start predefined (RGBW) program:\n[Default: 1]\n" +
                        " - 1-10: animation program number"
 
@@ -870,9 +870,9 @@ def installed() {
     state.debug = true
     state.installedAt = now()
     state.lastReset = new Date().format("YYYY/MM/dd \n HH:mm:ss", location.timeZone)
-    state.channelMapping = []
-    state.channelThresholds = []
-    state.channelModes = []
+    state.channelMapping = [null, "Red", "Green", "Blue", "White"]
+    state.channelThresholds = [null,1,1,1,1]
+    state.channelModes = [null,1,1,1,1]
 }
 
 /**
@@ -978,20 +978,35 @@ def configure() {
  *  Capability-related Commands:
  **********************************************************************/
 
-/**
- *  on() - Turn the switch on. [Switch Capability]
- *
- *  Only sends commands to RGBW/OUT channels to avoid altering the levels of INPUT channels.
- **/
-def on() {
-    log.info "${device.displayName}: on()"
+ /**
+  *  on() - Turn the switch on. [Switch Capability]
+  *
+  *  Only sends commands to RGBW/OUT channels to avoid altering the levels of INPUT channels.
+  **/
+ def on() {
+     log.info "${device.displayName}: on()"
 
-    def cmds = []
-    (1..4).each { i ->
-        if ( 8 != state.channelModes[i] ) { cmds << onChX(i)}
-    }
-    return cmds
-}
+     def cmds = []
+     def newLevel = 0
+     def isAnyOn = false
+
+     (1..4).each { channel ->
+         // If there is a saved level which is not zero, then apply the saved level:
+         newLevel = device.latestValue("savedLevelCh${channel}") ?: -1
+         if (newLevel.toInteger() > 0) {
+             cmds << setLevelChX(newLevel.toInteger(), channel)
+             isAnyOn = true
+         }
+     }
+
+     if (!isAnyOn) { // However, if none of the channels were turned on, turn them all on.
+         (1..4).each { channel ->
+             if ( 8 != state.channelModes[channel] ) { cmds << onChX(channel)}
+         }
+     }
+
+     return cmds
+ }
 
 /**
  *  off() - Turn the switch off. [Switch Capability]
@@ -1574,7 +1589,7 @@ private onChX(channel) {
     }
     else {
         def newLevel =  device.latestValue("savedLevelCh${channel}") ?: 100
-        newLevel = Math.round(newLevel.toInteger() * 99 / 100 ) // scale level for switchMultilevelSet.
+        newLevel =  ( 0 == newLevel.toInteger() ) ? 99 : Math.round(newLevel.toInteger() * 99 / 100 ) // scale level for switchMultilevelSet.
         cmds << zwave.multiChannelV3.multiChannelCmdEncap(destinationEndPoint: (channel + 1) ).encapsulate(zwave.switchMultilevelV2.switchMultilevelSet(value: newLevel.toInteger())).format() // Endpoint = channel + 1
         sendEvent(name: "savedLevelCh${channel}", value: null) // Wipe savedLevel.
         sendEvent(name: "activeProgram", value: 0) // Wipe activeProgram.

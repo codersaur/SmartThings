@@ -39,13 +39,13 @@ To install the device handler:
 
 3. From the SmartThings app, edit the device settings to suit the channel configuration in use (see the use cases below) and hit _Done_. [It is possible to verify the device parameters from the Live Logging tab in the SmartThings IDE.]
 
-4. Once the settings have been applied, power-cycle the Fibaro RGBW Controller. 
+4. Once the settings have been applied, power-cycle the Fibaro RGBW Controller.
 
 ### Example Use Cases
 
 #### Four-channel RGBW LED strip:
 
-By default, the device handler is configured for use with a four-channel RGBW LED strip, so there is no need to edit the device handler code. The SmartThings GUI should look like the following: 
+By default, the device handler is configured for use with a four-channel RGBW LED strip, so there is no need to edit the device handler code. The SmartThings GUI should look like the following:
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/screenshot_rgbw.png" width="200">
 
@@ -60,7 +60,7 @@ In the device handler code, edit the tiles section to comment out the _White_ ch
 Then uncomment the read-only input channel for Ch4:
 
     "switchCh4ReadOnly", "ch4Label", "levelCh4Tile",
-    
+
 The _Built-in Program Shortcut_ tiles can also be commented out as these will not function in this configuration.
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_rgb_plus_input.png" width="400">
@@ -86,19 +86,19 @@ In the device handler code, edit the tiles section to comment out all of the col
     //"switchGreen","levelGreenSlider", "levelGreenTile",
     //"switchBlue","levelBlueSlider", "levelBlueTile",
     //"switchWhite", "levelWhiteSlider", "levelWhiteTile",
-    
+
 Uncomment the lines for the Ch1 and Ch2 OUT channels, and the Ch3 and Ch4 input tiles:
 
     // OUT Channels:
     "switchCh1","levelCh1Slider", "levelCh1Tile",
     "switchCh2","levelCh2Slider", "levelCh2Tile",
     ...
-    
+
     // INPUT Channels (read-only, label replaced slider control):
     ...
     "switchCh3ReadOnly", "ch3Label", "levelCh3Tile",
     "switchCh4ReadOnly", "ch4Label", "levelCh4Tile",
-    
+
 The _Built-in Program Shortcut_ and _Color Shortcut_ tiles can also be commented out as these will not function in this configuration.
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_two_out_two_in.png" width="400">
@@ -123,7 +123,7 @@ In the device handler code, edit the tiles section to comment out the RGBW chann
     //"switchGreen","levelGreenSlider", "levelGreenTile",
     //"switchBlue","levelBlueSlider", "levelBlueTile",
     //"switchWhite", "levelWhiteSlider", "levelWhiteTile",
-        
+
 Uncomment the lines for all input tiles:
 
     // INPUT Channels (read-only, label replaced slider control):
@@ -131,12 +131,12 @@ Uncomment the lines for all input tiles:
     "switchCh2ReadOnly", "ch2Label", "levelCh2Tile",
     "switchCh3ReadOnly", "ch3Label", "levelCh3Tile",
     "switchCh4ReadOnly", "ch4Label", "levelCh4Tile",
-    
+
 Additionally, comment out the _Energy and Power_ tiles, the _Built-in Program Shortcut_ tiles, and the _Color Shortcut Tiles_ sections as none of these will function in this configuration.
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)/screenshots/tiles_code_four_inputs.png" width="400">
 
-In the device settings, configure the channel mappings so that all channels map to `Input`. It is possible to alter the threshold values too, which control the level at which each input is considered "ON". 
+In the device settings, configure the channel mappings so that all channels map to `Input`. It is possible to alter the threshold values too, which control the level at which each input is considered "ON".
 
 Configure Parameter #14 so that all channels are set to `8. IN - ANALOG 0-10V (SENSOR)`
 
@@ -153,7 +153,7 @@ The SmartThings GUI should end up looking like the following:
 Some general notes relating to the Fibaro RGBW Controller:
 
 * Parameter #14 is used to control the mode of each channel. When editing this parameter keep in mind:
- * If using RGBW modes, all channels must have exactly the same mode. 
+ * If using RGBW modes, all channels must have exactly the same mode.
  * Mixing RGBW channels with IN/OUT channels at the same time will cause weird behaviour, for example the IN channels may report incorrect levels (as the INPUT is treated as a switch input for the RGBW channels).
   * If you want to use one or more channels as analog inputs, then the remaining channels must be set to OUT mode.
   * If using IN/OUT channel modes, the OUT channels can still be mapped to colours, but the built-in "RGBW programs" will have no effect.
@@ -166,6 +166,12 @@ There are two known bugs in firmware 25.25, which this device handler attempts t
 * BUG: If a basicSet or switchMultilevelSet command is issued to channel 0 or to an INPUT channel, then the levels of all INPUT channels may be incorrectly reported as zero. Incorrect reports will persist until there is a change to the input voltages that is greater than the 'input change threshold' defined by Paramter #43. To avoid this issue, this device handler does not send basicSet or switchMultilevelSet commands to channels in INPUT mode.
 
 ## Version History:
+
+#### 2016-11-13: v0.02
+ * Fix to preferences definition to prevent crashes on Android.
+ * on(): Restores saved levels of channels, but if all saved levels are zero, then all channels are set to 100%.
+ * onChX(): If the saved level is zero, then the channel will be set to 100%.
+ * installed(): state variables are pre-populated.
 
 #### 2016-11-08: v0.01
  * Added support for channels in IN/OUT modes.
