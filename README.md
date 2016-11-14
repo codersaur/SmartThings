@@ -30,7 +30,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 2. Select '*SmartApps*', then browse to '*My Apps*' at the bottom of the list.
 3. Select the new SmartApp, complete the configuration options and press '*Done*'.
 
-**Note:** Some SmartApps may support multiple instances, whereas other may only allow one instance.
+**Note:** Some SmartApps may support multiple instances, whereas others may only allow one instance.
 
 ## Device Handlers
 
