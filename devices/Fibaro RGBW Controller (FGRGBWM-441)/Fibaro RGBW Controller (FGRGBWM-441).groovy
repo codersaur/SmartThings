@@ -3,7 +3,7 @@
  *
  *  SmartThings Device Handler for: Fibaro RGBW Controller EU v2.x (FGRGBWM-441)
  *
- *  Version: 0.02 (2016-11-13)
+ *  Version: 0.03 (2016-11-14)
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)
  *
@@ -611,6 +611,27 @@ metadata {
                           "1" : "1: Start favourite program"]
 
         }
+		
+        section { // ASSOCIATION GROUPS:
+            input type: "paragraph", element: "paragraph",
+                title: "ASSOCIATION GROUPS:", description: "Enter a comma-delimited list of node IDs for each association group.\n" +
+                    "Node IDs must be in decimal format (E.g.: 27,155, ... ).\n" +
+                    "Each group allows a maximum of five devices.\n"
+
+            input name: "configAssocGroup01", type: "text", defaultValue: "", displayDuringSetup: false,
+                title: "Association Group #1:"
+
+            input name: "configAssocGroup02", type: "text", defaultValue: "", displayDuringSetup: false,
+                title: "Association Group #2:"
+
+            input name: "configAssocGroup03", type: "text", defaultValue: "", displayDuringSetup: false,
+                title: "Association Group #3:"
+
+            input name: "configAssocGroup04", type: "text", defaultValue: "", displayDuringSetup: false,
+                title: "Association Group #4:"
+
+        }
+
     }
 }
 
@@ -965,11 +986,18 @@ def configure() {
     cmds << zwave.configurationV2.configurationSet(parameterNumber: 73, size: 1, configurationValue: [configParam73.toInteger()]).format()
 
     // Association Groups:
-    // TODO: Enable other association groups to be edited from the GUI.
-    cmds << zwave.associationV2.associationRemove(groupingIdentifier:5, nodeId: []).format() // Remove all nodes from Association Group #5 (in case there's a rouge nodeId).
-    cmds << zwave.associationV2.associationSet(groupingIdentifier:5, nodeId:[zwaveHubNodeId]).format() // Add the SmartThings hub (controller) to Association Group #5.
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier: 1, nodeId: []).format()
+    cmds << zwave.associationV2.associationSet(groupingIdentifier: 1, nodeId: parseAssocGroup(configAssocGroup01,5)).format()
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier: 2, nodeId: []).format()
+    cmds << zwave.associationV2.associationSet(groupingIdentifier: 2, nodeId: parseAssocGroup(configAssocGroup02,5)).format()
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier: 3, nodeId: []).format()
+    cmds << zwave.associationV2.associationSet(groupingIdentifier: 3, nodeId: parseAssocGroup(configAssocGroup03,5)).format()
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier: 4, nodeId: []).format()
+    cmds << zwave.associationV2.associationSet(groupingIdentifier: 4, nodeId: parseAssocGroup(configAssocGroup04,5)).format()
+    cmds << zwave.associationV2.associationRemove(groupingIdentifier: 5, nodeId: []).format()
+    cmds << zwave.associationV2.associationSet(groupingIdentifier: 5, nodeId: [zwaveHubNodeId]).format() // Add the SmartThings hub (controller) to Association Group #5.
 
-    log.info "${device.displayName}: configure(): Device Parameters are being updated. It is recommended to power-cycle the Fibaro device once completed."
+    log.warn "${device.displayName}: configure(): Device Parameters are being updated. It is recommended to power-cycle the Fibaro device once completed."
 
     return delayBetween(cmds, 500) + getConfigReport()
 }
@@ -1431,6 +1459,31 @@ private intToUnsignedByteArray(number, size)  {
         while (uBA.size() > size) { uBA = uBA.drop(1) } // Trim leading bytes if too long. (takeRight() is not available)
         while (uBA.size() < size) { uBA = [0] + uBA } // Pad with leading zeros if too short.
         return uBA
+    }
+}
+
+/**
+ * parseAssocGroup(string, maxNodes)
+ *
+ *  Converts a comma-delimited string into a list of integers.
+ *  Checks that all elements are integer numbers, and removes any that are not.
+ *  Checks that the final list contains no more than maxNodes.
+ */
+private parseAssocGroup(string, maxNodes) {
+    if (state.debug) log.trace "${device.displayName}: parseAssocGroup(): Translating string: ${string}"
+
+    if (string) {
+        def nodeList = string.split(',')
+        nodeList = nodeList.collect { node ->
+            if (node.isInteger()) { node.toInteger() }
+            else { log.warn "${device.displayName}: parseAssocGroup(): Cannot parse: ${node}"}
+        }
+        nodeList = nodeList.findAll() // findAll() removes the nulls.
+        if (nodeList.size() > maxNodes) { log.warn "${device.displayName}: parseAssocGroup(): Number of nodes is greater than ${maxNodes}!" }
+        return nodeList.take(maxNodes)
+    }
+    else {
+        return []
     }
 }
 
