@@ -15,7 +15,7 @@ This SmartApp logs SmartThings device attributes to an [InfluxDB](https://influx
 ## Installation
 Follow [these instructions](https://github.com/codersaur/SmartThings#smartapp-installation-procedure) to install the SmartApp in the SmartThings IDE. However, before publishing the code in the IDE, edit the _getGroupName()_ command (at the bottom of the code) to add the Group IDs for your SmartThings instance. These can be found from the _'My Locations'_ tab in the SmartThings IDE.
 
-For a more information about installing InfluxDB, Grafana, and this SmartApp, [see this guide](http://codersaur.com/2016/04/smartthings-data-visualisation-using-influxdb-and-grafana/).
+For more information about installing InfluxDB, Grafana, and this SmartApp, [see this guide](http://codersaur.com/2016/04/smartthings-data-visualisation-using-influxdb-and-grafana/).
 
 ## Usage
 SmartApp settings:
