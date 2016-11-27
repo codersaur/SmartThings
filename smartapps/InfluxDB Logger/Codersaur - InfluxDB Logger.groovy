@@ -93,6 +93,7 @@ preferences {
 		input "batteries", "capability.battery", title: "Batteries", multiple: true, required: false
 		input "beacons", "capability.beacon", title: "Beacons", multiple: true, required: false
 		input "cos", "capability.carbonMonoxideDetector", title: "Carbon  Monoxide Detectors", multiple: true, required: false
+		input "co2s", "capability.carbonDioxideMeasurement", title: "Carbon Dioxide Sensors", multiple: true, required: false
 		input "colors", "capability.colorControl", title: "Color Controllers", multiple: true, required: false
 		input "contacts", "capability.contactSensor", title: "Contact Sensors", multiple: true, required: false
 		input "doorsControllers", "capability.doorControl", title: "Door Controllers", multiple: true, required: false
@@ -107,6 +108,7 @@ preferences {
 		input "sleepSensors", "capability.sleepSensor", title: "Sleep Sensors", multiple: true, required: false
 		input "smokeDetectors", "capability.smokeDetector", title: "Smoke Detectors", multiple: true, required: false
 		input "peds", "capability.stepSensor", title: "Pedometers", multiple: true, required: false
+		input "spls", "capability.soundPressureLevel", title: "Noise Level Sensors", multiple: true, required: false
 		input "switches", "capability.switch", title: "Switches", multiple: true, required: false
 		input "switchLevels", "capability.switchLevel", title: "Switch Levels", multiple: true, required: false
 		input "temperatures", "capability.temperatureMeasurement", title: "Temperature Sensors", multiple: true, required: false
@@ -185,6 +187,7 @@ def updated() {
 	state.deviceAttributes << [ devices: 'batteries', attributes: ['battery']]
 	state.deviceAttributes << [ devices: 'beacons', attributes: ['presence']]
 	state.deviceAttributes << [ devices: 'cos', attributes: ['carbonMonoxide']]
+	state.deviceAttributes << [ devices: 'co2s', attributes: ['carbonDioxide']]
 	state.deviceAttributes << [ devices: 'colors', attributes: ['hue','saturation','color']]
 	state.deviceAttributes << [ devices: 'contacts', attributes: ['contact']]
 	state.deviceAttributes << [ devices: 'doorsControllers', attributes: ['door']]
@@ -199,6 +202,7 @@ def updated() {
 	state.deviceAttributes << [ devices: 'presences', attributes: ['presence']]
 	state.deviceAttributes << [ devices: 'sleepSensors', attributes: ['sleeping']]
 	state.deviceAttributes << [ devices: 'smokeDetectors', attributes: ['smoke']]
+	state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
 	state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
 	state.deviceAttributes << [ devices: 'switchLevels', attributes: ['level']]
 	state.deviceAttributes << [ devices: 'temperatures', attributes: ['temperature']]
