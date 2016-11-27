@@ -7,7 +7,7 @@
  *
  *  Date: 2016-11-27
  *
- *  Version: 1.08
+ *  Version: 1.09
  *
  *  Description:
  *   Log SmartThings device states to InfluxDB.
@@ -19,8 +19,16 @@
  *
  *  Version History:
  *
+ *   2016-11-27: v1.09
+ *    - Added support for: 
+ *       Shock Sensors (capability.shockSensor)
+ *       Signal Strength Meters (capability.signalStrength)
+ *       Sound Sensors (capability.soundSensor)
+ *       Tamper Alerts (capability.tamperAlert)
+ *       Window Shades (capability.windowShade)
+ *
  *   2016-11-27: v1.08
- *    - Added support for Sound Pressure Level Sensors.
+ *    - Added support for Sound Pressure Level Sensors (capability.soundPressureLevel).
  *   
  *   2016-10-30: v1.07
  *    - Added support for: 
@@ -136,11 +144,15 @@ preferences {
         input "powerMeters", "capability.powerMeter", title: "Power Meters", multiple: true, required: false
         input "presences", "capability.presenceSensor", title: "Presence Sensors", multiple: true, required: false
         input "pressures", "capability.sensor", title: "Pressure Sensors", multiple: true, required: false
+        input "shockSensors", "capability.shockSensor", title: "Shock Sensors", multiple: true, required: false
+        input "signalStrengthMeters", "capability.signalStrength", title: "Signal Strength Meters", multiple: true, required: false
         input "sleepSensors", "capability.sleepSensor", title: "Sleep Sensors", multiple: true, required: false
         input "smokeDetectors", "capability.smokeDetector", title: "Smoke Detectors", multiple: true, required: false
+        input "soundSensors", "capability.soundSensor", title: "Sound Sensors", multiple: true, required: false
         input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
-		input "switches", "capability.switch", title: "Switches", multiple: true, required: false
+        input "switches", "capability.switch", title: "Switches", multiple: true, required: false
         input "switchLevels", "capability.switchLevel", title: "Switch Levels", multiple: true, required: false
+        input "tamperAlerts", "capability.tamperAlert", title: "Tamper Alerts", multiple: true, required: false
         input "temperatures", "capability.temperatureMeasurement", title: "Temperature Sensors", multiple: true, required: false
         input "thermostats", "capability.thermostat", title: "Thermostats", multiple: true, required: false
         input "threeAxis", "capability.threeAxis", title: "Three-axis (Orientation) Sensors", multiple: true, required: false
@@ -149,6 +161,7 @@ preferences {
         input "valves", "capability.valve", title: "Valves", multiple: true, required: false
         input "volts", "capability.voltageMeasurement", title: "Voltage Meters", multiple: true, required: false
         input "waterSensors", "capability.waterSensor", title: "Water Sensors", multiple: true, required: false
+        input "windowShades", "capability.windowShade", title: "Window Shades", multiple: true, required: false
     }
 
 }
@@ -237,11 +250,15 @@ def updated() {
     state.deviceAttributes << [ devices: 'powerMeters', attributes: ['power','voltage','current','powerFactor']]
     state.deviceAttributes << [ devices: 'presences', attributes: ['presence']]
     state.deviceAttributes << [ devices: 'pressures', attributes: ['pressure']]
+    state.deviceAttributes << [ devices: 'shockSensors', attributes: ['shock']]
+    state.deviceAttributes << [ devices: 'signalStrengthMeters', attributes: ['lqi','rssi']]
     state.deviceAttributes << [ devices: 'sleepSensors', attributes: ['sleeping']]
     state.deviceAttributes << [ devices: 'smokeDetectors', attributes: ['smoke']]
+    state.deviceAttributes << [ devices: 'soundSensors', attributes: ['sound']]
     state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
-	state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
+    state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
     state.deviceAttributes << [ devices: 'switchLevels', attributes: ['level']]
+    state.deviceAttributes << [ devices: 'tamperAlerts', attributes: ['tamper']]
     state.deviceAttributes << [ devices: 'temperatures', attributes: ['temperature']]
     state.deviceAttributes << [ devices: 'thermostats', attributes: ['temperature','heatingSetpoint','coolingSetpoint','thermostatSetpoint','thermostatMode','thermostatFanMode','thermostatOperatingState','thermostatSetpointMode','scheduledSetpoint','optimisation','windowFunction']]
     state.deviceAttributes << [ devices: 'threeAxis', attributes: ['threeAxis']]
@@ -250,6 +267,7 @@ def updated() {
     state.deviceAttributes << [ devices: 'valves', attributes: ['contact']]
     state.deviceAttributes << [ devices: 'volts', attributes: ['voltage']]
     state.deviceAttributes << [ devices: 'waterSensors', attributes: ['water']]
+    state.deviceAttributes << [ devices: 'windowShades', attributes: ['windowShade']]
 
     // Configure Scheduling:
     state.softPollingInterval = settings.prefSoftPollingInterval.toInteger()
@@ -368,7 +386,7 @@ def handleModeEvent(evt) {
     def locationId = escapeStringForInfluxDB(location.id)
     def locationName = escapeStringForInfluxDB(location.name)
     def mode = '"' + escapeStringForInfluxDB(evt.value) + '"'
-	def data = "_stMode,locationId=${locationId},locationName=${locationName} mode=${mode}"
+    def data = "_stMode,locationId=${locationId},locationName=${locationName} mode=${mode}"
     postToInfluxDB(data)
 }
 
@@ -664,7 +682,7 @@ def logSystemProperties() {
     def locationId = '"' + escapeStringForInfluxDB(location.id) + '"'
     def locationName = '"' + escapeStringForInfluxDB(location.name) + '"'
 
-	// Location Properties:
+    // Location Properties:
     if (prefLogLocationProperties) {
         try {
             def tz = '"' + escapeStringForInfluxDB(location.timeZone.ID) + '"'
@@ -677,14 +695,14 @@ def logSystemProperties() {
             def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst}"
             postToInfluxDB(data)
         } catch (e) {
-        	log.error "${app.label}: LogSystemProperties(): Unable to log Location properties: ${e}"
+            log.error "${app.label}: LogSystemProperties(): Unable to log Location properties: ${e}"
         }
-	}
+    }
 
-	// Hub Properties:
+    // Hub Properties:
     if (prefLogHubProperties) {
-       	location.hubs.each { h ->
-        	try {
+        location.hubs.each { h ->
+            try {
                 def hubId = '"' + escapeStringForInfluxDB(h.id) + '"'
                 def hubName = '"' + escapeStringForInfluxDB(h.name) + '"'
                 def hubIP = '"' + escapeStringForInfluxDB(h.localIP) + '"'
@@ -699,11 +717,11 @@ def logSystemProperties() {
                 data += "status=${hubStatus},batteryInUse=${batteryInUse},uptime=${hubUptime},zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
                 postToInfluxDB(data)
             } catch (e) {
-        		log.error "${app.label}: LogSystemProperties(): Unable to log Hub properties: ${e}"
-        	}
-       	}
+                log.error "${app.label}: LogSystemProperties(): Unable to log Hub properties: ${e}"
+            }
+        }
 
-	}
+    }
 
 }
 
@@ -798,9 +816,9 @@ private escapeStringForInfluxDB(str) {
  **/
 private getGroupName(id) {
 
-	if (id == null) {return 'Home'}
-	else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Kitchen'}
-	else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Lounge'}
-	else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Office'}
-	else {return 'Unknown'}    
+    if (id == null) {return 'Home'}
+    else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Kitchen'}
+    else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Lounge'}
+    else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Office'}
+    else {return 'Unknown'}    
 }
