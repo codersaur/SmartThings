@@ -74,7 +74,7 @@
  *    - Headers and path are stored as state (to avoid recalculating on every event).
  * 
  *   2016-02-28: v1.00
- *    - Inital Version
+ *    - Initial Version.
  * 
  *  To Do:
  *
