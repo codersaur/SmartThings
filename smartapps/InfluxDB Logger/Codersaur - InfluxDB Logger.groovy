@@ -109,6 +109,8 @@ preferences {
         input "prefDatabaseHost", "text", title: "Host", defaultValue: "10.10.10.10", required: true
         input "prefDatabasePort", "text", title: "Port", defaultValue: "8086", required: true
         input "prefDatabaseName", "text", title: "Database Name", defaultValue: "", required: true
+        input "prefDatabaseUser", "text", title: "Database Username", defaultValue: "", required: false
+        input "prefDatabasePass", "text", title: "Database Password", defaultValue: "", required: false
     }
     
     section("Polling:") {
@@ -218,10 +220,26 @@ def updated() {
     state.databaseHost = settings.prefDatabaseHost
     state.databasePort = settings.prefDatabasePort
     state.databaseName = settings.prefDatabaseName
+    if (settings.prefDatabaseUser != null && settings.prefDatabaseUser != "") {
+        state.databaseUser = settings.prefDatabaseUser
+    } else {
+        state.databaseUser = null
+    }
+    if (settings.prefDatabasePass != null && settings.prefDatabasePass != "") {
+        state.databasePass = settings.prefDatabasePass
+    } else {
+        settings.prefDatabasePass = null
+    }
+    if (state.databaseUser != null && state.databasePass != null) {
+        def userpass = encodeCredentials(state.databaseUser, state.databasePass)
+    }
     
     state.path = "/write?db=${state.databaseName}"
     state.headers = [:] 
     state.headers.put("HOST", "${state.databaseHost}:${state.databasePort}")
+    if (userpass != null) {
+        state.headers.put("Authorization", userpass)
+    }
     state.headers.put("Content-Type", "application/x-www-form-urlencoded")
 
     // Build array of device collections and the attributes we want to report on for that collection:
@@ -775,6 +793,15 @@ def postToInfluxDB(data) {
  *  Helper Commands:
  **********************************************************************/
 
+private encodeCredentials(username, password){
+    log.debug "Encoding credentials"
+    def userpassascii = "${username}:${password}"
+    def userpass = "Basic " + userpassascii.encodeAsBase64().toString()
+    //log.debug "ASCII credentials are ${userpassascii}"
+    //log.debug "Credentials are ${userpass}"
+    return userpass
+}
+
 /**
  *  escapeStringForInfluxDB()
  *
@@ -822,3 +849,4 @@ private getGroupName(id) {
     else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Office'}
     else {return 'Unknown'}    
 }
+
