@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-11-27
+ *  Date: 2017-01-30
  *
- *  Version: 1.09
+ *  Version: 1.10
  *
  *  Description:
  *   Log SmartThings device states to InfluxDB.
@@ -18,6 +18,9 @@
  *   command code at the end of this file.
  *
  *  Version History:
+ *
+ *   2017-01-30: v1.10
+ *    - Fixed typo in postToInfluxDB().
  *
  *   2016-11-27: v1.09
  *    - Added support for: 
@@ -77,6 +80,8 @@
  *    - Initial Version.
  * 
  *  To Do:
+ *    - hubAction now supports a callback, so it should be possible to process the response.
+ *    - Add support for username and password.
  *
  *  License:
  *   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -756,7 +761,7 @@ def postToInfluxDB(data) {
 
     // For reference, code that could be used for WAN hosts:
     // This has the advantage of exposing the response.
-    // def url = "http://${state.databaseHost}:${state.databasePost}/write?db=${state.databaseName}" 
+    // def url = "http://${state.databaseHost}:${state.databasePort}/write?db=${state.databaseName}" 
     //    try {
     //      httpPost(url, data) { response ->
     //          if (response.status != 999 ) {
