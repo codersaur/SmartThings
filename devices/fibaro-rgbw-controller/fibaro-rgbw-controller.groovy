@@ -5,7 +5,7 @@
  *
  *  Version: 0.03 (2016-11-14)
  *
- *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)
+ *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller
  *
  *  Author: David Lomas (codersaur)
  *
@@ -14,7 +14,7 @@
  *  support the use of one or more of the controller's channels in IN/OUT mode.
  *
  *  For full information, including installation instructions, exmples, and version history, see:
- *   https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)
+ *   https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller
  *
  *  License:
  *   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except

@@ -9,11 +9,11 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 ## SmartApps
 
-* [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/Evohome):
+* [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/evohome-connect):
  - This SmartApp connects your Honeywell Evohome System to SmartThings.
  - Note, the Evohome Heating Zone device handler (below) must also be installed.
 
-* [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/InfluxDB%20Logger):
+* [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/influxdb-logger):
  - This SmartApp logs SmartThings device attributes to an [InfluxDB](https://influxdata.com/) database.
 
 ### SmartApp Installation Procedure
@@ -34,27 +34,27 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 ## Device Handlers
 
-* [Aeon Home Energy Meter (GEN2 - UK - 1 Clamp)](https://github.com/codersaur/SmartThings/tree/master/devices/Aeon%20Home%20Energy%20Meter%20(GEN2%20-%20UK%20-%201%20Clamp)):
+* [Aeon Home Energy Meter (GEN2 - UK - 1 Clamp)](https://github.com/codersaur/SmartThings/tree/master/devices/aeon-home-energy-meter):
  - This device handler is written specifically for the Aeon Home Energy Meter Gen2 UK version, with a single clamp.
  - It supports live reporting of energy, power, current, and voltage, as well as energy and cost statistics over multiple pre-defined periods.
 
-* [Evohome Heating Zone - BETA](https://github.com/codersaur/SmartThings/tree/master/devices/Evohome):
+* [Evohome Heating Zone - BETA](https://github.com/codersaur/SmartThings/tree/master/devices/evohome):
  - This device handler is required for the Evohome (Connect) SmartApp.
 
-* [Fibaro Dimmer 2 (FGD-212)](https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20Dimmer%202%20(FGD-212)):
+* [Fibaro Dimmer 2 (FGD-212)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2):
  - This device handler is written specifically for the Fibaro Dimmer 2 (FGD-212).
  - It extends hajar97's original device handler to suport Nightmode and fixes a number of issues.
  - Nightmode function: Nightmode forces the dimmer to switch on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the new Nightmode tile, and/or scheduled from the device settings.
  
-* [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/Fibaro%20RGBW%20Controller%20(FGRGBWM-441)):
+* [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller):
  - This device handler is written specifically for the Fibaro RGBW Controller (FGRGBWM-441).
  - It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode (i.e. analog sensor inputs).
  
-* [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/Philio%20Dual%20Relay%20(PAN04)):
+* [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/philio-dual-relay):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
-* [TKB Metering Switch (TZ88E-GEN5)](https://github.com/codersaur/SmartThings/tree/master/devices/TKB%20Metering%20Switch%20(TZ88E-GEN5)):
+* [TKB Metering Switch (TZ88E-GEN5)](https://github.com/codersaur/SmartThings/tree/master/devices/tkb-metering-switch):
  - This device handler is written specifically for the TKB Metering Switch (TZ88E-GEN5).
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
  
