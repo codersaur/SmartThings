@@ -1,6 +1,6 @@
 # InfluxDB Logger
 
-Copyright (c) 2016 [David Lomas](https://github.com/codersaur)
+Copyright (c) 2017 [David Lomas](https://github.com/codersaur)
 
 ## Overview
 
