@@ -27,6 +27,9 @@ SmartApp settings:
 
 ## Version History
 
+#### 2017-01-30: v1.10
+ * Fixed typo in postToInfluxDB().
+
 #### 2016-11-27: v1.09
  * Added support for more capabilities:
   * Shock Sensors (capability.shockSensor)
