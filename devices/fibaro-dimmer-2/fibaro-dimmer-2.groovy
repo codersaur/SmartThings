@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-10-11
+ *  Date: 2016-10-31
  *
- *  Version: 1.01
+ *  Version: 1.03
  *
  *  Description:
  *   - This device handler is written specifically for the Fibaro Dimmer 2 (FGD-212).
@@ -24,6 +24,13 @@
  *
  *  Version History:
  *
+ *   2016-10-31: v1.03
+ *    - Added event handlers for Crc16Encap, SensorMultilevelReport, ManufacturerSpecificReport, 
+ *      VersionReport, and FirmwareMdReport.
+ *
+ *   2016-10-24: v1.02
+ *    - Increased delay between ConfigurationSet commands to 500ms to improve reliability of sending parameters.
+ *
  *   2016-10-11: v1.01
  *    - Added Nightmode functionality.
  *    - dimmerEvents(): Fixed MeterGet requests after a switch or level state change.
@@ -39,6 +46,15 @@
  *    - Tiles: Added GetConfig button to retreive the current device settings (which are displayed in the debug log).
  *
  *  To Do:
+ *   - Port over all new coding standards from my Fibaro RGBW DTH.
+ *   - Fix behaviour of level attribute: I'm pretty sure it should be zero when the switch is off.
+ *       - Reseach the actual behaviour of the Fibaro RGBW and Dimmer 2 and then ask on ST Community.
+ *       - the Fibaro RGBW explicitly sends zero level values when switch is turned off. This is probably the best behaviour.
+ *       - If opinion is divided, maybe make this an option in the device handler settings (“Report zero levels if switch is off?” Boolean)
+ *   - Add in requests for ManufacturerSpecificReports, VersionReports, and FirmwareMdReports, maybe in updated() and configure().
+ *   - Review command class versions in parse() and ensure they align with z-wave alliance doc: http://products.z-wavealliance.org/products/1729/classes
+ *   - Add missing handler for command: MultiChannelCmdEncap(bitAddress: false, command: 1, commandClass: 32, destinationEndPoint: 0, parameter: [0], sourceEndPoint: 1)
+ *   - Optimise handler for: Crc16Encap
  *   - Display load errors, e.g. burnt out bulb warnings.
  *   - Settings/Preferences: Fix Association Groups (atm, it just puts the controller into the relevent group).
  *   - Update the device settings in ST UI when configuration reports are received.
@@ -648,8 +664,8 @@ def parse(String description) {
         //  COMMAND_CLASS_SCENE_ACTIVATION [0x2B: 1]
         //  COMMAND_CLASS_METER_V3 [0x32: 3]
         //  COMMAND_CLASS_CONFIGURATION [0x70: 1]
-        //  ...
-        def cmd = zwave.parse(description.replace("98C1", "9881"), [0x20: 1, 0x25: 1, 0x26: 3, 0x28: 1, 0x2B: 1, 0x30: 1, 0x32: 3, 0x70: 1, 0x72: 1, 0x73: 1, 0x85: 2, 0x90: 1, 0x98: 1, 0x9B: 1]) 
+        //  ...See: http://products.z-wavealliance.org/products/1729
+        def cmd = zwave.parse(description.replace("98C1", "9881"), [0x20: 1, 0x25: 1, 0x26: 3, 0x28: 1, 0x2B: 1, 0x30: 1, 0x31: 4, 0x32: 3, 0x70: 1, 0x72: 1, 0x73: 1, 0x85: 2, 0x90: 1, 0x98: 1, 0x9B: 1]) 
             // The purpose of the replace statement here is to fix a bug, see here: https://community.smartthings.com/t/wireless-wall-switch-zme-wallc-s-to-control-smartthings-devices-and-routines/24810/28
         if (cmd) {
             result = zwaveEvent(cmd)
@@ -744,6 +760,22 @@ def zwaveEvent(physicalgraph.zwave.commands.sceneactivationv1.SceneActivationSet
 }
 
 /**
+ *  COMMAND_CLASS_SENSOR_MULTILEVEL (0x31) : SensorMultilevelReport
+ *
+ *  Appears to be used to report power. Not sure if anything else...?
+ **/
+def zwaveEvent(physicalgraph.zwave.commands.sensormultilevelv4.SensorMultilevelReport cmd) {
+    if (state.debug) log.debug "${device.displayName}: zwaveEvent(): SensorMultilevelReport received: ${cmd}"
+    
+    if ( cmd.sensorType == 4 ) { // Instantaneous Power (Watts):
+        return createEvent(name: "power", value: cmd.scaledSensorValue, unit: "W")
+    }
+    else {
+    	log.warn "${device.displayName}: zwaveEvent(): SensorMultilevelReport with unhandled sensorType: ${cmd}"
+    }
+}
+
+/**
  *  COMMAND_CLASS_METER_V3 (0x32)
  *
  *  FGD-212 supports energy and power only. Will not report current, voltage, or power factor.
@@ -798,6 +830,27 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 }
 
 /**
+ *  COMMAND_CLASS_CRC16_ENCAP (0x56) : Crc16Encap
+ *
+ *  The CRC-16 Encapsulation Command Class is used to encapsulate a command with an additional CRC-16 checksum
+ *  to ensure integrity of the payload. The purpose for this command class is to ensure a higher integrity level
+ *  of payloads carrying important data
+ **/
+def zwaveEvent(physicalgraph.zwave.commands.crc16encapv1.Crc16Encap cmd) {
+    log.trace "${device.displayName}: Crc16Encap received: ${cmd}"
+    
+    def versions = [0x20: 1, 0x25: 1, 0x26: 3, 0x28: 1, 0x2B: 1, 0x30: 1, 0x31: 4, 0x32: 3, 0x70: 1, 0x72: 1, 0x73: 1, 0x85: 2, 0x90: 1, 0x98: 1, 0x9B: 1]
+    def version = versions[cmd.commandClass as Integer]
+    def ccObj = version ? zwave.commandClass(cmd.commandClass, version) : zwave.commandClass(cmd.commandClass)
+    def encapsulatedCommand = ccObj?.command(cmd.command)?.parse(cmd.data)
+    if (!encapsulatedCommand) {
+        log.warn "Could not extract command from ${cmd}"
+    } else {
+        return zwaveEvent(encapsulatedCommand)
+    }
+}
+
+/**
  *  COMMAND_CLASS_CONFIGURATION (0x70)
  *
  *  Log received configuration values.
@@ -846,12 +899,51 @@ def zwaveEvent(physicalgraph.zwave.commands.securityv1.SecurityMessageEncapsulat
 }
 
 /**
+ *  COMMAND_CLASS_MANUFACTURER_SPECIFIC (0x72) : ManufacturerSpecificReport
+ *
+ *  ManufacturerSpecific reports tell us the device's manufacturer ID and product ID.
+ **/
+def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerSpecificReport cmd) {
+    if (state.debug) log.debug "${device.displayName}: zwaveEvent(): ManufacturerSpecificReport received: ${cmd}"
+    updateDataValue("manufacturerName","${cmd.manufacturerName}")
+    updateDataValue("manufacturerId","${cmd.manufacturerId}")
+    updateDataValue("productId","${cmd.productId}")
+    updateDataValue("productTypeId","${cmd.productTypeId}")
+}
+
+/**
+ *  COMMAND_CLASS_VERSION (0x86) : VersionReport
+ *
+ *  Version reports tell us the device's Z-Wave framework and firmware versions.
+ **/
+def zwaveEvent(physicalgraph.zwave.commands.versionv1.VersionReport cmd) {  
+    if (state.debug) log.debug "${device.displayName}: zwaveEvent(): VersionReport received: ${cmd}"
+    updateDataValue("applicationVersion","${cmd.applicationVersion}")
+    updateDataValue("applicationSubVersion","${cmd.applicationSubVersion}")
+    updateDataValue("zWaveLibraryType","${cmd.zWaveLibraryType}")
+    updateDataValue("zWaveProtocolVersion","${cmd.zWaveProtocolVersion}")
+    updateDataValue("zWaveProtocolSubVersion","${cmd.zWaveProtocolSubVersion}")
+}
+
+/**
+ *  COMMAND_CLASS_FIRMWARE_UPDATE_MD (0x7A) : FirmwareMdReport
+ *
+ *  Firmware Meta Data reports tell us the device's firmware version and manufacturer ID.
+ **/
+def zwaveEvent(physicalgraph.zwave.commands.firmwareupdatemdv2.FirmwareMdReport cmd) { 
+    if (state.debug) log.debug "${device.displayName}: zwaveEvent(): FirmwareMdReport received: ${cmd}"
+    updateDataValue("firmwareChecksum","${cmd.checksum}")
+    updateDataValue("firmwareId","${cmd.firmwareId}")
+    updateDataValue("manufacturerId","${cmd.manufacturerId}")
+}
+
+/**
  *  Default event handler.
  *
  *  Called for all events that aren't handled above.
  **/
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
-    log.warn "${device.displayName}: No handler for command: $cmd"
+    log.warn "${device.displayName}: zwaveEvent(): No handler for command: $cmd"
     // Handles all Z-Wave commands we aren't interested in
     createEvent(descriptionText: cmd.toString(), isStateChange: false)
 }
@@ -1198,7 +1290,7 @@ def configureAfterSecure() {
             zwave.configurationV1.configurationSet(parameterNumber: 54, size: 1, scaledConfigurationValue: param54.toInteger()),
             zwave.configurationV1.configurationSet(parameterNumber: 58, size: 1, scaledConfigurationValue: param58.toInteger()),
             zwave.configurationV1.configurationSet(parameterNumber: 59, size: 2, scaledConfigurationValue: param59.toInteger())
-        ])
+        ],500)
 
         // Register for Group 1
         if(paramAssociationGroup1) {
@@ -1227,16 +1319,13 @@ def configureAfterSecure() {
         }
         else {
             cmds << secure(zwave.associationV2.associationRemove(groupingIdentifier:4, nodeId: [zwaveHubNodeId]))
-            //cmds << secure(zwave.associationV2.associationRemove(groupingIdentifier:4, nodeId: [10]))
         }
         // Register for Group 5
         if(paramAssociationGroup5) {
-            //cmds << secure(zwave.associationV2.associationSet(groupingIdentifier:5, nodeId: [zwaveHubNodeId]))
-            cmds << secure(zwave.associationV2.associationSet(groupingIdentifier:5, nodeId: [10]))
+            cmds << secure(zwave.associationV2.associationSet(groupingIdentifier:5, nodeId: [zwaveHubNodeId]))
         }
         else {
-            //cmds << secure(zwave.associationV2.associationRemove(groupingIdentifier:5, nodeId: [zwaveHubNodeId]))
-            cmds << secure(zwave.associationV2.associationRemove(groupingIdentifier:5, nodeId: [10]))
+            cmds << secure(zwave.associationV2.associationRemove(groupingIdentifier:5, nodeId: [zwaveHubNodeId]))
         }
 
     cmds
@@ -1280,6 +1369,7 @@ def getConfigReport() {
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 11)
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 13)
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 19)
+    cmds << zwave.configurationV1.configurationGet(parameterNumber: 28)
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 30)
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 31)
     cmds << zwave.configurationV1.configurationGet(parameterNumber: 32)
