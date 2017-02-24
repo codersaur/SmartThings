@@ -42,9 +42,8 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
  - This device handler is required for the Evohome (Connect) SmartApp.
 
 * [Fibaro Dimmer 2 (FGD-212)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2):
- - This device handler is written specifically for the Fibaro Dimmer 2 (FGD-212).
- - It extends hajar97's original device handler to suport Nightmode and fixes a number of issues.
- - Nightmode function: Nightmode forces the dimmer to switch on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the new Nightmode tile, and/or scheduled from the device settings.
+ - An advanced device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave Dimmer, with support for full parameter synchronisation, multi-channel device associations, protection modes, fault reporting, and advanced logging options.
+ - the _Nightmode_ function forces the dimmer to switch on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the _Nightmode_ tile, or scheduled from the device's settings.
  
 * [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller):
  - This device handler is written specifically for the Fibaro RGBW Controller (FGRGBWM-441).
