@@ -41,7 +41,7 @@ An advanced SmartThings device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave 
 
 
 #### Child Protection Mode:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-protection.png" width="200" align="left">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-protection.png" width="200" align="right">
 
 The Fibaro Dimmer 2 supports the Z-wave Protection Command Class. This allows the device to be protected from unintentional control (e.g. by a child) by disabling the physical switches and/or RF control.
 
@@ -142,13 +142,7 @@ The device exposes the following custom commands which can be called from a Smar
 * **resetEnergy()**: Reset the _Accumulated Energy_ figure back to _0_.
 * **sync()**: Trigger device synchronisation.
 
-## Physical Device Notes:
-
-General notes relating to the Fibaro Dimmer 2:
-
-* The device has three read-only parameters. These are not shown in the settings GUI, but their values will be reported in the Live Logging tab of the IDE when Configuration Reports are received.
-
-## Version History:
+## Version History
 
 #### 2017-02-24: v2.00
  * Complete re-write in-line with new coding standards.
@@ -224,10 +218,16 @@ General notes relating to the Fibaro Dimmer 2:
   *  Initial version based on device handler by hajar97.
   *  Tiles: Added GetConfig button to retrieve the current device settings (which are displayed in the debug log).
 
- ## To Do:
+## To Do
  *   Optimise zwaveEvent(CRC_16_ENCAP) by using _ecapsulatedCommand()_, once implemenation has been fixed by SmartThings.
  *   Allow protection state to be controlled via commands (maybe just the local). This would allow a smartApp to disable all physical light switches, perhaps on a schedule, for example. E.g. stop children turning on the lights after 10PM. Similar to Nightmode.
  *   Add _Button_ capability and raise _button_ events.
+
+## Physical Device Notes
+
+General notes relating to the Fibaro Dimmer 2:
+
+* The device has three read-only parameters. These are not shown in the settings GUI, but their values will be reported in the Live Logging tab of the IDE when Configuration Reports are received.
 
 ## References
  Some useful links relevant to the development of this device handler:
