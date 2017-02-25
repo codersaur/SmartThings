@@ -23,7 +23,9 @@ An advanced SmartThings device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave 
 
 1. Follow [these instructions](https://github.com/codersaur/SmartThings#device-handler-installation-procedure) to install the device handler in the SmartThings IDE.
 
-2. From the SmartThings app on your phone, edit the device settings to suit your installation and hit _Done_. The first configuration sync may take some time. If the device has not synced after 2 minutes, tap the _sync_ tile to force any remaining configuration items to be synchronised.
+2. **Note for iPhone users**: The _defaultValue_ attribute of inputs (preferences) are commented out by default to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone").
+
+3. From the SmartThings app on your phone, edit the device settings to suit your installation and hit _Done_. The first configuration sync may take some time. If the device has not synced after 2 minutes, tap the _sync_ tile to force any remaining configuration items to be synchronised.
 **Note, if you are upgrading from an earlier version of this device handler it is still important to review all the settings, as many will not carry over from earlier versions!**
 
 ## Settings
@@ -69,7 +71,13 @@ If _Nightmode_ Start and Stop times are set here, they will only apply to the co
 
 The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the [manufacturer's manual](http://manuals.fibaro.com/dimmer-2/) for a full description of each parameter.
 
-Note, the Fibaro Dimmer 2 has a few read-only parameters that are not shown in this section. The dimmer will periodically report the values of these read-only parameters to the hub, and their values can be seen in the IDE Live Logging.
+##### Auto-calibration:
+If parameter #13 is used to force auto-calibration of the device, any values that are specified for parameters #1, #2, and #30 will be ignored. Monitor the _Live Logging_ tab in the IDE to discover what the new auto-calibrated values are.
+
+Next time the parameters are updated, remember to set parameter #13 back to _0: Readout_ if you do not want auto-calibration to be forced again. Additionally, review parameters #1, #2, and #30, as any values specified will over-write the auto-calibrated values.
+
+##### Read-only Parameters:
+The Fibaro Dimmer 2 has a few read-only parameters that are not shown in this section. The dimmer will periodically report the values of these read-only parameters to the hub, and their values can be seen in the _Live Logging_ tab in the IDE.
 
 #### Multi-channel Device Associations:
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-assocgroups.png" width="200" align="right">
@@ -143,6 +151,11 @@ The device exposes the following custom commands which can be called from a Smar
 * **sync()**: Trigger device synchronisation.
 
 ## Version History
+
+#### 2017-02-25: v2.01:
+ * Preferences: defaultValues are commented out by default to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone").
+ * updated(): Fix to allow device to sync after a forced auto-calibration.
+ * updateSyncPending(): If a target value is null, then it does not need syncing.
 
 #### 2017-02-24: v2.00
  * Complete re-write in-line with new coding standards.
