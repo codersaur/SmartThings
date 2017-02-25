@@ -72,6 +72,8 @@ If _Nightmode_ Start and Stop times are set here, they will only apply to the co
 
 The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the [manufacturer's manual](http://manuals.fibaro.com/dimmer-2/) for a full description of each parameter.
 
+If no value is specified for a parameter, then it will not be synched with the device and the existing value in the device will be preserved.
+
 ##### Auto-calibration:
 If parameter #13 is used to force auto-calibration of the device, any values that are specified for parameters #1, #2, and #30 will be ignored. Monitor the _Live Logging_ tab in the IDE to discover what the new auto-calibrated values are.
 
