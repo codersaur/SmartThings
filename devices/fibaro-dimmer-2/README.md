@@ -23,7 +23,7 @@ An advanced SmartThings device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave 
 
 1. Follow [these instructions](https://github.com/codersaur/SmartThings#device-handler-installation-procedure) to install the device handler in the SmartThings IDE.
 
-2. **Note for iPhone users**: The _defaultValue_ attribute of inputs (preferences) are commented out by default to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone").
+2. **Note for iPhone users**: The _defaultValue_ of inputs (preferences) are commented out to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone" in the code).
 
 3. From the SmartThings app on your phone, edit the device settings to suit your installation and hit _Done_. The first configuration sync may take some time. If the device has not synced after 2 minutes, tap the _sync_ tile to force any remaining configuration items to be synchronised.
 **Note, if you are upgrading from an earlier version of this device handler it is still important to review all the settings, as many will not carry over from earlier versions!**
