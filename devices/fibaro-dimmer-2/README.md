@@ -68,6 +68,7 @@ The _Nightmode_ feature forces the dimmer to switch on at a specified level. (Be
 If _Nightmode_ Start and Stop times are set here, they will only apply to the corresponding instance of the device. If you want to implement a _Nightmode_ schedule for multiple devices it is possible to write a simple SmartApp (or use CoRE) to  call the _enableNightmode()_ and _disableNightmode()_ commands on each device.
 
 #### Device Parameters:
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-params.png" width="200" align="right">
 
 The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the [manufacturer's manual](http://manuals.fibaro.com/dimmer-2/) for a full description of each parameter.
 
