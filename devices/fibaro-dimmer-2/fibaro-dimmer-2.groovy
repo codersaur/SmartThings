@@ -1,13 +1,13 @@
 /*****************************************************************************************************************
- *  Copyright 2017 David Lomas (codersaur)
+ *  Copyright: David Lomas (codersaur)
  *
  *  Name: Fibaro Dimmer 2
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2017-02-24
+ *  Date: 2017-02-25
  *
- *  Version: 2.00
+ *  Version: 2.01
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2
  *
@@ -137,8 +137,8 @@ metadata {
         // Tile Layouts:
         main(["switch"])
         details([
-        	"switch",
-        	"instMode","power",
+            "switch",
+            "instMode","power",
             "nightmode",
             "energyLastReset","energy",
             "scene",
@@ -171,7 +171,7 @@ metadata {
                     "4" : "Debug",
                     "5" : "Trace"
                 ],
-                defaultValue: "3",
+//                defaultValue: "3", // iPhone users can uncomment these lines!
                 required: true
             )
 
@@ -184,7 +184,7 @@ metadata {
                     "1" : "Error",
                     "2" : "Warning"
                 ],
-                defaultValue: "2",
+//                defaultValue: "2", // iPhone users can uncomment these lines!
                 required: true
             )
 
@@ -194,7 +194,7 @@ metadata {
                 "be re-sent to the device. This will take several minutes and you may need to press the 'sync' " +
                 "tile a few times.",
                 type: "boolean",
-                defaultValue: false,
+//                defaultValue: false, // iPhone users can uncomment these lines!
                 required: true
             )
 
@@ -203,7 +203,7 @@ metadata {
                 title: "Proactively Request Reports: Additonal requests for status reports will be made. " +
                 "Use only if status reporting is unreliable.",
                 type: "boolean",
-                defaultValue: false,
+//                defaultValue: false, // iPhone users can uncomment these lines!
                 required: true
             )
         }
@@ -223,7 +223,7 @@ metadata {
                     //"1" : "Protection by sequence", // Not supported by Fibaro Dimmer 2.
                     "2" : "No operation possible"
                 ],
-                defaultValue: "0",
+//                defaultValue: "0", // iPhone users can uncomment these lines!
                 required: true
             )
 
@@ -236,7 +236,7 @@ metadata {
                     "1" : "No RF control"//,
                     //"2" : "No RF response" // Not supported by Fibaro Dimmer 2.
                 ],
-                defaultValue: "0",
+//                defaultValue: "0", // iPhone users can uncomment these lines!
                 required: true
             )
 
@@ -253,14 +253,14 @@ metadata {
                 name: "configNightmodeLevel",
                 title: "Nightmode Level: The dimmer will always switch on at this level when nightmode is enabled.",
                 range: "1..100",
-                defaultValue: "10",
+//                defaultValue: "10", // iPhone users can uncomment these lines!
                 required: true
 
             input type: "boolean",
                 name: "configNightmodeForce",
                 title: "Force Nightmode: If the dimmer is on when nightmode is enabled, the Nightmode Level is applied immediately " +
                     "(otherwise it's only applied next time the dimmer is switched on).",
-                defaultValue: true,
+//                defaultValue: true, // iPhone users can uncomment these lines!
                 required: true
 
             input type: "time",
@@ -448,7 +448,7 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv3.SwitchMultilevelS
  *
  *  Common handler for BasicReport, SwitchBinaryReport, SwitchMultilevelReport.
  *
- *  Action: Raise 'switch' and 'level' events. 
+ *  Action: Raise 'switch' and 'level' events.
  *   Restore pending level if dimmer has been switched on after nightmode has been disabled.
  *   If Proactive Reporting is enabled, and the level has changed, request a meter report.
  **/
@@ -951,7 +951,7 @@ def zwaveEvent(physicalgraph.zwave.commands.multichannelv3.MultiChannelCmdEncap 
  *    Short        parameterNumber     Parameter ID.
  *    Short        size                Size of parameter's value (bytes).
  *
- *  Example: ConfigurationReport(configurationValue: [0], parameterNumber: 14, reserved11: 0, 
+ *  Example: ConfigurationReport(configurationValue: [0], parameterNumber: 14, reserved11: 0,
  *            scaledConfigurationValue: 0, size: 1)
  **/
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
@@ -1718,6 +1718,24 @@ def updated() {
             state."paramTarget${it.id}" = settings."configParam${it.id}"?.toInteger()
         }
 
+        // Check if auto-calibration is being forced. If so, must ignore target values for P1/2/30:
+        if (state.paramTarget13 > 0) {
+            state.paramCache13 = null // Remove cached value to force sync of P13:
+            logger("Auto-calibration is being forced.","info")
+            if (state.paramTarget1 != null) logger("Auto-calibration is being forced, but a value has been " +
+            "provided for parameter #1. This will be ignored! Check Live Logging for the auto-calibrated " +
+            "value shortly.","warn")
+            if (state.paramTarget2 != null) logger("Auto-calibration is being forced, but a value has been " +
+            "provided for parameter #2. This will be ignored! Check Live Logging for the auto-calibrated " +
+            "value shortly.","warn")
+            if (state.paramTarget30 != null) logger("Auto-calibration is being forced, but a value has been " +
+            "provided for parameter #30. This will be ignored! Check Live Logging for the auto-calibrated " +
+            "value shortly.","warn")
+            state.paramTarget1 = null
+            state.paramTarget2 = null
+            state.paramTarget30 = null
+        }
+
         // Update Assoc Group target values:
         state.assocGroupTarget1 = [ zwaveHubNodeId ] // Assoc Group #1 is Lifeline and will contain controller only.
         getAssocGroupsMd().findAll( { it.id != 1} ).each {
@@ -1730,6 +1748,10 @@ def updated() {
 
         // Sync configuration with phyiscal device:
         sync(state.syncAll)
+
+        // Set target for parameter #13 [Force Auto-calibration] back to 0 [Readout].
+        // Sync will now only complete when auto-calibration has completed:
+        state.paramTarget13 = 0
 
         // Request device medadata (this just seems the best place to do it):
         cmds << zwave.firmwareUpdateMdV2.firmwareMdGet()
@@ -1885,7 +1907,7 @@ private sync(forceAll = false) {
         def cachedNodes = state."assocGroupCache${it.id}"
         def targetNodes = state."assocGroupTarget${it.id}"
 
-        if ( targetNodes != null & (cachedNodes != targetNodes) ) {
+        if ( cachedNodes != targetNodes ) {
             // Display to user in hex format (same as IDE):
             def targetNodesHex  = []
             targetNodes.each { targetNodesHex.add(String.format("%02X", it)) }
@@ -1921,18 +1943,16 @@ private updateSyncPending() {
     def syncPending = 0
 
     getParamsMd().findAll( {!it.readonly} ).each { // Exclude readonly parameters.
-        if ((state."paramCache${it.id}" == null) || (state."paramCache${it.id}" != state."paramTarget${it.id}")) {
+        if ( (state."paramTarget${it.id}" != null) & (state."paramCache${it.id}" != state."paramTarget${it.id}") ) {
             syncPending++
         }
     }
 
     getAssocGroupsMd().each {
         def cachedNodes = state."assocGroupCache${it.id}"
-        cachedNodes = (cachedNodes) ? cachedNodes.sort() : null
         def targetNodes = state."assocGroupTarget${it.id}"
-        targetNodes = (targetNodes) ? targetNodes.sort() : null
 
-        if ( targetNodes != null & ( cachedNodes != targetNodes) ) {
+        if ( cachedNodes != targetNodes ) {
             syncPending++
         }
     }
@@ -2031,7 +2051,7 @@ private generatePrefsParams() {
                 title: "#${it.id}: ${it.name}: \n" + it.description + lb +"Default Value: ${it.defaultValue}",
                 type: it.type,
                 range: it.range,
-                defaultValue: it.defaultValue,
+//                defaultValue: it.defaultValue, // iPhone users can uncomment these lines!
                 required: it.required
             )
             break
@@ -2042,7 +2062,7 @@ private generatePrefsParams() {
                 title: "#${it.id}: ${it.name}: \n" + it.description + lb + "Default Value: ${it.defaultValue}",
                 type: it.type,
                 options: it.options,
-                defaultValue: it.defaultValue,
+//                defaultValue: it.defaultValue, // iPhone users can uncomment these lines!
                 required: it.required
             )
             break
@@ -2075,7 +2095,7 @@ private generatePrefsAssocGroups() {
                 name: "configAssocGroup${it.id}",
                 title: "Association Group #${it.id}: ${it.name}: \n" + it.description + " \n[MAX NODES: ${it.maxNodes}]",
                 type: "text",
-                defaultValue: "",
+//                defaultValue: "", // iPhone users can uncomment these lines!
                 required: false
             )
         }
@@ -2084,7 +2104,7 @@ private generatePrefsAssocGroups() {
 
 /**
  *  manageSchedules()
- * 
+ *
  *  Schedules/unschedules Nightmode.
  **/
 private manageSchedules() {
@@ -2118,7 +2138,7 @@ private manageSchedules() {
 
 /**
  *  test()
- *  
+ *
  *  Temp testing method. Called from 'test' tile.
  **/
 private test() {
