@@ -44,10 +44,14 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 * [Fibaro Dimmer 2 (FGD-212)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2):
  - An advanced device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave Dimmer, with support for full parameter synchronisation, multi-channel device associations, protection modes, fault reporting, and advanced logging options.
  - The _Nightmode_ function forces the dimmer to switch on at a specific level (e.g. low-level during the night). It can be enabled/disabled manually using the _Nightmode_ tile, or scheduled from the device's settings.
- 
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-tiles-on.png" width="200">
+
 * [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller):
  - This device handler is written specifically for the Fibaro RGBW Controller (FGRGBWM-441).
  - It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode (i.e. analog sensor inputs).
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-rgbw-controller/screenshots/screenshot_rgbw.png" width="200">
  
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/philio-dual-relay):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
