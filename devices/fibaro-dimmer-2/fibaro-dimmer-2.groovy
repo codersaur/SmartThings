@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2017-02-25
+ *  Date: 2017-02-27
  *
- *  Version: 2.01
+ *  Version: 2.02
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2
  *
@@ -128,7 +128,7 @@ metadata {
         }
         standardTile("fault", "device.fault", decoration: "flat", width: 2, height: 2) {
             state "default", label:'${currentValue} Fault', action:"clearFault", backgroundColor:"#FF6600", icon:"st.secondary.tools"
-            state "clear", label:'${currentValue}', action:"", backgroundColor:"79b821", icon:""
+            state "clear", label:'${currentValue}', action:"", backgroundColor:"#79b821", icon:""
         }
         standardTile("test", "device.power", decoration: "flat", width: 2, height: 2) {
             state "default", label:'Test', action:"test"

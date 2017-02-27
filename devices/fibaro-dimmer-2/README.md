@@ -155,10 +155,13 @@ The device exposes the following custom commands which can be called from a Smar
 
 ## Version History
 
+#### 2017-02-27: v2.02:
+ * Fixed backgroundColor for fault tile.
+
 #### 2017-02-25: v2.01:
- * Preferences: defaultValues are commented out by default to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone").
- * updated(): Fix to allow device to sync after a forced auto-calibration.
- * updateSyncPending(): If a target value is null, then it does not need syncing.
+  * Preferences: defaultValues are commented out by default to cater for Android users. iPhone users can uncomment these lines if they wish (search for "iPhone").
+  * updated(): Fix to allow device to sync after a forced auto-calibration.
+  * updateSyncPending(): If a target value is null, then it does not need syncing.
 
 #### 2017-02-24: v2.00
  * Complete re-write in-line with new coding standards.
