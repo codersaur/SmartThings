@@ -75,9 +75,9 @@ The settings in this section can be used to specify the value of all writable de
 If no value is specified for a parameter, then it will not be synched with the device and the existing value in the device will be preserved.
 
 ##### Auto-calibration:
-If parameter #13 is used to force auto-calibration of the device, any values that are specified for parameters #1, #2, and #30 will be ignored. Monitor the _Live Logging_ tab in the IDE to discover what the new auto-calibrated values are.
+If parameter #13 is used to force auto-calibration of the device, any values that are specified for parameters #1, #2, and #30 will be ignored. After hitting _Done_, monitor the _Live Logging_ tab in the IDE to discover what the new auto-calibrated values are (the auto-calibrated values will not be updated in the device's settings screen due to limitations of the SmartThings platform).
 
-Next time the parameters are updated, remember to set parameter #13 back to _0: Readout_ if you do not want auto-calibration to be forced again. Additionally, review parameters #1, #2, and #30, as any values specified will over-write the auto-calibrated values.
+Next time device settings are updated, remember to set parameter #13 back to _0: Readout_ if you do not want auto-calibration to be forced again. Additionally, review parameters #1, #2, and #30, as any values specified will over-write the auto-calibrated values.
 
 ##### Read-only Parameters:
 The Fibaro Dimmer 2 has a few read-only parameters that are not shown in this section. The dimmer will periodically report the values of these read-only parameters to the hub, and their values can be seen in the _Live Logging_ tab in the IDE.
