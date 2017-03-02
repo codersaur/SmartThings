@@ -1,11 +1,13 @@
 # Fibaro Flood Sensor (FGFS-101) (EU)
-https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-dimmer-2
+https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-flood-sensor
 
 Copyright (c) [David Lomas](https://github.com/codersaur)
 
 ## Overview
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-tiles-on.png" width="200" align="right">
-An advanced SmartThings device handler for the Fibaro Flood Sensor (FGFS-101) (EU). For devices with firmware: 2.6 or older (NOT the newer ZW5 version!).
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-tiles-main.png" width="200" align="right">
+An advanced SmartThings device handler for the Fibaro Flood Sensor (FGFS-101) (EU).
+
+**The newer ZW5 (Z-Wave Plus) version is NOT supported.**
 
 ### Key features:
 * Reports water, temperature, tamper, and battery attributes.
@@ -27,36 +29,36 @@ An advanced SmartThings device handler for the Fibaro Flood Sensor (FGFS-101) (E
 ## Settings
 
 #### General Settings:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-general.png" width="200" align="right">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-settings-general.png" width="200" align="right">
 
 * **IDE Live Logging Level**: Set the level of log messages shown in the SmartThings IDE _Live Logging_ tab. For normal operation _Info_ or _Warning_ is recommended, if troubleshooting use _Debug_ or _Trace_.
 
 * **Device Logging Level**: Set the level of log messages that will be recorded in the device's _logMessage_ attribute. This offers a way to review historical messages without having to keep the IDE _Live Logging_ screen open. To prevent excessive events, the maximum level supported is _Warning_.
 
-* **Force Full Sync**: By default, only settings that have been modified will be synchronised with the device. Enable this setting to force all device parameters, association groups, and protection settings to re-sent to the device. This will take several minutes and you may need to press the _sync_ tile a few times before the device is fully synced.
+* **Force Full Sync**: By default, only settings that have been modified will be synchronised with the device. Enable this setting to force all device parameters and association groups to be re-sent to the device.
+
+* **Auto-reset Tamper Alarm**: Automatically reset tamper alarms after a time delay.
 
 #### Wake Up Interval:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-general.png" width="200" align="right">
 
 * **Wake Up Interval**: The device will wake up periodically to sync configuration. A longer interval will save battery power. Only applicable when in battery-power mode.
 
 #### Device Parameters:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-params.png" width="200" align="right">
 
 The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the [manufacturer's manual](http://manuals.fibaro.com/flood-sensor/) for a full description of each parameter.
 
 If no value is specified for a parameter, then it will not be synched with the device and the existing value in the device will be preserved.
 
 #### Multi-channel Device Associations:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-assocgroups.png" width="200" align="right">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-settings-assoc.png" width="200" align="right">
 
-The Fibaro Floor Sensor supports _Multi-channel_ Device Associations. This allows the Fibaro Flood Sensor to send water and tamper alarm commands directly to groups of other devices (e.g. sirens), without the commands being processed by the SmartThings hub. This results in faster response times compared to using a SmartApp for example.
+The Fibaro Floor Sensor supports _Multi-channel_ Device Associations. This allows the device to send water and tamper alarm commands directly to Z-Wave other devices (e.g. sirens), without the commands being processed by the SmartThings hub. This results in faster response times compared to using a SmartApp.
 
 The Fibaro Flood Sensor supports three association groups:
 
 - **Association Group #1**: Sends BASIC_SET or ALARM commands when the sensor detects water.
-- **Association Group #2**: Sends ALARM commands when the device detects movements or tampering.
-- **Association Group #3**: Device status (contains only the main controller).
+- **Association Group #2**: Sends ALARM commands when the device detects movement or tampering.
+- **Association Group #3**: Device status (contains the main controller only).
 
 The members of each _Association Group_ must be defined as a comma-delimited list of target nodes. Each target device can be specified in one of two ways:
 - _Node_: A single hexadecimal number (e.g. "0C") representing the target _Device Network ID_.
@@ -69,16 +71,20 @@ You can find the _Device Network ID_ for all Z-Wave devices in your SmartThings 
 #### Main Tile:
 The main tile indicates water detection and temperature.
 
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-tiles-wet.png" width="200">
+
 #### Power Status Tile:
 This tile indicates the battery level, or that the device is hard-wired to DC power.
 
 #### Tamper Tile:
-This tile indicates if the device has detected movement or tampering. Tapping the tile will clear the tamper status. Tamper alerts can also be cleared automatically (see settings).
+This tile indicates if the device has detected movement or tampering. Pressing the tile will clear the tamper status. Tamper alerts can also be cleared automatically (see settings).
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-tiles-tamper.png" width="200">
 
 #### Sync Tile:
 This tile indicates when all configuration settings have been successfully synchronised with the physical device. Note, if the device is in battery-powered mode, new settings will only by synchronised when the device wakes up.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-tiles-sync.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-tiles-sync.png" width="200">
 
 ## SmartApp Integration
 
@@ -88,9 +94,9 @@ The device handler publishes the following attributes:
 
 * **battery [NUMBER]**: Current battery level (%).
 * **logMessage [STRING]**: Important log messages.
-* **powerSource [ENUM]**: Indicates if the device is battery, dc, or mains-powered.
+* **powerSource [ENUM]**: Indicates if the device is battery-, dc-, or mains-powered.
 * **syncPending [NUMBER]**: The number of configuration items that need to be synced with the physical device. _0_ if the device is fully synchronised.
-* **tamper [ENUM]**: Indicates if the has been tampered with.
+* **tamper [ENUM]**: Indicates if the device has been tampered with.
 * **temperature [NUMBER]**: Current temperature (C).
 * **water [ENUM]**: Indicates if the sensor is 'dry' or 'wet'.
 
@@ -110,7 +116,6 @@ The device exposes the following custom commands which can be called from a Smar
 General notes concerning the Fibaro Flood Sensor:
 
 * If the device does not report temperature values as expected, it is recommended to perform a full reset of the device.
-* The Fibaro Flood Sensor documentation treats some parameter values as SIGNED and others as UNSIGNED, e.g. 1-bit parameters with values 0-255. The treatment of each parameter is identified in _getParamMd()_ by attribute _isSigned_. Unsigned parameter values (isSigned = false) are converted from signed to unsigned when receiving config reports.
 * In hard-wired power mode, the device is active and listening. It will not issue Wake Up notifications or battery reports.
 * In battery-powered mode, the device is _sleepy_ and can only be configured after it has woken up.
 
