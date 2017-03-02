@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2016-02-27
+ *  Date: 2017-03-02
  *
- *  Version: 1.02
+ *  Version: 1.03
  *
  *  Description:
  *   - This device handler is written specifically for the Aeon Home Energy Meter Gen2 UK version, with a single clamp.
@@ -24,6 +24,10 @@
  *   - If you are re-using this device, please use your own hosting for the icons.
  *
  *  Version History:
+ *
+ *   2017-03-02: v1.03:
+ *    - Fixed tile formatting for Android.
+ *    - Limited power attribute to one decimal place.
  *
  *   2016-02-27: v1.02
  *    - Added "Voltage Measurement" capability to metadata (although not currently suppoted by hub).
@@ -44,6 +48,7 @@
  *    - Added calculation of total cost, based on CostPerKWh setting.
  * 
  *  To Do:
+ *   - Capture out-of-band energy reset.
  *   - Option to specify a '£/day' fixed charge, which is added to all energy cost figures.
  *   - If the use of 'enum' inputs with "multiple: true" is ever fixed by ST, then implement input
  *     preferences to specify Reporting Group Content Flags (Parameters 101-103).
@@ -68,7 +73,7 @@ metadata {
 	{
 		capability "Power Meter"
 		capability "Energy Meter"
-		//capability "Voltage Measurement"  // In documentation, but generates RunTimeException.
+		capability "Voltage Measurement"
 		capability "Polling"
 		capability "Refresh"
         capability "Configuration"
@@ -127,30 +132,17 @@ metadata {
 	// Tile definitions:
 	tiles(scale: 2) {
 	
-		// Main Tiles:
-		valueTile("mainPower", "device.dispPower") {
-			state "default", label:'${currentValue}', backgroundColors:[
-					[value: "0.0 W", 	color: "#00cc33"],
-					[value: "250.0 W", 	color: "#66cc33"],
-					[value: "500.0 W", 	color: "#cccc33"],
-					[value: "750.0 W", 	color: "#ffcc33"],
-					[value: "1000.0 W",	color: "#ff9933"], 
-					[value: "1500.0 W",	color: "#ff6633"], 
-					[value: "2000.0 W",	color: "#ff3333"]
-				]		
-		}
-		
 		// Multi Tile:
-		multiAttributeTile(name:"multi1", type: "generic", width: 4, height: 4, canChangeIcon: true) {
-			tileAttribute ("device.dispPower", key: "PRIMARY_CONTROL") {
-				attributeState "default", label:'${currentValue}', backgroundColors:[
-					[value: "0.0 W", 	color: "#00cc33"],
-					[value: "250.0 W", 	color: "#66cc33"],
-					[value: "500.0 W", 	color: "#cccc33"],
-					[value: "750.0 W", 	color: "#ffcc33"],
-					[value: "1000.0 W",	color: "#ff9933"], 
-					[value: "1500.0 W",	color: "#ff6633"], 
-					[value: "2000.0 W",	color: "#ff3333"]
+		multiAttributeTile(name:"multi1", type: "generic", width: 6, height: 4) {
+			tileAttribute ("device.power", key: "PRIMARY_CONTROL") {
+				attributeState "default", label:'${currentValue} W', backgroundColors: [
+					[value: 0, color: "#00cc33"],
+					[value: 250, color: "#66cc33"],
+					[value: 500, color: "#cccc33"],
+					[value: 750, color: "#ffcc33"],
+					[value: 1000, color: "#ff9933"], 
+					[value: 1500, color: "#ff6633"], 
+					[value: 2000, color: "#ff3333"]
 				]		
 			}
 			tileAttribute ("device.dispPowerCost", key: "SECONDARY_CONTROL") {
@@ -162,7 +154,7 @@ metadata {
 		valueTile("instMode", "device.dispPower", decoration: "flat", width: 2, height: 1) {
 			state "default", label:'Now:', action:"refresh.refresh", icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_refresh.png"
 		}
-		valueTile("power", "device.dispPower", decoration: "flat", width: 2, height: 1) {
+		valueTile("power", "device.dispPower", decoration: "flat", width: 2, height: 1, canChangeIcon: true) {
 			state "default", label:'${currentValue}', icon: "https://raw.githubusercontent.com/codersaur/SmartThings/master/icons/tile_2x1_top_bottom_2.png"
 		}
 		valueTile("current", "device.dispCurrent", decoration: "flat", width: 2, height: 1) {
@@ -222,18 +214,18 @@ metadata {
 		}
 		
 		// Tile layouts:
-		main (["mainPower"])
+		main (["multi1"])
 		details([
 			// Multi Tile:
-			"multi1"
+			"multi1",
 			// Instantaneous Values:
-			,"instMode","power", "current" //,"voltage" //, "powerFactor"
+			"instMode","power", "current", //"voltage" ,// "powerFactor",
 			// Ad Hoc Stats:
-			,"lastReset", "energy", "costOfEnergy"	
+			"lastReset", "energy", "costOfEnergy",
 			// Energy Stats:
-			,"statsMode", "energyPeriod", "costOfEnergyPeriod" //,"costPerKWH"
+			"statsMode", "energyPeriod", "costOfEnergyPeriod"//, //"costPerKWH",
 			// Action Buttons:
-			//, "refresh","resetAllStats","configure","test"
+			// "refresh","resetAllStats","configure","test"
 		])
 	}
 
@@ -345,7 +337,7 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
     	state.energy = cmd.scaledMeterValue
 		updateStats()
         sendEvent(name: "dispEnergy", value: String.format("%.2f",cmd.scaledMeterValue as BigDecimal) + " kWh", displayed: false)
-		return createEvent(name: "energy", value: cmd.scaledMeterValue, unit: "kWh")
+		return createEvent(name: "energy", value: String.format("%.2f",cmd.scaledMeterValue as BigDecimal), unit: "kWh")
 	}
 	else if (cmd.scale == 1) {
     	// Accumulated Energy (kVAh) - Ignore.
@@ -357,7 +349,7 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd) {
 		sendEvent(name: "powerCost", value: state.powerCost, unit: "£/day")
         sendEvent(name: "dispPowerCost", value: "£" + String.format("%.2f",state.powerCost as BigDecimal) + " per day", displayed: false)
         sendEvent(name: "dispPower", value: String.format("%.1f",cmd.scaledMeterValue as BigDecimal) + " W", displayed: false)
-        return createEvent(name: "power", value: cmd.scaledMeterValue, unit: "W")
+        return createEvent(name: "power", value: String.format("%.1f",cmd.scaledMeterValue as BigDecimal), unit: "W")
 	}
 	else if (cmd.scale == 4) {
     	// Instantaneous Voltage (Volts)
@@ -483,7 +475,7 @@ def zwaveEvent(physicalgraph.zwave.commands.manufacturerspecificv2.ManufacturerS
  *  Called for all events that aren't handled above.
  **/
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
-	if (state.debug) log.debug "$device.displayName: Unhandled: $cmd"
+	if (state.debug) log.warn "$device.displayName: Unhandled: $cmd"
 	[:]
 }
 
