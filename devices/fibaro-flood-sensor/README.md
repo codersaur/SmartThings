@@ -115,7 +115,8 @@ The device exposes the following custom commands which can be called from a Smar
 
 General notes concerning the Fibaro Flood Sensor:
 
-* If the device does not report temperature values as expected, it is recommended to perform a full reset of the device.
+* Remember to calibrate temperature measurements using parameter #73. The Fibaro Flood Sensor typically reports temperatures that are ~5°C above the air temperature outside the casing.
+* If the device does not send temperature reports with the expected frequency, it is recommended to perform a full reset of the device.
 * In hard-wired power mode, the device is active and listening. It will not issue Wake Up notifications or battery reports.
 * In battery-powered mode, the device is _sleepy_ and can only be configured after it has woken up.
 
