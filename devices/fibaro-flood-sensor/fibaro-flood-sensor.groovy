@@ -9,7 +9,7 @@
  *
  *  Version: 1.00
  *
- *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-floor-sensor
+ *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-flood-sensor
  *
  *  Author: David Lomas (codersaur)
  *
@@ -17,7 +17,7 @@
  *   with firmware: 2.6 or older.
  *
  *  For full information, including installation instructions, exmples, and version history, see:
- *   https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-floor-sensor
+ *   https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-flood-sensor
  *
  *  License:
  *   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
