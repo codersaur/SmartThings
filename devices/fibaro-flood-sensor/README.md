@@ -16,7 +16,7 @@ An advanced SmartThings device handler for the Fibaro Flood Sensor (FGFS-101) (E
 * Supports battery and hard-wired power modes.
 * _Sync_ tile indicates when all configuration options are successfully synchronised with the physical device.
 * Logger functionality enables critical errors and warnings to be saved to the _logMessage_ attribute.
-
+* Extensive inline code comments to support community development.
 
 ## Installation
 
