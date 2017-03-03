@@ -21,6 +21,7 @@ This SmartThings device handler has been written for the Fibaro RGBW Controller 
  * hue, saturation, level
  * hex
  * name
+* Extensive inline code comments to support community development.
 
 ### Screenshots:
 
