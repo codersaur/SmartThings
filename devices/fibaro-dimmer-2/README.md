@@ -17,7 +17,7 @@ An advanced SmartThings device handler for the Fibaro Dimmer 2 (FGD-212) Z-Wave 
 * Dimmer _level_ range is now 0-100% (instead of 0-99%).
 * _Nightmode_ feature allows switch-on brightness level to be controlled on a schedule.
 * Logger functionality enables critical errors and warnings to be saved to the _logMessage_ attribute.
-
+* Extensive inline code comments to support community development.
 
 ## Installation
 
