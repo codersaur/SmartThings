@@ -45,7 +45,7 @@ An advanced SmartThings device handler for the GreenWave PowerNode (Single socke
 #### Device Parameters:
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-settings-params.png" width="200" align="right">
 
-The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the [manufacturer's manual](http://manuals.fibaro.com/flood-sensor/) for a full description of each parameter.
+The settings in this section can be used to specify the value of all writable device parameters. It is recommended to consult the manufacturer's manual for a full description of each parameter.
 
 If no value is specified for a parameter, then it will not be synched with the device and the existing value in the device will be preserved.
 
