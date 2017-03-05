@@ -48,18 +48,15 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 * [Fibaro Flood Sensor (FGFS-101)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-flood-sensor):
  - An advanced SmartThings device handler for the Fibaro Flood Sensor (FGFS-101) (EU), with support for full parameter synchronisation, multi-channel device associations, and advanced logging options.
-
  <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-flood-sensor/screenshots/ffs-ss-tiles-wet.png" width="200">
 
 * [Fibaro RGBW Controller (FGRGBWM-441)](https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller):
  - This device handler is written specifically for the Fibaro RGBW Controller (FGRGBWM-441).
  - It extends the native SmartThings device handler to support editing the device's parameters from the SmartThings GUI, and to support the use of one or more of the controller's channels in IN/OUT mode (i.e. analog sensor inputs).
-
  <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-rgbw-controller/screenshots/screenshot_rgbw.png" width="200">
  
- * [GreenWave PowerNode (Single) (NS210-G-EN)](https://github.com/codersaur/SmartThings/tree/master/devices/greenwave-powernode-single):
+* [GreenWave PowerNode (Single) (NS210-G-EN)](https://github.com/codersaur/SmartThings/tree/master/devices/greenwave-powernode-single):
   - An advanced SmartThings device handler for the GreenWave PowerNode (Single socket) Z-Wave power outlet, with support for power and energy reporting, the _Room Colour Wheel_, local and RF protection modes, an _Auto-off Timer_, full parameter synchronisation, and advanced logging options.
-
  <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-main.png" width="200">
 
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/philio-dual-relay):
