@@ -58,6 +58,11 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-rgbw-controller/screenshots/screenshot_rgbw.png" width="200">
  
+ * [GreenWave PowerNode (Single) (NS210-G-EN)](https://github.com/codersaur/SmartThings/tree/master/devices/greenwave-powernode-single):
+ - An advanced SmartThings device handler for the GreenWave PowerNode (Single socket) Z-Wave power outlet, with support for power and energy reporting, the _Room Colour Wheel_, local and RF protection modes, an _Auto-off Timer_, full parameter synchronisation, and advanced logging options.
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-main.png" width="200">
+
 * [Philio Dual Relay (PAN04)](https://github.com/codersaur/SmartThings/tree/master/devices/philio-dual-relay):
  - This device handler is written specifically for the Philio Dual Relay (PAN04), when used as a single switch/relay only.
  - It supports live reporting of energy, power, current, voltage, and power factor,  as well as energy and cost statistics over multiple pre-defined periods.
