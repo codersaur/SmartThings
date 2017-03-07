@@ -471,14 +471,14 @@ def dimmerEvent(physicalgraph.zwave.Command cmd) {
     // Store last active level, which is needed for nightmode functionality:
     if (levelValue > 0) state.lastActiveLevel = levelValue
 
-    // Restore pending level if dimmer has been switched on after nightmode has been disabled:
+	// Restore pending level if dimmer has been switched on after nightmode has been disabled:
     if (!state.nightmodeActive & (state.nightmodePendingLevel > 0) & switchEvent.isStateChange & switchValue == "on") {
         logger("dimmerEvent(): Applying Pending Level: ${state.nightmodePendingLevel}","debug")
         result << response(secure(zwave.basicV1.basicSet(value: Math.round(state.nightmodePendingLevel.toInteger() * 99 / 100 ))))
         state.nightmodePendingLevel = 0
     }
     // Else if Proactive Reporting is enabled, and the level has changed, request a meter report:
-    else if (state.proactiveReports & levelEvent.isStateChange) {
+	else if (state.proactiveReports != null & state.proactiveReports & levelEvent.isStateChange) {
         result << response(["delay 5000", secure(zwave.meterV3.meterGet(scale: 2)),"delay 10000", secure(zwave.meterV3.meterGet(scale: 2))])
         // Meter request is delayed for 5s, although sometimes this isn't long enough, so make a second request after another 10 seconds.
     }
@@ -1705,8 +1705,8 @@ def updated() {
         state.updatedLastRanAt = now()
 
         // Update internal state:
-        state.loggingLevelIDE     = settings.configLoggingLevelIDE.toInteger()
-        state.loggingLevelDevice  = settings.configLoggingLevelDevice.toInteger()
+        state.loggingLevelIDE     = settings.configLoggingLevelIDE?.toInteger()
+        state.loggingLevelDevice  = settings.configLoggingLevelDevice?.toInteger()
         state.syncAll             = ("true" == settings.configSyncAll)
         state.proactiveReports    = ("true" == settings.configProactiveReports)
 
@@ -1743,8 +1743,8 @@ def updated() {
         }
 
         // Update Protection target values:
-        state.protectLocalTarget = settings.configProtectLocal.toInteger()
-        state.protectRFTarget    = settings.configProtectRF.toInteger()
+        state.protectLocalTarget = settings.configProtectLocal?.toInteger()
+        state.protectRFTarget    = settings.configProtectRF?.toInteger()
 
         // Sync configuration with phyiscal device:
         sync(state.syncAll)
