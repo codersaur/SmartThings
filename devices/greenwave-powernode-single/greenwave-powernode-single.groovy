@@ -3,9 +3,9 @@
  *
  *  Name: GreenWave PowerNode (Single) Advanced
  *
- *  Date: 2017-03-05
+ *  Date: 2017-03-08
  *
- *  Version: 1.00
+ *  Version: 1.01
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/greenwave-powernode-single
  *
@@ -1535,19 +1535,19 @@ private getCommandClassVersions() {
  **/
 private getParamsMd() {
     return [
-        // Firmware v4.23 onwards:
+        // Firmware v4.22 onwards:
         [id:  0, size: 1, type: "number", range: "1..100", defaultValue: 10, required: false, readonly: false,
-         isSigned: true, fwVersion: 4.23,
+         isSigned: true, fwVersion: 4.22,
          name: "Power Report Threshold",
          description : "Power level change that will result in a new power report being sent.\n" +
          "Values: 1-100 = % change from previous report"],
         [id:  1, size: 1, type: "number", range: "0..255", defaultValue: 255, required: false, readonly: false, // Real default is 2.
-         isSigned: false, fwVersion: 4.23,
+         isSigned: false, fwVersion: 4.22,
          name: "Keep-Alive Time",
          description : "Time after which the LED indicator will flash if there has been no communication from the hub.\n" +
          "Values: 1-255 = time in minutes"],
         [id: 2, size: 1, type: "number", defaultValue: 0, required: false, readonly: true, // READ-ONLY!
-         isSigned: false, fwVersion: 4.23,
+         isSigned: false, fwVersion: 4.22,
          name: "Wheel Status",
          description : "Indicates the position of the Room Colour Selector wheel."],
         // Firmware v4.28 onwards:

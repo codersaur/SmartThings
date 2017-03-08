@@ -139,6 +139,9 @@ The device exposes the following commands which can be called from a SmartApp:
 
 ## Version History
 
+#### 2017-03-08: v1.01
+  *  getParamsMd(): set fwVersion to 4.22, for parameters #0,#1, and #2.
+
 #### 2017-03-05: v1.00
   *  Initial version.
 
