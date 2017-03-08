@@ -152,6 +152,7 @@ General notes concerning the GreenWave PowerNode:
 * The device is generally poor at reporting physical switch events (reports are typically delayed by 10-20s). To work round the issue, this device handler will request BinarySwitchReports if a meter report indicates that there has been a change in state.
 * The device seems to send a lot of Meter Reports. It is important to be cautious setting parameter #0, to avoid spamming the Z-Wave network. Ideally, there should be a parameter to control the _power reporting interval_.
 * The device reports _Current Leakage_ alarms frequently, hence this device handler has an option to ignore them.
+* There does not appear to be any way (in software) to turn off the white power button LED, so this device isn't great for use in bedrooms as it lights up dark rooms. If anyone has a solution, please let me know!
 
 ## References
  Some useful links relevant to the development of this device handler:
