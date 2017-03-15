@@ -9,11 +9,11 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 ## SmartApps
 
-* [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/evohome-connect):
+#### [Evohome (Connect) - BETA](https://github.com/codersaur/SmartThings/tree/master/smartapps/evohome-connect):
  - This SmartApp connects your Honeywell Evohome System to SmartThings.
  - Note, the Evohome Heating Zone device handler (below) must also be installed.
 
-* [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/influxdb-logger):
+#### [InfluxDB Logger](https://github.com/codersaur/SmartThings/tree/master/smartapps/influxdb-logger):
  - This SmartApp logs SmartThings device attributes to an [InfluxDB](https://influxdata.com/) database.
 
 ### SmartApp Installation Procedure
