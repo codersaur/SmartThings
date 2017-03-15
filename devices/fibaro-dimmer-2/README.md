@@ -85,7 +85,7 @@ The Fibaro Dimmer 2 has a few read-only parameters that are not shown in this se
 #### Multi-channel Device Associations:
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/fibaro-dimmer-2/screenshots/fd2-ss-settings-assocgroups.png" width="200" align="right">
 
-The Fibaro Dimmer 2 supports _Multi-channel_ Device Associations. This allows the physical switches connected to a Fibaro Dimmer 2 to send z-wave commands directly to groups of other devices (e.g. other dimmers are relays), without the commands being processed by the SmartThings hub. This results in faster response times compared to using a SmartApp for example.
+The Fibaro Dimmer 2 supports _Multi-channel_ Device Associations. This allows the physical switches connected to a Fibaro Dimmer 2 to send z-wave commands directly to groups of other devices (e.g. other dimmers or relays), without the commands being processed by the SmartThings hub. This results in faster response times compared to using a SmartApp for example.
 
 The Fibaro Dimmer 2 supports four association groups:
 
