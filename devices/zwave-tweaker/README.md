@@ -57,22 +57,6 @@ Use the settings in this section to configure a configuration parameter. Paramet
 * **Parameter Value**: Enter the desired value for the parameter.
 
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-param.png" width="200">
-
-#### Configure Other Settings:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-protection.png" width="200" align="right">
-
-* **Local Protection**: Prevent unintentional control (e.g. by a child), by disabling any physical switches on the device. The device must support the PROTECTION command class.
-
-* **RF Protection**: Enabling _RF Protection_ means the device will not respond to wireless commands from other Z-Wave devices, including on/off commands issued via the SmartThings app.The device must support the PROTECTION command class.
-
-* **ALL ON/ALL OFF Function**: Control the device's response to SWITCH_ALL_SET commands.
-
-#### Original Settings:
-
-Do not delete any setting values below this line! They belong to the original device handler and will be reinstated when the original device handler is restored.
-
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-original.png" width="200">
-
 ## GUI
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-main.png" width="200" align="right">
 
@@ -209,6 +193,22 @@ Using the Z-Wave Tweaker's settings it is possible to configure a device's respo
 4. If a change to the SWITCH_ALL mode fails to sync, check the following:
    * The device supports the SWITCH_ALL command class.
    * The device supports the specific mode selected.
+
+
+#### Configure Other Settings:
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-protection.png" width="200" align="right">
+
+* **Local Protection**: Prevent unintentional control (e.g. by a child), by disabling any physical switches on the device. The device must support the PROTECTION command class.
+
+* **RF Protection**: Enabling _RF Protection_ means the device will not respond to wireless commands from other Z-Wave devices, including on/off commands issued via the SmartThings app.The device must support the PROTECTION command class.
+
+* **ALL ON/ALL OFF Function**: Control the device's response to SWITCH_ALL_SET commands.
+
+#### Original Settings:
+
+Do not delete any setting values below this line! They belong to the original device handler and will be reinstated when the original device handler is restored.
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-original.png" width="200">
 
 ## Current Limitations
 * The Z-Wave Tweaker will not work with sleepy (e.g. battery-powered) devices.
