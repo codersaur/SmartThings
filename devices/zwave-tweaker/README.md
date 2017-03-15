@@ -5,6 +5,7 @@ Copyright (c) [David Lomas](https://github.com/codersaur)
 
 ## Overview
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-main.png" width="200" align="right">
+
 A SmartThings device handler to assist with interrogating and tweaking Z-Wave devices.
 
 ### Key features:
@@ -41,7 +42,9 @@ Use the settings in this section to configure an association group.
 
 * **Association Group Members**: Members must be defined as a comma-delimited list of targets. Each target device can be specified in one of two ways:
    * _Node_: A single hexadecimal number (e.g. "0C") representing the target _Device Network ID_.
-   * _Endpoint_: A pair of hexadecimal numbers separated by a colon (e.g. "10:1") that represent the target _Device Network ID_ and _Endpoint ID_ respectively. For devices that support multiple endpoints (e.g. a dual relay), this allows a specific endpoint to be targeted by the association group.
+   * _Endpoint_: A pair of hexadecimal numbers separated by a colon (e.g. "10:1") that represent the target _Device Network ID_ and _Endpoint ID_ respectively. For devices that support multiple endpoints (e.g. a dual relay), this allows a specific endpoint to be targeted by the association group.  
+   
+   Note, the Device Network IDs for all Z-Wave devices in your SmartThings network are displayed on the My Devices tab in the SmartThings IDE. Consult the relevant manufacturer's manual for information about the endpoints supported by a particular target device.
 
 * **Command Class**: The Z-Wave Tweaker will automatically detect whether to use _Association_ or _Multi-channel Association_ commands, however you can force it to use a specific command class using this setting.
 
@@ -137,13 +140,13 @@ For a device to be able to send commands it must support either the ASSOCIATION 
 Using the Z-Wave Tweaker's settings it is possible to configure one association group at a time:
 
 1. From the SmartThings smartphone app, click on the gear icon to open the device settings.
-2. In the _CONFIGURE ASSOCIATION GROUP_ section, input the ID of the target group, and [fill in the members](https://github.com/codersaur/SmartThings/tree/master/devices/zwave-tweaker#configure-association-group). 
-   If you want to remove all members from the association group, leave the members blank.
+2. In the _CONFIGURE ASSOCIATION GROUP_ section, input the ID of the target group, and [fill in the members](https://github.com/codersaur/SmartThings/tree/master/devices/zwave-tweaker#configure-association-group).   
+   If you want to remove all members from the association group, leave the members blank.  
    Note, the _Device Network IDs_ for all Z-Wave devices in your SmartThings network are displayed on the _My Devices_ tab in the SmartThings IDE. Consult the relevant manufacturer's manual for information about the endpoints supported by a particular target device.
 
    <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-assocgroup.png" width="200">
 3. If needed, specify the command class to be used (this is not normally required as the Z-Wave Tweaker will automatically select the appropriate command class).
-4. Tap _Done_. The change will now be synced with the device, when complete, the _Sync_ tile should turn green.
+4. Tap _Done_. The change will now be synced with the device, when complete, the _Sync_ tile should turn green.  
    In the IDE, you should see the old members and the new members displayed:
 
    <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-log-assocgroupsync.png">
@@ -163,7 +166,7 @@ Using the Z-Wave Tweaker's settings it is possible to configure one parameter at
 2. In the _CONFIGURE A PARAMETER_ section, input the parameter ID and desired parameter value.
 
    <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-param.png" width="200">
-3. Tap _Done_. The change will now be synced with the device, when complete, the _Sync_ tile should turn green.
+3. Tap _Done_. The change will now be synced with the device, when complete, the _Sync_ tile should turn green.  
    In the IDE, you should see the old value and the new value displayed:
 
    <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-log-paramsync.png">
