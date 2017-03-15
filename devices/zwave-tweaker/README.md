@@ -21,42 +21,6 @@ A SmartThings device handler to assist with interrogating and tweaking Z-Wave de
 ## Installation
 The Z-Wave Tweaker is designed to temporarily replace the normal device handler for a device. Follow [these instructions](https://github.com/codersaur/SmartThings#device-handler-installation-procedure) to install the device handler using the SmartThings IDE.
 
-## Settings
-
-#### General Settings:
-
-* **IDE Live Logging Level**: Set the level of log messages shown in the SmartThings IDE _Live Logging_ tab. For normal operation _Info_ is recommended, if troubleshooting use _Debug_ or _Trace_.
-
-#### Scan Ranges:
-Configure the scan range for association groups, endpoints, and configuration parameters. If not configured, the default scan ranges are:
-* Association Groups: 0 to 10.
-* Endpoints: 0 to 10.
-* Parameters: 0 to 20.
-
-#### Configure Association Group:
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-assocgroup.png" width="200" align="right">
-
-Use the settings in this section to configure an association group.
-
-* **Association Group ID**: The ID of the group that will be configured. If this input is left blank, no association groups will by modified.
-
-* **Association Group Members**: Members must be defined as a comma-delimited list of targets. Each target device can be specified in one of two ways:
-   * _Node_: A single hexadecimal number (e.g. "0C") representing the target _Device Network ID_.
-   * _Endpoint_: A pair of hexadecimal numbers separated by a colon (e.g. "10:1") that represent the target _Device Network ID_ and _Endpoint ID_ respectively. For devices that support multiple endpoints (e.g. a dual relay), this allows a specific endpoint to be targeted by the association group.  
-   
-   Note, the Device Network IDs for all Z-Wave devices in your SmartThings network are displayed on the My Devices tab in the SmartThings IDE. Consult the relevant manufacturer's manual for information about the endpoints supported by a particular target device.
-
-* **Command Class**: The Z-Wave Tweaker will automatically detect whether to use _Association_ or _Multi-channel Association_ commands, however you can force it to use a specific command class using this setting.
-
-#### Configure A Parameter:
-
-Use the settings in this section to configure a configuration parameter. Parameters are device-specific so it is recommended to consult the manufacturer's product manual for a full description of each parameter.
-
-* **Parameter ID**: The ID of the parameter that will be configured. If this input is left blank, no parameter values will by modified.
-
-* **Parameter Value**: Enter the desired value for the parameter.
-
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-param.png" width="200">
 ## GUI
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-main.png" width="200" align="right">
 
@@ -194,6 +158,43 @@ Using the Z-Wave Tweaker's settings it is possible to configure a device's respo
    * The device supports the SWITCH_ALL command class.
    * The device supports the specific mode selected.
 
+
+## Settings
+
+#### General Settings:
+
+* **IDE Live Logging Level**: Set the level of log messages shown in the SmartThings IDE _Live Logging_ tab. For normal operation _Info_ is recommended, if troubleshooting use _Debug_ or _Trace_.
+
+#### Scan Ranges:
+Configure the scan range for association groups, endpoints, and configuration parameters. If not configured, the default scan ranges are:
+* Association Groups: 0 to 10.
+* Endpoints: 0 to 10.
+* Parameters: 0 to 20.
+
+#### Configure Association Group:
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-assocgroup.png" width="200" align="right">
+
+Use the settings in this section to configure an association group.
+
+* **Association Group ID**: The ID of the group that will be configured. If this input is left blank, no association groups will by modified.
+
+* **Association Group Members**: Members must be defined as a comma-delimited list of targets. Each target device can be specified in one of two ways:
+   * _Node_: A single hexadecimal number (e.g. "0C") representing the target _Device Network ID_.
+   * _Endpoint_: A pair of hexadecimal numbers separated by a colon (e.g. "10:1") that represent the target _Device Network ID_ and _Endpoint ID_ respectively. For devices that support multiple endpoints (e.g. a dual relay), this allows a specific endpoint to be targeted by the association group.  
+   
+   Note, the Device Network IDs for all Z-Wave devices in your SmartThings network are displayed on the My Devices tab in the SmartThings IDE. Consult the relevant manufacturer's manual for information about the endpoints supported by a particular target device.
+
+* **Command Class**: The Z-Wave Tweaker will automatically detect whether to use _Association_ or _Multi-channel Association_ commands, however you can force it to use a specific command class using this setting.
+
+#### Configure A Parameter:
+
+Use the settings in this section to configure a configuration parameter. Parameters are device-specific so it is recommended to consult the manufacturer's product manual for a full description of each parameter.
+
+* **Parameter ID**: The ID of the parameter that will be configured. If this input is left blank, no parameter values will by modified.
+
+* **Parameter Value**: Enter the desired value for the parameter.
+
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-param.png" width="200">
 
 #### Configure Other Settings:
 <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-settings-protection.png" width="200" align="right">
