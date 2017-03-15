@@ -7,7 +7,7 @@
  *
  *  Date: 2017-03-15
  *
- *  Version: 0.06
+ *  Version: 0.07
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/zwave-tweaker
  *
@@ -132,7 +132,7 @@ metadata {
             )
 
             input (
-                name: "configLoggingLevelIDE",
+                name: "zwtLoggingLevelIDE",
                 title: "IDE Live Logging Level:\nMessages with this level and higher will be logged to the IDE.",
                 type: "enum",
                 options: [
@@ -229,7 +229,7 @@ metadata {
                 type: "text",
                 required: false
             )
-            
+
             input (
                 name: "zwtAssocGroupCc",
                 title: "Command Class:",
@@ -355,7 +355,7 @@ def updated() {
         state.updatedLastRanAt = now()
 
         // Logging Level:
-        state.loggingLevelIDE = (settings.configLoggingLevelIDE) ? settings.configLoggingLevelIDE.toInteger() : 3
+        state.loggingLevelIDE = (settings.zwtLoggingLevelIDE) ? settings.zwtLoggingLevelIDE.toInteger() : 3
 
         // Run initialisation checks
         if (!state.zwtInitialised) { initialise() }
@@ -2101,17 +2101,35 @@ private printCommands() {
  **/
 private cleanUp() {
     logger("cleanUp(): Cleaning up device state.","info")
-    state.zwtInitialised = null
-    state.zwtGeneralMd = null
-    state.zwtCommandsMd = null
-    state.zwtAssocGroupsMd = null
-    state.zwtEndpointsMd = null
-    state.zwtParamsMd = null
-    state.zwtMeterReportsMd = null
-    state.zwtNotificationReportsMd = null
-    state.zwtSensorMultilevelReportsMd = null
-    state.zwtAssocGroupTarget = null
-    state.zwtParamTarget = null
+
+    state.remove("zwtInitialised")
+    state.remove("zwtGeneralMd")
+    state.remove("zwtCommandsMd")
+    state.remove("zwtAssocGroupsMd")
+    state.remove("zwtEndpointsMd")
+    state.remove("zwtParamsMd")
+    state.remove("zwtMeterReportsMd")
+    state.remove("zwtNotificationReportsMd")
+    state.remove("zwtSensorMultilevelReportsMd")
+    state.remove("zwtAssocGroupTarget")
+    state.remove("zwtParamTarget")
+
+    device.updateSetting("zwtLoggingLevelIDE", null)
+    device.updateSetting("zwtAssocGroupsScanStart", null)
+    device.updateSetting("zwtAssocGroupsScanStop", null)
+    device.updateSetting("zwtEndpointsScanStart", null)
+    device.updateSetting("zwtEndpointsScanStop", null)
+    device.updateSetting("zwtParamsScanStart", null)
+    device.updateSetting("zwtParamsScanStop", null)
+    device.updateSetting("zwtAssocGroupId", null)
+    device.updateSetting("zwtAssocGroupMembers", null)
+    device.updateSetting("zwtAssocGroupCc", null)
+    device.updateSetting("zwtParamId", null)
+    device.updateSetting("zwtParamValue", null)
+    device.updateSetting("zwtProtectLocal", null)
+    device.updateSetting("zwtProtectRF", null)
+    device.updateSetting("zwtSwitchAllMode", null)
+
 }
 
 /*****************************************************************************************************************

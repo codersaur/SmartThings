@@ -219,8 +219,11 @@ Do not delete any setting values below this line! They belong to the original de
 
 ## Version History
 
+#### 2017-03-15: v0.07
+* cleanUp(): Uses state.remove() and device.updateSetting()
+
 #### 2017-03-15: v0.06
-  *  Beta release.
+* Beta release.
 
 ## References
  Some useful links relevant to the development of this device handler:
