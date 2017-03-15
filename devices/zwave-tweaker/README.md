@@ -57,7 +57,9 @@ The Z-Wave Tweaker is designed to be operated from the SmartThings smartphone ap
 The Z-Wave Tweaker can scan a device to discover basic properties, including any supported association groups, multi-channel endpoints, and configuration parameters.
 
 * Tap the _Scan General_ tile to begin collecting basic information. After a few seconds, you should see some responses from the device in the IDE, such as _Version_ and _Protection_ reports.
-* After the responses stop, tap on of the other _Scan_ tiles to begin collecting more-specific information. Each scan may take 30 seconds or so to run. **Do not run multiple scans at the same time as this will cause network congestion and some responses from the device may be lost**.
+* After the responses stop, tap on of the other _Scan_ tiles to begin collecting more-specific information.  
+   Be sure to set appropriate [scan ranges](https://github.com/codersaur/SmartThings/blob/master/devices/zwave-tweaker/README.md#scan-ranges) in the Tweaker's settings, and allow time for each scan to complete.  
+   **Do not run multiple scans at the same time as this will cause network congestion and some responses from the device may be lost**.
 * To view the data that has been collected, tap on the corresponding _Print_ tile. This should output information to the _Live Logging_ tab in the IDE.
 
    _Print General:_
