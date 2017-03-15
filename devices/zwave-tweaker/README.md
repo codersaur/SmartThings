@@ -42,7 +42,7 @@ Each _Print_ tile can be used to output the information collected by the corresp
 #### Sync Tile:
 This tile indicates when all configuration changes have been successfully synchronised with the physical device.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-synced.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-sync-pending.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-synced.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/zwave-tweaker/screenshots/zwt-ss-tiles-sync-pending.png" width="100">
 
 #### Cleanup Tile:
 Tap this tile when you have finished using the Z-Wave Tweaker. It will remove all collected data in preparation for reinstating the original device handler.
