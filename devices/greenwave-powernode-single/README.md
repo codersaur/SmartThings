@@ -76,32 +76,32 @@ These tiles display the instantaneous power consumption of the device (Watts) an
 #### Room Colour Wheel Tile:
 This tile mirrors the _Room Colour Wheel_ on the bottom right of the physical power outlet.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-colour-wheel-aqua.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-colour-wheel-orange.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-colour-wheel-aqua.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-colour-wheel-orange.png" width="100">
 
 #### Blink Tile:
 The _Blink_ tile will cause the _Circle LED_ on the outlet to blink for ~20 seconds. This is useful to identify the physical device.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-blink.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-blink.png" width="100">
 
 #### Local Protection Tile:
 This tile toggles the _local protection_ state. This can be used to prevent unintentional control (e.g. by a child), by disabling the physical power switch on the device.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-lp-unprotected.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-lp-protected.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-lp-unprotected.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-lp-protected.png" width="100">
 
 #### RF Protection Tile:
 This tile toggles the _RF protection_ state. Enabling _RF Protection_ means the device will not respond to wireless commands from other Z-Wave devices, including on/off commands issued via the SmartThings app.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-rfp-unprotected.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-rfp-protected.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-rfp-unprotected.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-rfp-protected.png" width="100">
 
 #### Sync Tile:
 This tile indicates when all configuration settings have been successfully synchronised with the physical device.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-synced.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-sync-pending.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-synced.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-sync-pending.png" width="100">
 
 #### Fault Tile:
 The _Fault_ tile indicates if the device has reported any faults. These may include load faults, firmware, or hardware issues. Once any faults have been investigated and remediated, the tile can be tapped to clear the fault status.
 
-<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-clear.png" width="200"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-fault-active.png" width="200">
+<img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-clear.png" width="100"> <img src="https://raw.githubusercontent.com/codersaur/SmartThings/master/devices/greenwave-powernode-single/screenshots/gwpn-ss-tiles-fault-active.png" width="100">
 
 ## SmartApp Integration
 
