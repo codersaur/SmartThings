@@ -219,6 +219,9 @@ Do not delete any setting values below this line! They belong to the original de
 
 ## Version History
 
+#### 2017-03-16: v0.08
+* initialise(): Removes any null ccIds parsed from the rawDescription.
+
 #### 2017-03-15: v0.07
 * cleanUp(): Uses state.remove() and device.updateSetting()
 

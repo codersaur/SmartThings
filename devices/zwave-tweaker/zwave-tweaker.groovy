@@ -5,9 +5,9 @@
  *
  *  Author: David Lomas (codersaur)
  *
- *  Date: 2017-03-15
+ *  Date: 2017-03-16
  *
- *  Version: 0.07
+ *  Version: 0.08
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/zwave-tweaker
  *
@@ -229,7 +229,7 @@ metadata {
                 type: "text",
                 required: false
             )
-
+            
             input (
                 name: "zwtAssocGroupCc",
                 title: "Command Class:",
@@ -1599,13 +1599,13 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
 /**
  *  initialise()
  *
- *  Sets up meta-data caches and determines if the device is using security encapsulation.
+ *  Sets up meta-data caches, parses fingerprint, and determines if the device is using security encapsulation.
  **/
 private initialise() {
     logger("initialise()","trace")
 
-    // Initialise parameter and association group meta data stores if they don't exist:
-    if (!state.zwtGeneralMd) state.zwtGeneralMd = [:]
+    // Initialise meta-data stores if they don't exist:
+    if (!state.zwtGeneralMd) state.zwtGeneralMd = [:] // Map!
     if (!state.zwtCommandsMd) state.zwtCommandsMd = []
     if (!state.zwtAssocGroupsMd) state.zwtAssocGroupsMd = []
     if (!state.zwtEndpointsMd) state.zwtEndpointsMd = []
@@ -1626,6 +1626,7 @@ private initialise() {
         ccIds = device.rawDescription.findAll(/0x\p{XDigit}+/)
         if (ccIds.size() > 0) { ccIds.remove(0) }
     }
+    ccIds.removeAll([null])
     state.zwtGeneralMd.commandClassIds = ccIds.sort().collect { Integer.parseInt(it.replace("0x",""),16) } // Parse hex strings to ints.
     state.zwtGeneralMd.commandClassNames = toCcNames(state.zwtGeneralMd.commandClassIds,true) // Parse Ids to names.
     logger("Supported Command Classes: ${state.zwtGeneralMd.commandClassNames}","info")
@@ -2114,21 +2115,21 @@ private cleanUp() {
     state.remove("zwtAssocGroupTarget")
     state.remove("zwtParamTarget")
 
-    device.updateSetting("zwtLoggingLevelIDE", null)
-    device.updateSetting("zwtAssocGroupsScanStart", null)
-    device.updateSetting("zwtAssocGroupsScanStop", null)
-    device.updateSetting("zwtEndpointsScanStart", null)
-    device.updateSetting("zwtEndpointsScanStop", null)
-    device.updateSetting("zwtParamsScanStart", null)
-    device.updateSetting("zwtParamsScanStop", null)
-    device.updateSetting("zwtAssocGroupId", null)
-    device.updateSetting("zwtAssocGroupMembers", null)
-    device.updateSetting("zwtAssocGroupCc", null)
-    device.updateSetting("zwtParamId", null)
-    device.updateSetting("zwtParamValue", null)
-    device.updateSetting("zwtProtectLocal", null)
-    device.updateSetting("zwtProtectRF", null)
-    device.updateSetting("zwtSwitchAllMode", null)
+    device?.updateSetting("zwtLoggingLevelIDE", null)
+    device?.updateSetting("zwtAssocGroupsScanStart", null)
+    device?.updateSetting("zwtAssocGroupsScanStop", null)
+    device?.updateSetting("zwtEndpointsScanStart", null)
+    device?.updateSetting("zwtEndpointsScanStop", null)
+    device?.updateSetting("zwtParamsScanStart", null)
+    device?.updateSetting("zwtParamsScanStop", null)
+    device?.updateSetting("zwtAssocGroupId", null)
+    device?.updateSetting("zwtAssocGroupMembers", null)
+    device?.updateSetting("zwtAssocGroupCc", null)
+    device?.updateSetting("zwtParamId", null)
+    device?.updateSetting("zwtParamValue", null)
+    device?.updateSetting("zwtProtectLocal", null)
+    device?.updateSetting("zwtProtectRF", null)
+    device?.updateSetting("zwtSwitchAllMode", null)
 
 }
 
