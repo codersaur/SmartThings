@@ -82,9 +82,10 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 5. Click '*Publish*' *(For Me)*.
 
 #### Part Two: Connect your device to SmartThings
-If your device is already connected to SmartThings, you can skip straight to part three.
-If your physical device is not yet connected to SmartThings, you will need to follow [these instructions to _Add a Thing_](https://support.smartthings.com/hc/en-gb/articles/205956950-How-to-connect-and-configure-new-devices). 
-During the joining process SmartThings will select an appropriate device handler, if the correct device handler (installed in part one) is selected, you can skip to part four, otherwise you will need to change the handler in part three.
+
+If your device is already connected to SmartThings, you can skip straight to part three, however if your physical device is not yet connected to SmartThings, you will need to follow [these instructions to _Add a Thing_](https://support.smartthings.com/hc/en-gb/articles/205956950-How-to-connect-and-configure-new-devices).
+
+During the joining process SmartThings will select an appropriate device handler, if the correct device handler (installed in part one) is selected, you can skip to part four, otherwise you will need to change the handler as described in part three.
 
 #### Part Three: Update existing device types
 
