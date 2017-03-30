@@ -73,7 +73,7 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 
 ### Device Handler Installation Procedure
 
-#### Part One: Install the code using the SmartThings IDE
+#### Part One: Install the device handler code using the SmartThings IDE
 
 1. Within the SmartThings IDE, click on '*My Device Handlers*'.
 2. Click the '*+ Create New Device Handler*' button. 
@@ -81,7 +81,12 @@ This repository contains device handlers and SmartApps for use with Samsung's [S
 4. Click '*Create*'.
 5. Click '*Publish*' *(For Me)*.
 
-#### Part Two: Update existing device types
+#### Part Two: Connect your device to SmartThings
+If your device is already connected to SmartThings, you can skip straight to part three.
+If your physical device is not yet connected to SmartThings, you will need to follow [these instructions to _Add a Thing_](https://support.smartthings.com/hc/en-gb/articles/205956950-How-to-connect-and-configure-new-devices). 
+During the joining process SmartThings will select an appropriate device handler, if the correct device handler (installed in part one) is selected, you can skip to part four, otherwise you will need to change the handler in part three.
+
+#### Part Three: Update existing device types
 
 When you add new devices, SmartThings will automatically select the device handler with the closest-matching *fingerprint*. However, this process is not perfect and it often fails to select the desired device handler. You may also have pre-existing devices you want to switch to new device handler. In these cases, you need to change the device type of each device instance from the IDE.
 
@@ -91,7 +96,7 @@ When you add new devices, SmartThings will automatically select the device handl
 4. Change the '*Type*' using the drop-down box (custom devices will be near the bottom of the list).
 5. Hit the '*Update*' button at the bottom.
 
-#### Part Three: Update existing device settings
+#### Part Four: Update existing device settings
 
 If you have changed the type of an existing device, it is very important to update the device's settings to ensure the device instance is fully initialised and ready for use with the new device handler.
 
