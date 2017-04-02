@@ -28,7 +28,7 @@ SmartApp settings:
 
 ## Version History
 
-#### 2017-04-01: v1.10
+#### 2017-04-03: v1.11
  * Supports Basic HTTP Authentication.
  * logger(): Wrapper for all logging.
  * softPoll(): checks that attribute values are != null.
