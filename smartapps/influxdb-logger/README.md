@@ -1,6 +1,6 @@
 # InfluxDB Logger
 
-Copyright (c) 2017 [David Lomas](https://github.com/codersaur)
+Copyright (c) [David Lomas](https://github.com/codersaur)
 
 ## Overview
 
@@ -11,6 +11,7 @@ This SmartApp logs SmartThings device attributes to an [InfluxDB](https://influx
 * The _Soft-Polling_ feature forces attribute values to be written to the database periodically, even if values haven't changed.
 * Logs Location _Mode_ events.
 * Supports an InfluxDB instance on the local LAN, without needing to route traffic via the cloud.
+* Supports Basic Authentication to InfluxDB database.
 
 ## Installation
 Follow [these instructions](https://github.com/codersaur/SmartThings#smartapp-installation-procedure) to install the SmartApp in the SmartThings IDE. However, before publishing the code in the IDE, edit the _getGroupName()_ command (at the bottom of the code) to add the Group IDs for your SmartThings instance. These can be found from the _'My Locations'_ tab in the SmartThings IDE.
@@ -27,6 +28,14 @@ SmartApp settings:
 
 ## Version History
 
+#### 2017-04-01: v1.10
+ * Supports Basic HTTP Authentication.
+ * logger(): Wrapper for all logging.
+ * softPoll(): checks that attribute values are != null.
+ * postToInfluxDB(): Added callback option to the HubAction object.
+ * handleInfluxResponse(): New callback function. Handles response from posts made in postToInfluxDB() and logs errors.
+ * updated(): Removed custom attributes for EnergyMeters.
+ 
 #### 2017-01-30: v1.10
  * Fixed typo in postToInfluxDB().
 
