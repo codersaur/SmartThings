@@ -1,7 +1,7 @@
 # Fibaro RGBW Controller (FGRGBWM-441)
 https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller
 
-Copyright (c) 2016 [David Lomas](https://github.com/codersaur)
+Copyright (c) [David Lomas](https://github.com/codersaur)
 
 ## Overview
 
@@ -168,6 +168,10 @@ There are two known bugs in firmware 25.25, which this device handler attempts t
 
 ## Version History:
 
+#### 2017-04-17: v0.04
+ * installed(): Initialises attribute values in addition to state.
+ * updated(): Added check to prevent double execution, and to call installed() if not run.
+  
 #### 2016-11-14: v0.03
  * Association Group Members can be edited from the SmartThings GUI.
   

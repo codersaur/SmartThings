@@ -1,9 +1,9 @@
 /**
- *  Copyright 2016 David Lomas (codersaur)
+ *  Copyright David Lomas (codersaur)
  *
  *  SmartThings Device Handler for: Fibaro RGBW Controller EU v2.x (FGRGBWM-441)
  *
- *  Version: 0.03 (2016-11-14)
+ *  Version: 0.04 (2017-04-17)
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/fibaro-rgbw-controller
  *
@@ -611,7 +611,7 @@ metadata {
                           "1" : "1: Start favourite program"]
 
         }
-		
+
         section { // ASSOCIATION GROUPS:
             input type: "paragraph", element: "paragraph",
                 title: "ASSOCIATION GROUPS:", description: "Enter a comma-delimited list of node IDs for each association group.\n" +
@@ -888,62 +888,93 @@ def zwaveEvent(physicalgraph.zwave.Command cmd) {
  *  installed() - Runs when the device is first installed.
  **/
 def installed() {
+    log.trace "installed()"
+
     state.debug = true
     state.installedAt = now()
     state.lastReset = new Date().format("YYYY/MM/dd \n HH:mm:ss", location.timeZone)
     state.channelMapping = [null, "Red", "Green", "Blue", "White"]
     state.channelThresholds = [null,1,1,1,1]
     state.channelModes = [null,1,1,1,1]
+
+    // Initialise attributes:
+    sendEvent(name: "switch", value: "off", displayed: false)
+    sendEvent(name: "level", value: 0, unit: "%", displayed: false)
+    sendEvent(name: "hue", value: 0, unit: "%", displayed: false)
+    sendEvent(name: "saturation", value: 0, unit: "%", displayed: false)
+    sendEvent(name: "colorName", value: "custom", displayed: false)
+    sendEvent(name: "color", value: "[]", displayed: false)
+    sendEvent(name: "activeProgram", value: 0, displayed: false)
+    sendEvent(name: "energy", value: 0, unit: "kWh", displayed: false)
+    sendEvent(name: "power", value: 0, unit: "W", displayed: false)
+    sendEvent(name: "lastReset", value: state.lastReset, displayed: false)
+
+    (1..4).each { channel ->
+        sendEvent(name: "switchCh${channel}", value: "off", displayed: false)
+        sendEvent(name: "levelCh${channel}", value: 0, unit: "%", displayed: false)
+    }
+
+    ["Red", "Green", "Blue", "White"].each { mapping ->
+        sendEvent(name: "switchCh${mapping}", value: "off", displayed: false)
+        sendEvent(name: "levelCh${mapping}", value: 0, unit: "%", displayed: false)
+    }
+
+    state.isInstalled = true
 }
 
 /**
  *  updated() - Runs after device settings have been changed in the SmartThings GUI (and/or IDE?).
- *
- *  Note, the updated() method is not a 'command', so it doesn't send commands by default.
- *  To execute commands from updated() you have to specifically return a HubAction object.
- *  The response() helper wraps commands up in a HubAction so they can be sent from parse() or updated().
- *  See: https://community.smartthings.com/t/remotec-z-thermostat-configuration-with-z-wave-commands/31956/12
  **/
 def updated() {
     if ("true" == configDebugMode) log.trace "${device.displayName}: updated()"
 
-    state.debug = ("true" == configDebugMode)
+    if (!state.updatedLastRanAt || now() >= state.updatedLastRanAt + 2000) {
+        state.updatedLastRanAt = now()
 
-    // Convert channel mappings to a map:
-    def cMapping = []
-    cMapping[1] = configCh1Mapping
-    cMapping[2] = configCh2Mapping
-    cMapping[3] = configCh3Mapping
-    cMapping[4] = configCh4Mapping
-    state.channelMapping = cMapping
+        // Make sure installation has completed:
+        if (!state.isInstalled) { installed() }
 
-    // Convert channel thresholds to a map:
-    def cThresholds = []
-    cThresholds[1] = configCh1Threshold.toInteger()
-    cThresholds[2] = configCh2Threshold.toInteger()
-    cThresholds[3] = configCh3Threshold.toInteger()
-    cThresholds[4] = configCh4Threshold.toInteger()
-    state.channelThresholds = cThresholds
+        state.debug = ("true" == configDebugMode)
 
-    // Convert channel modes to a map:
-    def cModes = []
-    cModes[1] = configParam14_1.toInteger()
-    cModes[2] = configParam14_2.toInteger()
-    cModes[3] = configParam14_3.toInteger()
-    cModes[4] = configParam14_4.toInteger()
-    state.channelModes = cModes
+        // Convert channel mappings to a map:
+        def cMapping = []
+        cMapping[1] = configCh1Mapping
+        cMapping[2] = configCh2Mapping
+        cMapping[3] = configCh3Mapping
+        cMapping[4] = configCh4Mapping
+        state.channelMapping = cMapping
 
-    // Validate Paramter #14 settings:
-    state.isRGBW = ( state.channelModes[1] < 8 ) || ( state.channelModes[2] < 8 ) || ( state.channelModes[3] < 8 ) || ( state.channelModes[4] < 8 )
-    state.isIN   = ( state.channelModes[1] == 8 ) || ( state.channelModes[2] == 8 ) || ( state.channelModes[3] == 8 ) || ( state.channelModes[4] == 8 )
-    state.isOUT  = ( state.channelModes[1] > 8 ) || ( state.channelModes[2] > 8 ) || ( state.channelModes[3] > 8 ) || ( state.channelModes[4] > 8 )
-    if ( state.isRGBW & ( (state.channelModes[1] != state.channelModes[2]) || (state.channelModes[1] != state.channelModes[3]) || (state.channelModes[1] != state.channelModes[4]) ) ) {
-        log.warn "${device.displayName}: updated(): Invalid combination of RGBW channels detected. All RGBW channels should be identical. You may get weird behaviour!"
+        // Convert channel thresholds to a map:
+        def cThresholds = []
+        cThresholds[1] = configCh1Threshold.toInteger()
+        cThresholds[2] = configCh2Threshold.toInteger()
+        cThresholds[3] = configCh3Threshold.toInteger()
+        cThresholds[4] = configCh4Threshold.toInteger()
+        state.channelThresholds = cThresholds
+
+        // Convert channel modes to a map:
+        def cModes = []
+        cModes[1] = configParam14_1.toInteger()
+        cModes[2] = configParam14_2.toInteger()
+        cModes[3] = configParam14_3.toInteger()
+        cModes[4] = configParam14_4.toInteger()
+        state.channelModes = cModes
+
+        // Validate Paramter #14 settings:
+        state.isRGBW = ( state.channelModes[1] < 8 ) || ( state.channelModes[2] < 8 ) || ( state.channelModes[3] < 8 ) || ( state.channelModes[4] < 8 )
+        state.isIN   = ( state.channelModes[1] == 8 ) || ( state.channelModes[2] == 8 ) || ( state.channelModes[3] == 8 ) || ( state.channelModes[4] == 8 )
+        state.isOUT  = ( state.channelModes[1] > 8 ) || ( state.channelModes[2] > 8 ) || ( state.channelModes[3] > 8 ) || ( state.channelModes[4] > 8 )
+        if ( state.isRGBW & ( (state.channelModes[1] != state.channelModes[2]) || (state.channelModes[1] != state.channelModes[3]) || (state.channelModes[1] != state.channelModes[4]) ) ) {
+            log.warn "${device.displayName}: updated(): Invalid combination of RGBW channels detected. All RGBW channels should be identical. You may get weird behaviour!"
+        }
+        if ( state.isRGBW & ( state.isIN || state.isOUT ) ) log.warn "${device.displayName}: updated(): Invalid combination of RGBW and IN/OUT channels detected. You may get weird behaviour!"
+
+        // Call configure() and refresh():
+        return response( [ configure() + refresh() ])
     }
-    if ( state.isRGBW & ( state.isIN || state.isOUT ) ) log.warn "${device.displayName}: updated(): Invalid combination of RGBW and IN/OUT channels detected. You may get weird behaviour!"
-
-    // Call configure() and refresh():
-    return response( [ configure() + refresh() ])
+    else {
+        log.debug "updated(): Ran within last 2 seconds so aborting."
+    }
 }
 
 /**
