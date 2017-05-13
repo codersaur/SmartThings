@@ -122,7 +122,7 @@ void updated() {
 	atomicState.debug = settings.prefDebugMode
 	
 	// Evohome:
-	atomicState.evohomeEndpoint = 'https://tccna.honeywell.com'
+	atomicState.evohomeEndpoint = 'https://mytotalconnectcomfort.com/WebApi'
 	atomicState.evohomeAuth = [tokenLifetimePercentThreshold : 50] // Auth Token will be refreshed when down to 50% of its lifetime.
 	atomicState.evohomeStatusPollInterval = settings.prefEvohomeStatusPollInterval // Poll interval for status updates (minutes).
 	atomicState.evohomeSchedulePollInterval = 60 // Hardcoded to 1hr (minutes).
