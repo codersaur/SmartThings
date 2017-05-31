@@ -77,6 +77,7 @@ preferences {
         input "prefLogModeEvents", "bool", title:"Log Mode Events?", defaultValue: true, required: true
         input "prefLogHubProperties", "bool", title:"Log Hub Properties?", defaultValue: true, required: true
         input "prefLogLocationProperties", "bool", title:"Log Location Properties?", defaultValue: true, required: true
+        input "prefUseEventTimestamp", "bool", title:"Use Event Timestamp?", defaultValue: false, required: true
     }
     
     section("Devices To Monitor:") {
@@ -260,6 +261,8 @@ def handleModeEvent(evt) {
     def locationName = escapeStringForInfluxDB(location.name)
     def mode = '"' + escapeStringForInfluxDB(evt.value) + '"'
 	def data = "_stMode,locationId=${locationId},locationName=${locationName} mode=${mode}"
+    if (prefUseEventTimestamp)
+        data += (evt.date && evt.date.time) ? " ${evt.date.time * 1000000}" : " ${now() * 1000000}"
     postToInfluxDB(data)
 }
 
@@ -483,6 +486,9 @@ def handleEvent(evt) {
         data += ",unit=${unit} value=${value}"
     }
     
+    if (prefUseEventTimestamp)
+        data += (evt.date && evt.date.time) ? " ${evt.date.time * 1000000}" : " ${now() * 1000000}"
+
     // Post data to InfluxDB:
     postToInfluxDB(data)
 
@@ -556,6 +562,7 @@ def logSystemProperties() {
             def sst = '"' + times.sunset.format("HH:mm", location.timeZone) + '"'
 
             def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst}"
+            data += (prefUseEventTimestamp) ? " ${now() * 1000000}" : ""
             postToInfluxDB(data)
         } catch (e) {
 		    logger("logSystemProperties(): Unable to log Location properties: ${e}","error")
@@ -578,6 +585,7 @@ def logSystemProperties() {
 
                 def data = "_stHub,locationId=${locationId},locationName=${locationName},hubId=${hubId},hubName=${hubName},hubIP=${hubIP} "
                 data += "status=${hubStatus},batteryInUse=${batteryInUse},uptime=${hubUptime},zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
+                data += (prefUseEventTimestamp) ? " ${now() * 1000000}" : ""
                 postToInfluxDB(data)
             } catch (e) {
 				logger("logSystemProperties(): Unable to log Hub properties: ${e}","error")
