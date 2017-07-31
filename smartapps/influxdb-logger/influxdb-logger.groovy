@@ -488,6 +488,12 @@ def handleEvent(evt) {
 
 }
 
+String getLength(String message) {
+    assert message instanceof String
+    return message.getBytes("UTF-8").size().toString()
+}
+
+
 
 /*****************************************************************************************************************
  *  Main Commands:
@@ -596,7 +602,10 @@ def logSystemProperties() {
  *  Uses hubAction instead of httpPost() in case InfluxDB server is on the same LAN as the Smartthings Hub.
  **/
 def postToInfluxDB(data) {
-    logger("postToInfluxDB(): Posting data to InfluxDB: Host: ${state.databaseHost}, Port: ${state.databasePort}, Database: ${state.databaseName}, Data: [${data}]","debug")
+    def length = getLength(data)
+    state.headers.put("Content-Length", length)
+
+	logger("postToInfluxDB(): Posting data to InfluxDB: Host: ${state.databaseHost}, Port: ${state.databasePort}, Database: ${state.databaseName}, Data: [${data}], Size: ${length}","debug")
     
     try {
         def hubAction = new physicalgraph.device.HubAction(
