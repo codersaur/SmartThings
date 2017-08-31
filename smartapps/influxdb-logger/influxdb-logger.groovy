@@ -108,8 +108,8 @@ preferences {
         input "sleepSensors", "capability.sleepSensor", title: "Sleep Sensors", multiple: true, required: false
         input "smokeDetectors", "capability.smokeDetector", title: "Smoke Detectors", multiple: true, required: false
         input "soundSensors", "capability.soundSensor", title: "Sound Sensors", multiple: true, required: false
-	input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
-	input "switches", "capability.switch", title: "Switches", multiple: true, required: false
+		input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
+		input "switches", "capability.switch", title: "Switches", multiple: true, required: false
         input "switchLevels", "capability.switchLevel", title: "Switch Levels", multiple: true, required: false
         input "tamperAlerts", "capability.tamperAlert", title: "Tamper Alerts", multiple: true, required: false
         input "temperatures", "capability.temperatureMeasurement", title: "Temperature Sensors", multiple: true, required: false
@@ -575,7 +575,7 @@ def logSystemProperties() {
             def times = getSunriseAndSunset()
             def srt = '"' + times.sunrise.format("HH:mm", location.timeZone) + '"'
             def sst = '"' + times.sunset.format("HH:mm", location.timeZone) + '"'
-	    def alarmstatus = '"' + escapeStringForInfluxDB(location.currentState("alarmSystemStatus")?.value)  + '"'
+			def alarmstatus = '"' + escapeStringForInfluxDB(location.currentState("alarmSystemStatus")?.value)  + '"'
             def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst},alarmstatus=${alarmstatus}"            	
             postToInfluxDB(data)
         } catch (e) {
