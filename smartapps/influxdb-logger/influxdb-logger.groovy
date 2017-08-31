@@ -77,6 +77,7 @@ preferences {
         input "prefLogModeEvents", "bool", title:"Log Mode Events?", defaultValue: true, required: true
         input "prefLogHubProperties", "bool", title:"Log Hub Properties?", defaultValue: true, required: true
         input "prefLogLocationProperties", "bool", title:"Log Location Properties?", defaultValue: true, required: true
+        input "prefLogSHMEvents", "bool", title:"Log Smart Home Monitor events?", defaultValue: true, required: true	    
     }
     
     section("Devices To Monitor:") {
@@ -107,8 +108,8 @@ preferences {
         input "sleepSensors", "capability.sleepSensor", title: "Sleep Sensors", multiple: true, required: false
         input "smokeDetectors", "capability.smokeDetector", title: "Smoke Detectors", multiple: true, required: false
         input "soundSensors", "capability.soundSensor", title: "Sound Sensors", multiple: true, required: false
-		input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
-		input "switches", "capability.switch", title: "Switches", multiple: true, required: false
+	input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
+	input "switches", "capability.switch", title: "Switches", multiple: true, required: false
         input "switchLevels", "capability.switchLevel", title: "Switch Levels", multiple: true, required: false
         input "tamperAlerts", "capability.tamperAlert", title: "Tamper Alerts", multiple: true, required: false
         input "temperatures", "capability.temperatureMeasurement", title: "Temperature Sensors", multiple: true, required: false
@@ -211,8 +212,8 @@ def updated() {
     state.deviceAttributes << [ devices: 'sleepSensors', attributes: ['sleeping']]
     state.deviceAttributes << [ devices: 'smokeDetectors', attributes: ['smoke']]
     state.deviceAttributes << [ devices: 'soundSensors', attributes: ['sound']]
-	state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
-	state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
+    state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
+    state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
     state.deviceAttributes << [ devices: 'switchLevels', attributes: ['level']]
     state.deviceAttributes << [ devices: 'tamperAlerts', attributes: ['tamper']]
     state.deviceAttributes << [ devices: 'temperatures', attributes: ['temperature']]
@@ -260,6 +261,26 @@ def handleModeEvent(evt) {
     def locationName = escapeStringForInfluxDB(location.name)
     def mode = '"' + escapeStringForInfluxDB(evt.value) + '"'
 	def data = "_stMode,locationId=${locationId},locationName=${locationName} mode=${mode}"
+    postToInfluxDB(data)
+}
+
+/**
+ *  alarmStatusHandler(evt)
+ * 
+ *  Log SHM Alarm status changes.
+ **/
+  def alarmStatusHandler(evt) {
+    logger("alarmStatusHandler(): SHM Mode changed to: ${evt.value}","info")
+    def locationId = escapeStringForInfluxDB(location.id)
+    def locationName = escapeStringForInfluxDB(location.name)
+    def tz = '"' + escapeStringForInfluxDB(location.timeZone.ID) + '"'
+    def mode = '"' + escapeStringForInfluxDB(location.mode) + '"'
+    def hubCount = location.hubs.size()
+    def times = getSunriseAndSunset()
+    def srt = '"' + times.sunrise.format("HH:mm", location.timeZone) + '"'
+    def sst = '"' + times.sunset.format("HH:mm", location.timeZone) + '"'
+    def alarmstatus = '"' + escapeStringForInfluxDB(location.currentState("alarmSystemStatus")?.value)  + '"'
+    def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst},alarmstatus=${alarmstatus}"            	
     postToInfluxDB(data)
 }
 
@@ -554,8 +575,8 @@ def logSystemProperties() {
             def times = getSunriseAndSunset()
             def srt = '"' + times.sunrise.format("HH:mm", location.timeZone) + '"'
             def sst = '"' + times.sunset.format("HH:mm", location.timeZone) + '"'
-
-            def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst}"
+	    def alarmstatus = '"' + escapeStringForInfluxDB(location.currentState("alarmSystemStatus")?.value)  + '"'
+            def data = "_stLocation,locationId=${locationId},locationName=${locationName},latitude=${location.latitude},longitude=${location.longitude},timeZone=${tz} mode=${mode},hubCount=${hubCount}i,sunriseTime=${srt},sunsetTime=${sst},alarmstatus=${alarmstatus}"            	
             postToInfluxDB(data)
         } catch (e) {
 		    logger("logSystemProperties(): Unable to log Location properties: ${e}","error")
@@ -692,7 +713,10 @@ private manageSubscriptions() {
     
     // Subscribe to mode events:
     if (prefLogModeEvents) subscribe(location, "mode", handleModeEvent)
-    
+
+    // Subscribe to SHM alarm events
+    if (prefLogSHMEvents) subscribe(location, "alarmSystemStatus", alarmStatusHandler)
+        
     // Subscribe to device attributes (iterate over each attribute for each device collection in state.deviceAttributes):
     def devs // dynamic variable holding device collection.
     state.deviceAttributes.each { da ->
