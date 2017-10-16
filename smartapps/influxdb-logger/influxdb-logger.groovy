@@ -68,17 +68,17 @@ preferences {
         input "prefDatabaseUser", "text", title: "Username", required: false
         input "prefDatabasePass", "text", title: "Password", required: false
     }
-    
+
     section("Polling:") {
         input "prefSoftPollingInterval", "number", title:"Soft-Polling interval (minutes)", defaultValue: 10, required: true
     }
-    
+
     section("System Monitoring:") {
         input "prefLogModeEvents", "bool", title:"Log Mode Events?", defaultValue: true, required: true
         input "prefLogHubProperties", "bool", title:"Log Hub Properties?", defaultValue: true, required: true
         input "prefLogLocationProperties", "bool", title:"Log Location Properties?", defaultValue: true, required: true
     }
-    
+
     section("Devices To Monitor:") {
         input "accelerometers", "capability.accelerationSensor", title: "Accelerometers", multiple: true, required: false
         input "alarms", "capability.alarm", title: "Alarms", multiple: true, required: false
@@ -107,8 +107,8 @@ preferences {
         input "sleepSensors", "capability.sleepSensor", title: "Sleep Sensors", multiple: true, required: false
         input "smokeDetectors", "capability.smokeDetector", title: "Smoke Detectors", multiple: true, required: false
         input "soundSensors", "capability.soundSensor", title: "Sound Sensors", multiple: true, required: false
-		input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
-		input "switches", "capability.switch", title: "Switches", multiple: true, required: false
+        input "spls", "capability.soundPressureLevel", title: "Sound Pressure Level Sensors", multiple: true, required: false
+        input "switches", "capability.switch", title: "Switches", multiple: true, required: false
         input "switchLevels", "capability.switchLevel", title: "Switch Levels", multiple: true, required: false
         input "tamperAlerts", "capability.tamperAlert", title: "Tamper Alerts", multiple: true, required: false
         input "temperatures", "capability.temperatureMeasurement", title: "Temperature Sensors", multiple: true, required: false
@@ -137,7 +137,7 @@ preferences {
 def installed() {
     state.installedAt = now()
     state.loggingLevelIDE = 5
-    log.debug "${app.label}: Installed with settings: ${settings}" 
+    log.debug "${app.label}: Installed with settings: ${settings}"
 }
 
 /**
@@ -151,11 +151,11 @@ def uninstalled() {
 
 /**
  *  updated()
- * 
+ *
  *  Runs when app settings are changed.
- * 
+ *
  *  Updates device.state with input values and other hard-coded values.
- *  Builds state.deviceAttributes which describes the attributes that will be monitored for each device collection 
+ *  Builds state.deviceAttributes which describes the attributes that will be monitored for each device collection
  *  (used by manageSubscriptions() and softPoll()).
  *  Refreshes scheduling and subscriptions.
  **/
@@ -164,16 +164,16 @@ def updated() {
 
     // Update internal state:
     state.loggingLevelIDE = (settings.configLoggingLevelIDE) ? settings.configLoggingLevelIDE.toInteger() : 3
-    
+
     // Database config:
     state.databaseHost = settings.prefDatabaseHost
     state.databasePort = settings.prefDatabasePort
     state.databaseName = settings.prefDatabaseName
     state.databaseUser = settings.prefDatabaseUser
-    state.databasePass = settings.prefDatabasePass 
-    
+    state.databasePass = settings.prefDatabasePass
+
     state.path = "/write?db=${state.databaseName}"
-    state.headers = [:] 
+    state.headers = [:]
     state.headers.put("HOST", "${state.databaseHost}:${state.databasePort}")
     state.headers.put("Content-Type", "application/x-www-form-urlencoded")
     if (state.databaseUser && state.databasePass) {
@@ -181,7 +181,7 @@ def updated() {
     }
 
     // Build array of device collections and the attributes we want to report on for that collection:
-    //  Note, the collection names are stored as strings. Adding references to the actual collection 
+    //  Note, the collection names are stored as strings. Adding references to the actual collection
     //  objects causes major issues (possibly memory issues?).
     state.deviceAttributes = []
     state.deviceAttributes << [ devices: 'accelerometers', attributes: ['acceleration']]
@@ -211,8 +211,8 @@ def updated() {
     state.deviceAttributes << [ devices: 'sleepSensors', attributes: ['sleeping']]
     state.deviceAttributes << [ devices: 'smokeDetectors', attributes: ['smoke']]
     state.deviceAttributes << [ devices: 'soundSensors', attributes: ['sound']]
-	state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
-	state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
+    state.deviceAttributes << [ devices: 'spls', attributes: ['soundPressureLevel']]
+    state.deviceAttributes << [ devices: 'switches', attributes: ['switch']]
     state.deviceAttributes << [ devices: 'switchLevels', attributes: ['level']]
     state.deviceAttributes << [ devices: 'tamperAlerts', attributes: ['tamper']]
     state.deviceAttributes << [ devices: 'temperatures', attributes: ['temperature']]
@@ -228,7 +228,7 @@ def updated() {
     // Configure Scheduling:
     state.softPollingInterval = settings.prefSoftPollingInterval.toInteger()
     manageSchedules()
-    
+
     // Configure Subscriptions:
     manageSubscriptions()
 }
@@ -239,18 +239,18 @@ def updated() {
 
 /**
  *  handleAppTouch(evt)
- * 
+ *
  *  Used for testing.
  **/
 def handleAppTouch(evt) {
     logger("handleAppTouch()","trace")
-    
+
     softPoll()
 }
 
 /**
  *  handleModeEvent(evt)
- * 
+ *
  *  Log Mode changes.
  **/
 def handleModeEvent(evt) {
@@ -266,22 +266,29 @@ def handleModeEvent(evt) {
 /**
  *  handleEvent(evt)
  *
- *  Builds data to send to InfluxDB.
- *   - Escapes and quotes string values.
- *   - Calculates logical binary values where string values can be 
- *     represented as binary values (e.g. contact: closed = 1, open = 0)
- * 
- *  Useful references: 
- *   - http://docs.smartthings.com/en/latest/capabilities-reference.html
- *   - https://docs.influxdata.com/influxdb/v0.10/guides/writing_data/
+ *  parseEvent() then post to InfluxDB.
  **/
 def handleEvent(evt) {
     logger("handleEvent(): $evt.displayName($evt.name:$evt.unit) $evt.value","info")
-    
+    data = parseEvent(evt)
+    postToInfluxDB(data)
+}
+
+/**
+ *  parseEvent(evt)
+ *
+ *  Parses event data to send to InfluxDB.
+ *   - Escapes and quotes string values.
+ *   - Calculates logical binary values where string values can be
+ *     represented as binary values (e.g. contact: closed = 1, open = 0)
+ *
+ **/
+def parseEvent(evt) {
     // Build data string to send to InfluxDB:
     //  Format: <measurement>[,<tag_name>=<tag_value>] field=<field_value>
     //    If value is an integer, it must have a trailing "i"
     //    If value is a string, it must be enclosed in double quotes.
+    logger("handleEvent(): $evt.displayName($evt.name:$evt.unit) $evt.value","info")
     def measurement = evt.name
     // tags:
     def deviceId = escapeStringForInfluxDB(evt.deviceId)
@@ -297,9 +304,9 @@ def handleEvent(evt) {
     def unit = escapeStringForInfluxDB(evt.unit)
     def value = escapeStringForInfluxDB(evt.value)
     def valueBinary = ''
-    
+
     def data = "${measurement},deviceId=${deviceId},deviceName=${deviceName},groupId=${groupId},groupName=${groupName},hubId=${hubId},hubName=${hubName},locationId=${locationId},locationName=${locationName}"
-    
+
     // Unit tag and fields depend on the event type:
     //  Most string-valued attributes can be translated to a binary value too.
     if ('acceleration' == evt.name) { // acceleration: Calculate a binary value (active = 1, inactive = 0)
@@ -474,7 +481,7 @@ def handleEvent(evt) {
     }
     // Catch any other event with a string value that hasn't been handled:
     else if (evt.value ==~ /.*[^0-9\.,-].*/) { // match if any characters are not digits, period, comma, or hyphen.
-		logger("handleEvent(): Found a string value that's not explicitly handled: Device Name: ${deviceName}, Event Name: ${evt.name}, Value: ${evt.value}","warn")
+        logger("handleEvent(): Found a string value that's not explicitly handled: Device Name: ${deviceName}, Event Name: ${evt.name}, Value:${evt.value}","warn")
         value = '"' + value + '"'
         data += ",unit=${unit} value=${value}"
     }
@@ -482,10 +489,7 @@ def handleEvent(evt) {
     else {
         data += ",unit=${unit} value=${value}"
     }
-    
-    // Post data to InfluxDB:
-    postToInfluxDB(data)
-
+    return data
 }
 
 
@@ -497,7 +501,7 @@ def handleEvent(evt) {
  *  softPoll()
  *
  *  Executed by schedule.
- * 
+ *
  *  Forces data to be posted to InfluxDB (even if an event has not been triggered).
  *  Doesn't poll devices, just builds a fake event to pass to handleEvent().
  *
@@ -505,11 +509,12 @@ def handleEvent(evt) {
  **/
 def softPoll() {
     logger("softPoll()","trace")
-    
+
     logSystemProperties()
-    
+
     // Iterate over each attribute for each device, in each device collection in deviceAttributes:
     def devs // temp variable to hold device collection.
+    def eventsData = ""
     state.deviceAttributes.each { da ->
         devs = settings."${da.devices}"
         if (devs && (da.attributes)) {
@@ -517,9 +522,9 @@ def softPoll() {
                 da.attributes.each { attr ->
                     if (d.hasAttribute(attr) && d.latestState(attr)?.value != null) {
                         logger("softPoll(): Softpolling device ${d} for attribute: ${attr}","info")
-                        // Send fake event to handleEvent():
-                        handleEvent([
-                            name: attr, 
+                        // Build multiple event string to sent to InfluxDB
+                        eventsData = eventsData + '\n' + parseEvent([
+                            name: attr,
                             value: d.latestState(attr)?.value,
                             unit: d.latestState(attr)?.unit,
                             device: d,
@@ -531,7 +536,7 @@ def softPoll() {
             }
         }
     }
-
+    postToInfluxDB(eventsData)
 }
 
 /**
@@ -571,7 +576,7 @@ def logSystemProperties() {
                 def hubIP = '"' + escapeStringForInfluxDB(h.localIP) + '"'
                 def hubStatus = '"' + escapeStringForInfluxDB(h.status) + '"'
                 def batteryInUse = ("false" == h.hub.getDataValue("batteryInUse")) ? "0i" : "1i"
-                def hubUptime = h.hub.getDataValue("uptime") + 'i'
+                def hubUptime = ("null" == h.hub.getDataValue("uptime")) ? (h.hub.getDataValue("uptime") + "i") : "0i"
                 def zigbeePowerLevel = h.hub.getDataValue("zigbeePowerLevel") + 'i'
                 def zwavePowerLevel =  '"' + escapeStringForInfluxDB(h.hub.getDataValue("zwavePowerLevel")) + '"'
                 def firmwareVersion =  '"' + escapeStringForInfluxDB(h.firmwareVersionString) + '"'
@@ -597,7 +602,7 @@ def logSystemProperties() {
  **/
 def postToInfluxDB(data) {
     logger("postToInfluxDB(): Posting data to InfluxDB: Host: ${state.databaseHost}, Port: ${state.databasePort}, Database: ${state.databaseName}, Data: [${data}]","debug")
-    
+
     try {
         def hubAction = new physicalgraph.device.HubAction(
         	[
@@ -609,7 +614,7 @@ def postToInfluxDB(data) {
             null,
             [ callback: handleInfluxResponse ]
         )
-		
+
         sendHubCommand(hubAction)
     }
     catch (Exception e) {
@@ -617,7 +622,7 @@ def postToInfluxDB(data) {
     }
 
     // For reference, code that could be used for WAN hosts:
-    // def url = "http://${state.databaseHost}:${state.databasePort}/write?db=${state.databaseName}" 
+    // def url = "http://${state.databaseHost}:${state.databasePort}/write?db=${state.databaseName}"
     //    try {
     //      httpPost(url, data) { response ->
     //          if (response.status != 999 ) {
@@ -626,7 +631,7 @@ def postToInfluxDB(data) {
     //              log.debug "Response contentType: ${response.contentType}"
     //            }
     //      }
-    //  } catch (e) {	
+    //  } catch (e) {
     //      logger("postToInfluxDB(): Something went wrong when posting: ${e}","error")
     //  }
 }
@@ -649,8 +654,8 @@ def handleInfluxResponse(physicalgraph.device.HubResponse hubResponse) {
 
 /**
  *  manageSchedules()
- * 
- *  Configures/restarts scheduled tasks: 
+ *
+ *  Configures/restarts scheduled tasks:
  *   softPoll() - Run every {state.softPollingInterval} minutes.
  **/
 private manageSchedules() {
@@ -659,7 +664,7 @@ private manageSchedules() {
     // Generate a random offset (1-60):
     Random rand = new Random(now())
     def randomOffset = 0
-    
+
     // softPoll:
     try {
         unschedule(softPoll)
@@ -673,12 +678,12 @@ private manageSchedules() {
         logger("manageSchedules(): Scheduling softpoll to run every ${state.softPollingInterval} minutes (offset of ${randomOffset} seconds).","trace")
         schedule("${randomOffset} 0/${state.softPollingInterval} * * * ?", "softPoll")
     }
-    
+
 }
 
 /**
  *  manageSubscriptions()
- * 
+ *
  *  Configures subscriptions.
  **/
 private manageSubscriptions() {
@@ -686,13 +691,13 @@ private manageSubscriptions() {
 
     // Unsubscribe:
     unsubscribe()
-    
+
     // Subscribe to App Touch events:
     subscribe(app,handleAppTouch)
-    
+
     // Subscribe to mode events:
     if (prefLogModeEvents) subscribe(location, "mode", handleModeEvent)
-    
+
     // Subscribe to device attributes (iterate over each attribute for each device collection in state.deviceAttributes):
     def devs // dynamic variable holding device collection.
     state.deviceAttributes.each { da ->
@@ -754,9 +759,9 @@ private encodeCredentialsBasic(username, password) {
  *  escapeStringForInfluxDB()
  *
  *  Escape values to InfluxDB.
- *  
- *  If a tag key, tag value, or field key contains a space, comma, or an equals sign = it must 
- *  be escaped using the backslash character \. Backslash characters do not need to be escaped. 
+ *
+ *  If a tag key, tag value, or field key contains a space, comma, or an equals sign = it must
+ *  be escaped using the backslash character \. Backslash characters do not need to be escaped.
  *  Commas and spaces will also need to be escaped for measurements, though equals signs = do not.
  *
  *  Further info: https://docs.influxdata.com/influxdb/v0.10/write_protocols/write_syntax/
@@ -779,10 +784,10 @@ private escapeStringForInfluxDB(str) {
  *  getGroupName()
  *
  *  Get the name of a 'Group' (i.e. Room) from its ID.
- *  
+ *
  *  This is done manually as there does not appear to be a way to enumerate
  *  groups from a SmartApp currently.
- * 
+ *
  *  GroupIds can be obtained from the SmartThings IDE under 'My Locations'.
  *
  *  See: https://community.smartthings.com/t/accessing-group-within-a-smartapp/6830
@@ -793,5 +798,5 @@ private getGroupName(id) {
     else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Kitchen'}
     else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Lounge'}
     else if (id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX') {return 'Office'}
-    else {return 'Unknown'}    
+    else {return 'Unknown'}
 }
