@@ -775,7 +775,7 @@ private escapeStringForInfluxDB(str) {
         //str = str.replaceAll("'", "_")  // Replace apostrophes with underscores.
     }
     else {
-        str = 'null'
+        str = '0'
     }
     return str
 }
