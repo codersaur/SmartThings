@@ -266,7 +266,7 @@ def handleModeEvent(evt) {
 /**
  *  handleEvent(evt)
  *
- *  parseEvent() then post to InfluxDB.
+ *  parseEvent then post to InfluxDB.
  **/
 def handleEvent(evt) {
     logger("handleEvent(): $evt.displayName($evt.name:$evt.unit) $evt.value","info")
@@ -288,7 +288,6 @@ def parseEvent(evt) {
     //  Format: <measurement>[,<tag_name>=<tag_value>] field=<field_value>
     //    If value is an integer, it must have a trailing "i"
     //    If value is a string, it must be enclosed in double quotes.
-    logger("handleEvent(): $evt.displayName($evt.name:$evt.unit) $evt.value","info")
     def measurement = evt.name
     // tags:
     def deviceId = escapeStringForInfluxDB(evt.deviceId)
@@ -481,7 +480,7 @@ def parseEvent(evt) {
     }
     // Catch any other event with a string value that hasn't been handled:
     else if (evt.value ==~ /.*[^0-9\.,-].*/) { // match if any characters are not digits, period, comma, or hyphen.
-        logger("handleEvent(): Found a string value that's not explicitly handled: Device Name: ${deviceName}, Event Name: ${evt.name}, Value:${evt.value}","warn")
+        logger("parseEvent(): Found a string value that's not explicitly handled: Device Name: ${deviceName}, Event Name: ${evt.name}, Value:${evt.value}","warn")
         value = '"' + value + '"'
         data += ",unit=${unit} value=${value}"
     }
