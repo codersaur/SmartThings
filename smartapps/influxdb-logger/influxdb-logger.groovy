@@ -513,7 +513,7 @@ def softPoll() {
 
     // Iterate over each attribute for each device, in each device collection in deviceAttributes:
     def devs // temp variable to hold device collection.
-    def eventsData = ""
+    def eventsData = []
     state.deviceAttributes.each { da ->
         devs = settings."${da.devices}"
         if (devs && (da.attributes)) {
@@ -521,21 +521,22 @@ def softPoll() {
                 da.attributes.each { attr ->
                     if (d.hasAttribute(attr) && d.latestState(attr)?.value != null) {
                         logger("softPoll(): Softpolling device ${d} for attribute: ${attr}","info")
-                        // Build multiple event string to sent to InfluxDB
-                        eventsData = eventsData + '\n' + parseEvent([
+                        // Event list to sent to InfluxDB
+                        eventsData.add(parseEvent([
                             name: attr,
                             value: d.latestState(attr)?.value,
                             unit: d.latestState(attr)?.unit,
                             device: d,
                             deviceId: d.id,
                             displayName: d.displayName
-                        ])
+                        ]))
                     }
                 }
             }
         }
     }
-    postToInfluxDB(eventsData)
+    // InfluxDB needs to be a newline delimited string
+    postToInfluxDB(eventsData.join('\n'))
 }
 
 /**
