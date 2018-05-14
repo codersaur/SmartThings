@@ -472,13 +472,17 @@ def handleEvent(evt) {
         valueBinary = ('closed' == evt.value) ? '1i' : '0i'
         data += ",unit=${unit} value=${value},valueBinary=${valueBinary}"
     }
+    else if ('temperature' == evt.name) { // temperature: make it a float if it's only an int
+        value = Float.parseFloat(value)
+    	data += ",unit=${unit} value=${value}"
+    } 
     // Catch any other event with a string value that hasn't been handled:
     else if (evt.value ==~ /.*[^0-9\.,-].*/) { // match if any characters are not digits, period, comma, or hyphen.
 		logger("handleEvent(): Found a string value that's not explicitly handled: Device Name: ${deviceName}, Event Name: ${evt.name}, Value: ${evt.value}","warn")
         value = '"' + value + '"'
         data += ",unit=${unit} value=${value}"
     }
-    // Catch any other general numerical event (carbonDioxide, power, energy, humidity, level, temperature, ultravioletIndex, voltage, etc).
+    // Catch any other general numerical event (carbonDioxide, power, energy, humidity, level, ultravioletIndex, voltage, etc).
     else {
         data += ",unit=${unit} value=${value}"
     }
