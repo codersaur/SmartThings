@@ -28,7 +28,7 @@
  *
  **/
 metadata {
-    definition (name: "Fibaro RGBW Controller", namespace: "codersaur", author: "David Lomas") {
+    definition (name: "Fibaro RGBW Controller (Advanced)", namespace: "codersaur", author: "David Lomas") {
         capability "Actuator"
         capability "Switch"
         capability "Switch Level"
@@ -1153,18 +1153,22 @@ def setColor(Map colorMap) {
     if (colorMap.containsKey("red") & colorMap.containsKey("green") & colorMap.containsKey("blue")) {
         if (state.debug) log.debug "${device.displayName}: setColor(): Setting color using RGB values."
         rgbw = rgbToRGBW(colorMap)
+        log.trace "${device.displayName}: setColor(): enriched color with RGBW values: ${rgbw}"
     }
     else if (colorMap.containsKey("hex")) {
         if (state.debug) log.debug "${device.displayName}: setColor(): Setting color using hex value."
         rgbw = hexToRGBW(colorMap)
+        log.trace "${device.displayName}: setColor(): enriched color with RGBW values: ${rgbw}"
     }
     else if (colorMap.containsKey("name")) {
         if (state.debug) log.debug "${device.displayName}: setColor(): Setting color using name."
         rgbw = nameToRGBW(colorMap)
+        log.trace "${device.displayName}: setColor(): enriched color with RGBW values: ${rgbw}"
     }
     else if (colorMap.containsKey("hue") & colorMap.containsKey("saturation") & colorMap.containsKey("level")) {
         if (state.debug) log.debug "${device.displayName}: setColor(): Setting color using HSV values."
         rgbw = hsvToRGBW(colorMap)
+        log.trace "${device.displayName}: setColor(): enriched color with RGBW values: ${rgbw}"
     }
     else if (colorMap.containsKey("red") || colorMap.containsKey("green") || colorMap.containsKey("blue") || colorMap.containsKey("white")) {
         if (state.debug) log.debug "${device.displayName}: setColor(): Setting color using partial RGBW values."
@@ -1176,6 +1180,7 @@ def setColor(Map colorMap) {
         def s = (colorMap.containsKey("saturation")) ? colorMap.saturation : device.latestValue("saturation").toInteger()
         def l = (colorMap.containsKey("level")) ? colorMap.level : device.latestValue("level").toInteger()
         rgbw = hsvToRGBW([hue: h, saturation: s, level: l])
+        log.trace "${device.displayName}: setColor(): enriched color with RGBW values: ${rgbw}"
     }
     else {
         log.error "${device.displayName}: setColor(): Cannot obtain color information from colorMap: ${colorMap}"
@@ -1827,14 +1832,14 @@ private hsvToRGBW(Map colorMap) {
         float s = colorMap.saturation / 100
         float v = colorMap.level * 255 / 100
 
-        int d = (int) h * 6
+        int d = Math.floor(h * 6)
         float f = (h * 6) - d
         int n = Math.round(v)
         int p = Math.round(v * (1 - s))
         int q = Math.round(v * (1 - f * s))
         int t = Math.round(v * (1 - (1 - f) * s))
 
-        switch (d) {
+        switch (d % 6) {
           case 0: return colorMap << [ red: n, green: t, blue: p, white: [n,t,p].min() ]
           case 1: return colorMap << [ red: q, green: n, blue: p, white: [q,n,p].min() ]
           case 2: return colorMap << [ red: p, green: n, blue: t, white: [p,n,t].min() ]
