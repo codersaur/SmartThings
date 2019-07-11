@@ -571,7 +571,7 @@ def logSystemProperties() {
                 def hubIP = '"' + escapeStringForInfluxDB(h.localIP) + '"'
                 def hubStatus = '"' + escapeStringForInfluxDB(h.status) + '"'
                 def batteryInUse = ("false" == h.hub.getDataValue("batteryInUse")) ? "0i" : "1i"
-                def hubUptime = h.hub.getDataValue("uptime") + 'i'
+                def hubUptime = (now() - h.hub.uptime) + 'i'
                 def zigbeePowerLevel = h.hub.getDataValue("zigbeePowerLevel") + 'i'
                 def zwavePowerLevel =  '"' + escapeStringForInfluxDB(h.hub.getDataValue("zwavePowerLevel")) + '"'
                 def firmwareVersion =  '"' + escapeStringForInfluxDB(h.firmwareVersionString) + '"'
