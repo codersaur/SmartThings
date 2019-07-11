@@ -419,7 +419,7 @@ def handleEvent(evt) {
     else if ('thermostatOperatingState' == evt.name) { // thermostatOperatingState: Calculate a binary value (heating = 1, <any other value> = 0)
         unit = 'thermostatOperatingState'
         value = '"' + value + '"'
-        valueBinary = ('heating' == evt.value) ? '1i' : '0i'
+        valueBinary = ('idle' == evt.value) ? '0i' : '1i' 
         data += ",unit=${unit} value=${value},valueBinary=${valueBinary}"
     }
     else if ('thermostatSetpointMode' == evt.name) { // thermostatSetpointMode: Calculate a binary value (followSchedule = 0, <any other value> = 1)
