@@ -571,13 +571,13 @@ def logSystemProperties() {
                 def hubIP = '"' + escapeStringForInfluxDB(h.localIP) + '"'
                 def hubStatus = '"' + escapeStringForInfluxDB(h.status) + '"'
                 def batteryInUse = ("false" == h.hub.getDataValue("batteryInUse")) ? "0i" : "1i"
-                def uptime = (now() - h.hub.uptime) + 'i'
+                def hubUptime = (now() - h.hub.uptime) + 'i'
                 def zigbeePowerLevel = h.hub.getDataValue("zigbeePowerLevel") + 'i'
                 def zwavePowerLevel =  '"' + escapeStringForInfluxDB(h.hub.getDataValue("zwavePowerLevel")) + '"'
                 def firmwareVersion =  '"' + escapeStringForInfluxDB(h.firmwareVersionString) + '"'
 
                 def data = "_stHub,locationId=${locationId},locationName=${locationName},hubId=${hubId},hubName=${hubName},hubIP=${hubIP} "
-                data += "status=${hubStatus},batteryInUse=${batteryInUse},uptime=${uptime},zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
+                data += "status=${hubStatus},batteryInUse=${batteryInUse},uptime=${hubUptime},zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
                 postToInfluxDB(data)
             } catch (e) {
 				logger("logSystemProperties(): Unable to log Hub properties: ${e}","error")
