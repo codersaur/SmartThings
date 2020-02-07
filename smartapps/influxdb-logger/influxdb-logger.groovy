@@ -175,7 +175,8 @@ def updated() {
     state.path = "/write?db=${state.databaseName}"
     state.headers = [:] 
     state.headers.put("HOST", "${state.databaseHost}:${state.databasePort}")
-    state.headers.put("Content-Type", "application/x-www-form-urlencoded")
+    //state.headers.put("Content-Type", "application/x-www-form-urlencoded")
+    state.headers.put("Content-Type", "text/plain charset=utf-8")
     if (state.databaseUser && state.databasePass) {
         state.headers.put("Authorization", encodeCredentialsBasic(state.databaseUser, state.databasePass))
     }
@@ -571,13 +572,15 @@ def logSystemProperties() {
                 def hubIP = '"' + escapeStringForInfluxDB(h.localIP) + '"'
                 def hubStatus = '"' + escapeStringForInfluxDB(h.status) + '"'
                 def batteryInUse = ("false" == h.hub.getDataValue("batteryInUse")) ? "0i" : "1i"
-                def hubUptime = h.hub.getDataValue("uptime") + 'i'
+                def hubUptime = h.hub.getDataValue("uptime")
                 def zigbeePowerLevel = h.hub.getDataValue("zigbeePowerLevel") + 'i'
                 def zwavePowerLevel =  '"' + escapeStringForInfluxDB(h.hub.getDataValue("zwavePowerLevel")) + '"'
                 def firmwareVersion =  '"' + escapeStringForInfluxDB(h.firmwareVersionString) + '"'
 
                 def data = "_stHub,locationId=${locationId},locationName=${locationName},hubId=${hubId},hubName=${hubName},hubIP=${hubIP} "
-                data += "status=${hubStatus},batteryInUse=${batteryInUse},uptime=${hubUptime},zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
+                data += "status=${hubStatus},batteryInUse=${batteryInUse}"
+                if (hubUptime) { data += "uptime=${hubUptime}i," }
+                data += ",zigbeePowerLevel=${zigbeePowerLevel},zwavePowerLevel=${zwavePowerLevel},firmwareVersion=${firmwareVersion}"
                 postToInfluxDB(data)
             } catch (e) {
 				logger("logSystemProperties(): Unable to log Hub properties: ${e}","error")
@@ -637,8 +640,9 @@ def postToInfluxDB(data) {
  *  Handles response from post made in postToInfluxDB().
  **/
 def handleInfluxResponse(physicalgraph.device.HubResponse hubResponse) {
-    if(hubResponse.status >= 400) {
-		logger("postToInfluxDB(): Something went wrong! Response from InfluxDB: Headers: ${hubResponse.headers}, Body: ${hubResponse.body}","error")
+    logger("handleInfluxResponse(" + hubResponse + ")","trace")
+    if(hubResponse.status != 204) {
+		logger("postToInfluxDB(): Something went wrong! Response from InfluxDB: \nHeaders: ${hubResponse.headers}, \nBody: ${hubResponse.body}","error")
     }
 }
 
