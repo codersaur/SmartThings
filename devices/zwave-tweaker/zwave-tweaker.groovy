@@ -7,11 +7,16 @@
  *
  *  Date: 2017-03-16
  *
- *  Version: 0.08
+ *  Version: 0.09
  *
  *  Source: https://github.com/codersaur/SmartThings/tree/master/devices/zwave-tweaker
  *
  *  Author: David Lomas (codersaur)
+ *  Updated by: Tim Grimley (mwav3)
+ *
+ *  Changelog:
+ *
+ *  0.09 - Updated to activate form tiles through preferences for compatibility with new Smartthings app
  *
  *  Description: A SmartThings device handler to assist with tweaking Z-Wave devices.
  *
@@ -30,7 +35,7 @@
  *
  *****************************************************************************************************************/
 metadata {
-    definition (name: "Z-Wave Tweaker", namespace: "codersaur", author: "David Lomas") {
+    definition (name: "Z-Wave Tweaker 2", namespace: "codersaur", author: "David Lomas") {
         capability "Actuator"
         capability "Sensor"
 
@@ -123,6 +128,23 @@ metadata {
 
     preferences {
 
+        section { // Cleanup:
+            input (
+                type: "paragraph",
+                element: "paragraph",
+                title: "PERFORM DEVICE CLEANUP:",
+                description: "NOTE - Perform Cleanup prior to uninstalling the tweaker so unnecessary preferences are removed"
+           )
+
+             input (
+                name: "cleanit",
+                title: "Perform Clean Up",
+                type: "bool",
+                required: false
+            )
+
+        }
+        
         section { // GENERAL:
             input (
                 type: "paragraph",
@@ -312,6 +334,112 @@ metadata {
                 required: false
             )
         }
+			section { // Perform Commands:
+            input type: "paragraph",
+                element: "paragraph",
+                title: "RUN COMMANDS: CHANGE BACK TO FALSE AFTER RUNNING EACH ONE!",
+                description: "Trigger commands (former tile actions)"
+
+            input (
+                name: "generalscan",
+                title: "Perform General Device Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "assocscan",
+                title: "Perform Association Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "endscan",
+                title: "Perform Endpoint Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "parameterscan",
+                title: "Perform Parameter Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "actuatorscan",
+                title: "Perform Actuator Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "sensorscan",
+                title: "Perform Sensor Scan",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "generalprint",
+                title: "Perform General Print",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "assocgroupsprint",
+                title: "Print Association Groups",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "endpointsprint",
+                title: "Print Endpoints",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "paramsprint",
+                title: "Print Parameters",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "actuatorprint",
+                title: "Print Actuator",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "sensorprint",
+                title: "Print Sensor",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "commandsprint",
+                title: "Print Commands",
+                type: "bool",
+                required: false
+            )
+            
+             input (
+                name: "pendingsync",
+                title: "Sync Pending",
+                type: "bool",
+                required: false
+            )
+            
+            
+      }
 
         section {
 
@@ -375,6 +503,52 @@ def updated() {
             state.zwtAssocGroupTarget = null
         }
 
+		// Perform Commands from Settings
+        if (settings.generalscan == true) { 
+        	scanGeneral() }
+
+ 		if (settings.assocscan == true) {
+        	scanAssocGroups() }
+         
+        if (settings.endscan == true) {
+        	scanEndpoints() }
+            
+        if (settings.parameterscan == true) {
+        	scanParams() }
+              
+        if (settings.actuatorscan  == true) {
+         	scanActuator() }
+               
+        if (settings.sensorscan == true) {
+        	scanSensor() }
+           
+        if (settings.generalprint == true) {
+            printGeneral() }
+            
+        if (settings.assocgroupsprint == true) {
+        	printAssocGroups() }
+       
+       	if (settings.endpointsprint == true) {
+            printEndpoints() }    
+            
+        if (settings.paramsprint == true) {
+        	printParams() }
+               
+        if (settings.actuatorprint == true) {
+        	printActuator() }
+              
+        if (settings.sensorprint == true) {
+        	printSensor() }
+             
+        if (settings.commandsprint == true) {
+        	printCommands() }
+       
+        if (settings.pendingsync == true) {
+        	sync() }
+      
+      	if (settings.cleanit == true) {
+        	cleanUp() }
+       
         // Check if a parameter needs to be synced:
         if ((settings.zwtParamId != null) & (settings.zwtParamValue != null)) {
             state.zwtParamTarget = [
@@ -2130,6 +2304,21 @@ private cleanUp() {
     device?.updateSetting("zwtProtectLocal", null)
     device?.updateSetting("zwtProtectRF", null)
     device?.updateSetting("zwtSwitchAllMode", null)
+    device?.updateSetting("generalscan", null)
+    device?.updateSetting("assocscan", null)
+    device?.updateSetting("endscan", null)
+    device?.updateSetting("parameterscan", null)
+    device?.updateSetting("actuatorscan", null)
+    device?.updateSetting("sensorscan", null)
+    device?.updateSetting("generalprint", null)
+    device?.updateSetting("assocgroupsprint", null)
+    device?.updateSetting("endpointsprint", null)
+    device?.updateSetting("paramsprint", null)
+    device?.updateSetting("actuatorprint", null)
+    device?.updateSetting("sensorprint", null)
+    device?.updateSetting("commandsprint", null)
+    device?.updateSetting("pendingsync", null)
+    device?.updateSetting("cleanit", null)
 
 }
 
