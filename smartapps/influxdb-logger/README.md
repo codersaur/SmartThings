@@ -7,11 +7,13 @@ Copyright (c) [David Lomas](https://github.com/codersaur)
 This SmartApp logs SmartThings device attributes to an [InfluxDB](https://influxdata.com/) database.
 
 ### Key features:
+* Supports InfluxDB v1.x and v2.x
 * Changes to device attributes are immediately logged to InfluxDB.
 * The _Soft-Polling_ feature forces attribute values to be written to the database periodically, even if values haven't changed.
 * Logs Location _Mode_ events.
 * Supports an InfluxDB instance on the local LAN, without needing to route traffic via the cloud.
 * Supports Basic Authentication to InfluxDB database.
+* Supports Token Authentication to InfluxDB v2 database.
 
 ## Installation
 Follow [these instructions](https://github.com/codersaur/SmartThings#smartapp-installation-procedure) to install the SmartApp in the SmartThings IDE. However, before publishing the code in the IDE, edit the _getGroupName()_ command (at the bottom of the code) to add the Group IDs for your SmartThings instance. These can be found from the _'My Locations'_ tab in the SmartThings IDE.
@@ -21,12 +23,15 @@ For more information about installing InfluxDB, Grafana, and this SmartApp, [see
 ## Usage
 SmartApp settings:
 
-* **InfluxDB Database**: Specify your InfluxDB instance details in this section.
+* **InfluxDB Database**: Specify your InfluxDB instance details in this section. Fill in "v1" or "v2"-marked parameters according to your InfluxDB version.
 * **Polling**: Configure the _Soft-Polling_ interval. All device attribute values will be written to the database at least once per interval. This is useful to ensure attribute values are written to the database, even when they have not changed. Set to zero to disable.
 * **System Monitoring**: Configure which location and hub attributes are logged.
 * **Devices to Monitor**: Specify which device attributes to monitor.
 
 ## Version History
+
+#### 2022-08-01: v1.12
+ * Supports InfluxDB v2 and Token Authentication.
 
 #### 2017-04-03: v1.11
  * Supports Basic HTTP Authentication.

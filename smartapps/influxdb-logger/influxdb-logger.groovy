@@ -64,9 +64,11 @@ preferences {
     section ("InfluxDB Database:") {
         input "prefDatabaseHost", "text", title: "Host", defaultValue: "10.10.10.10", required: true
         input "prefDatabasePort", "text", title: "Port", defaultValue: "8086", required: true
-        input "prefDatabaseName", "text", title: "Database Name", defaultValue: "", required: true
-        input "prefDatabaseUser", "text", title: "Username", required: false
-        input "prefDatabasePass", "text", title: "Password", required: false
+        input "prefDatabaseName", "text", title: "InfluxDB v1 Database Name or InfluxDB v2 Bucket", defaultValue: "", required: true
+        input "prefDatabaseUser", "text", title: "InfluxDB v1 Username", required: false
+        input "prefDatabasePass", "text", title: "InfluxDB v1 Password", required: false
+        input "prefDatabaseOrg", "text", title: "InfluxDB v2 Organization", required: false
+        input "prefDatabaseToken", "text", title: "InfluxDB v2 Token", required: false
     }
     
     section("Polling:") {
@@ -171,12 +173,20 @@ def updated() {
     state.databaseName = settings.prefDatabaseName
     state.databaseUser = settings.prefDatabaseUser
     state.databasePass = settings.prefDatabasePass 
+    state.databaseOrg = settings.prefDatabaseOrg
+    state.databaseToken = settings.prefDatabaseToken
     
-    state.path = "/write?db=${state.databaseName}"
+    if (state.databaseOrg) {
+        state.path = "/api/v2/write?org=${state.databaseOrg}&bucket=${state.databaseName}"
+    } else {
+        state.path = "/write?db=${state.databaseName}"
+    }
     state.headers = [:] 
     state.headers.put("HOST", "${state.databaseHost}:${state.databasePort}")
     state.headers.put("Content-Type", "application/x-www-form-urlencoded")
-    if (state.databaseUser && state.databasePass) {
+    if (state.databaseOrg && state.databaseToken) {
+        state.headers.put("Authorization", "Token " + state.databaseToken)
+    } else if (state.databaseUser && state.databasePass) {
         state.headers.put("Authorization", encodeCredentialsBasic(state.databaseUser, state.databasePass))
     }
 
@@ -597,7 +607,24 @@ def logSystemProperties() {
  **/
 def postToInfluxDB(data) {
     logger("postToInfluxDB(): Posting data to InfluxDB: Host: ${state.databaseHost}, Port: ${state.databasePort}, Database: ${state.databaseName}, Data: [${data}]","debug")
-    
+
+    /* Workaround for 2-byte characters counted as 1 */
+    def number_of_accentued_characters = 0
+    number_of_accentued_characters += data.count("à")
+    number_of_accentued_characters += data.count("â")
+    number_of_accentued_characters += data.count("é")
+    number_of_accentued_characters += data.count("è")
+    number_of_accentued_characters += data.count("ê")
+    number_of_accentued_characters += data.count("ë")
+    number_of_accentued_characters += data.count("î")
+    number_of_accentued_characters += data.count("ï")
+    number_of_accentued_characters += data.count("ô")
+    number_of_accentued_characters += data.count("ù")
+    number_of_accentued_characters += data.count("û")
+    number_of_accentued_characters += data.count("ç")
+    logger("postToInfluxDB(): Padding data with ${number_of_accentued_characters} extra space(s)", "debug")
+    data += " ".multiply(number_of_accentued_characters)
+
     try {
         def hubAction = new physicalgraph.device.HubAction(
         	[
